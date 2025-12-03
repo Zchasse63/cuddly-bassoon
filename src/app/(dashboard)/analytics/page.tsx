@@ -1,7 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { BarChart3, TrendingUp, Target, Phone, Mail, Search, Download } from 'lucide-react';
+import Link from 'next/link';
+import {
+  BarChart3,
+  TrendingUp,
+  Target,
+  Phone,
+  Mail,
+  Search,
+  Download,
+  Briefcase,
+  Users,
+  MessageSquare,
+  MapPin,
+  ArrowRight,
+  Map,
+  FileText,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { usePageContext } from '@/hooks/usePageContext';
 import { useKPIs } from '@/hooks/use-dashboard-data';
@@ -211,6 +227,126 @@ export default function AnalyticsPage() {
             : 'Start tracking revenue',
         ]}
       />
+
+      {/* Detailed Analytics Links */}
+      <section className="analytics-section">
+        <h2 className="analytics-section__title">Detailed Analytics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link href="/analytics/deals" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                      <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Deal Analytics</h3>
+                      <p className="text-xs text-muted-foreground">Pipeline & revenue</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics/buyers" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Buyer Analytics</h3>
+                      <p className="text-xs text-muted-foreground">Network & engagement</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics/communications" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                      <MessageSquare className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Communication</h3>
+                      <p className="text-xs text-muted-foreground">Channels & campaigns</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics/markets" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                      <MapPin className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Market Analytics</h3>
+                      <p className="text-xs text-muted-foreground">Trends & opportunities</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics/heatmap" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-rose-100 dark:bg-rose-900/30">
+                      <Map className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Heat Map</h3>
+                      <p className="text-xs text-muted-foreground">21 visualization layers</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/analytics/reports" className="group">
+            <Card className="h-full hover:border-primary/50 transition-colors">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-900/30">
+                      <FileText className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">Reports</h3>
+                      <p className="text-xs text-muted-foreground">Build & export reports</p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

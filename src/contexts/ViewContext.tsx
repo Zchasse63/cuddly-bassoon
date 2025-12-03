@@ -23,6 +23,12 @@ export type ViewType =
   | 'deal-detail'
   | 'documents'
   | 'analytics'
+  | 'analytics-buyers'
+  | 'analytics-communications'
+  | 'analytics-deals'
+  | 'analytics-heatmap'
+  | 'analytics-markets'
+  | 'analytics-reports'
   | 'search'
   | 'settings'
   | 'notifications'
@@ -31,7 +37,11 @@ export type ViewType =
   | 'lists'
   | 'filters'
   | 'market'
-  | 'map';
+  | 'map'
+  | 'leads'
+  | 'inbox'
+  | 'leads'
+  | 'onboarding';
 
 export interface EntityContext {
   type: 'property' | 'buyer' | 'deal' | 'document' | null;
@@ -100,6 +110,12 @@ const VIEW_LABELS: Record<ViewType, string> = {
   'deal-detail': 'Deal Details',
   documents: 'Documents',
   analytics: 'Analytics',
+  'analytics-buyers': 'Buyer Analytics',
+  'analytics-communications': 'Communication Analytics',
+  'analytics-deals': 'Deal Analytics',
+  'analytics-heatmap': 'Heat Map',
+  'analytics-markets': 'Market Analytics',
+  'analytics-reports': 'Reports',
   search: 'Search',
   settings: 'Settings',
   notifications: 'Notifications',
@@ -109,6 +125,9 @@ const VIEW_LABELS: Record<ViewType, string> = {
   filters: 'Filters',
   market: 'Market',
   map: 'Map',
+  inbox: 'Inbox',
+  leads: 'Leads',
+  onboarding: 'Onboarding',
 };
 
 interface ViewContextProviderProps {

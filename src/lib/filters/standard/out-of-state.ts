@@ -5,6 +5,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface OutOfStateParams {
   // No configurable parameters
 }
@@ -14,25 +15,63 @@ export interface OutOfStateParams {
  */
 function normalizeState(state: string | null | undefined): string | null {
   if (!state) return null;
-  
+
   const stateMap: Record<string, string> = {
-    'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
-    'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
-    'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
-    'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
-    'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
-    'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
-    'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
-    'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
-    'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
-    'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
-    'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
-    'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
-    'wisconsin': 'WI', 'wyoming': 'WY', 'district of columbia': 'DC',
+    alabama: 'AL',
+    alaska: 'AK',
+    arizona: 'AZ',
+    arkansas: 'AR',
+    california: 'CA',
+    colorado: 'CO',
+    connecticut: 'CT',
+    delaware: 'DE',
+    florida: 'FL',
+    georgia: 'GA',
+    hawaii: 'HI',
+    idaho: 'ID',
+    illinois: 'IL',
+    indiana: 'IN',
+    iowa: 'IA',
+    kansas: 'KS',
+    kentucky: 'KY',
+    louisiana: 'LA',
+    maine: 'ME',
+    maryland: 'MD',
+    massachusetts: 'MA',
+    michigan: 'MI',
+    minnesota: 'MN',
+    mississippi: 'MS',
+    missouri: 'MO',
+    montana: 'MT',
+    nebraska: 'NE',
+    nevada: 'NV',
+    'new hampshire': 'NH',
+    'new jersey': 'NJ',
+    'new mexico': 'NM',
+    'new york': 'NY',
+    'north carolina': 'NC',
+    'north dakota': 'ND',
+    ohio: 'OH',
+    oklahoma: 'OK',
+    oregon: 'OR',
+    pennsylvania: 'PA',
+    'rhode island': 'RI',
+    'south carolina': 'SC',
+    'south dakota': 'SD',
+    tennessee: 'TN',
+    texas: 'TX',
+    utah: 'UT',
+    vermont: 'VT',
+    virginia: 'VA',
+    washington: 'WA',
+    'west virginia': 'WV',
+    wisconsin: 'WI',
+    wyoming: 'WY',
+    'district of columbia': 'DC',
   };
 
   const trimmed = state.trim();
-  
+
   // Already a 2-letter code
   if (trimmed.length === 2) {
     return trimmed.toUpperCase();
@@ -52,7 +91,7 @@ export function applyOutOfStateFilter(
 ): FilterMatch {
   // Get property state
   const propertyState = normalizeState(property.state);
-  
+
   if (!propertyState) {
     return {
       filterId: 'out_of_state',
@@ -63,8 +102,7 @@ export function applyOutOfStateFilter(
   }
 
   // Try owner state from different sources
-  const ownerState = normalizeState(property.ownerState) || 
-                     normalizeState(property.mailingState);
+  const ownerState = normalizeState(property.ownerState) || normalizeState(property.mailingState);
 
   if (!ownerState) {
     return {
@@ -101,4 +139,3 @@ export function applyOutOfStateFilter(
     },
   };
 }
-

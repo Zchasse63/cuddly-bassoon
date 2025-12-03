@@ -6,6 +6,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface AccidentalLandlordParams {
   // No configurable parameters
 }
@@ -49,7 +50,7 @@ export function applyAccidentalLandlordFilter(
     if (property.homesteadRemovalDate) {
       const removalDate = new Date(property.homesteadRemovalDate);
       const yearsSinceRemoval = (Date.now() - removalDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
-      
+
       if (yearsSinceRemoval <= 2) {
         score = 95;
         reason = `Homestead exemption removed ${yearsSinceRemoval.toFixed(1)} years ago`;
@@ -70,23 +71,24 @@ export function applyAccidentalLandlordFilter(
 
   // Inference: currently not owner-occupied + single family + individual owner
   const isAbsentee = property.isOwnerOccupied === false;
-  const isSingleFamily = property.propertyType?.toLowerCase().includes('single') ||
-                         property.propertyType?.toLowerCase().includes('sfr');
-  const isIndividualOwner = property.ownerType?.toLowerCase() === 'individual' ||
-                            !property.ownerType?.toLowerCase().includes('llc');
+  const isSingleFamily =
+    property.propertyType?.toLowerCase().includes('single') ||
+    property.propertyType?.toLowerCase().includes('sfr');
+  const isIndividualOwner =
+    property.ownerType?.toLowerCase() === 'individual' ||
+    !property.ownerType?.toLowerCase().includes('llc');
 
   if (isAbsentee && isSingleFamily && isIndividualOwner) {
     // Check for short ownership suggesting unplanned rental
-    const ownershipYears = property.ownershipMonths 
-      ? property.ownershipMonths / 12 
-      : null;
+    const ownershipYears = property.ownershipMonths ? property.ownershipMonths / 12 : null;
 
     if (ownershipYears !== null && ownershipYears >= 3 && ownershipYears <= 10) {
       return {
         filterId: 'accidental_landlord',
         matched: true,
         score: 70,
-        reason: 'Single-family, individual owner, not owner-occupied (possible accidental landlord)',
+        reason:
+          'Single-family, individual owner, not owner-occupied (possible accidental landlord)',
         data: {
           propertyType: property.propertyType,
           ownerType: property.ownerType,
@@ -120,4 +122,3 @@ export function applyAccidentalLandlordFilter(
     reason: 'No indicators of accidental landlord situation',
   };
 }
-

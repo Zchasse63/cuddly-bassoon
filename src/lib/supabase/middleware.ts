@@ -38,14 +38,29 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Define protected routes that require authentication
-  const protectedRoutes = ['/dashboard', '/properties', '/buyers', '/deals', '/settings'];
+  const protectedRoutes = [
+    '/dashboard',
+    '/properties',
+    '/buyers',
+    '/deals',
+    '/settings',
+    '/onboarding',
+    '/api/user',
+    '/api/team',
+  ];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   // Define auth routes (login, signup) - redirect to dashboard if already authenticated
-  const authRoutes = ['/login', '/signup', '/auth'];
+  const authRoutes = ['/login', '/signup'];
   const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
+
+  // Auth callback and reset-password should be accessible
+  const authCallbackRoutes = ['/auth/callback', '/auth/reset-password'];
+  const isAuthCallback = authCallbackRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
 
   if (!user && isProtectedRoute) {
     // User is not authenticated and trying to access protected route
@@ -55,8 +70,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthRoute) {
-    // User is authenticated and trying to access auth routes
+  if (user && isAuthRoute && !isAuthCallback) {
+    // User is authenticated and trying to access auth routes (but not callbacks)
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

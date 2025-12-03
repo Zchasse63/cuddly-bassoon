@@ -6,6 +6,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UnderwaterLandlordParams {
   // No configurable parameters
 }
@@ -40,15 +41,15 @@ function estimateMonthlyMortgage(
   annualRate: number = 0.07
 ): number {
   if (!balance || balance <= 0) return 0;
-  
+
   const monthlyRate = annualRate / 12;
   const payments = 360; // 30 years
-  
+
   // Standard mortgage payment formula
-  const payment = balance * 
-    (monthlyRate * Math.pow(1 + monthlyRate, payments)) /
+  const payment =
+    (balance * (monthlyRate * Math.pow(1 + monthlyRate, payments))) /
     (Math.pow(1 + monthlyRate, payments) - 1);
-  
+
   return payment;
 }
 
@@ -78,10 +79,9 @@ export function applyUnderwaterLandlordFilter(
     monthlyExpenses = property.monthlyPITI;
   } else {
     // Build from components
-    const mortgage = property.monthlyMortgagePayment || 
-                     estimateMonthlyMortgage(property.mortgageBalance);
-    const tax = property.monthlyPropertyTax || 
-                estimateMonthlyTax(property.taxAmount);
+    const mortgage =
+      property.monthlyMortgagePayment || estimateMonthlyMortgage(property.mortgageBalance);
+    const tax = property.monthlyPropertyTax || estimateMonthlyTax(property.taxAmount);
     const insurance = property.monthlyInsurance || 0;
     const hoa = property.monthlyHOA || 0;
 
@@ -89,7 +89,7 @@ export function applyUnderwaterLandlordFilter(
 
     // If we only have mortgage estimate, add rough insurance estimate
     if (!property.monthlyInsurance && mortgage > 0) {
-      monthlyExpenses += (property.estimatedValue || 0) * 0.005 / 12; // ~0.5% annual
+      monthlyExpenses += ((property.estimatedValue || 0) * 0.005) / 12; // ~0.5% annual
     }
   }
 
@@ -138,4 +138,3 @@ export function applyUnderwaterLandlordFilter(
     },
   };
 }
-

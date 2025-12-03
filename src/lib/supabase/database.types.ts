@@ -2430,6 +2430,261 @@ export type Database = {
           },
         ];
       };
+      // Phase 11: Analytics & Reporting Tables
+      heat_map_cache: {
+        Row: {
+          id: string;
+          layer_type: string;
+          geographic_bounds: Json;
+          data: Json;
+          generated_at: string;
+          expires_at: string;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          layer_type: string;
+          geographic_bounds: Json;
+          data: Json;
+          generated_at?: string;
+          expires_at: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          layer_type?: string;
+          geographic_bounds?: Json;
+          data?: Json;
+          generated_at?: string;
+          expires_at?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      user_heat_map_data: {
+        Row: {
+          id: string;
+          user_id: string;
+          layer_type: string;
+          data: Json;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          layer_type: string;
+          data: Json;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          layer_type?: string;
+          data?: Json;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_heat_map_data_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_success_profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          profile_data: Json;
+          pattern_weights: Json;
+          closed_deals_count: number | null;
+          last_updated: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          profile_data?: Json;
+          pattern_weights?: Json;
+          closed_deals_count?: number | null;
+          last_updated?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          profile_data?: Json;
+          pattern_weights?: Json;
+          closed_deals_count?: number | null;
+          last_updated?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_success_profiles_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recommendation_interactions: {
+        Row: {
+          id: string;
+          user_id: string;
+          recommendation_id: string;
+          interaction_type: string;
+          feedback_data: Json | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          recommendation_id: string;
+          interaction_type: string;
+          feedback_data?: Json | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          recommendation_id?: string;
+          interaction_type?: string;
+          feedback_data?: Json | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'recommendation_interactions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'recommendation_interactions_recommendation_id_fkey';
+            columns: ['recommendation_id'];
+            isOneToOne: false;
+            referencedRelation: 'pending_recommendations';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pending_recommendations: {
+        Row: {
+          id: string;
+          user_id: string;
+          recommendation_type: string;
+          entity_type: string;
+          entity_id: string;
+          score: number;
+          reasoning: Json;
+          status: string;
+          expires_at: string | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          recommendation_type: string;
+          entity_type: string;
+          entity_id: string;
+          score: number;
+          reasoning: Json;
+          status?: string;
+          expires_at?: string | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          recommendation_type?: string;
+          entity_type?: string;
+          entity_id?: string;
+          score?: number;
+          reasoning?: Json;
+          status?: string;
+          expires_at?: string | null;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pending_recommendations_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_tasks: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          description: string | null;
+          priority: string;
+          status: string;
+          due_date: string | null;
+          entity_type: string | null;
+          entity_id: string | null;
+          ai_generated: boolean;
+          source_tool: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          description?: string | null;
+          priority?: string;
+          status?: string;
+          due_date?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          ai_generated?: boolean;
+          source_tool?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          description?: string | null;
+          priority?: string;
+          status?: string;
+          due_date?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          ai_generated?: boolean;
+          source_tool?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          completed_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_tasks_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

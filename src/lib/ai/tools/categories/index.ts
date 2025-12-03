@@ -13,6 +13,9 @@ import { registerDealPipelineTools } from './deal-pipeline';
 import { registerCrmTools } from './crm-tools';
 import { registerSkipTraceTools } from './skip-trace-tools';
 import { registerNotificationTools } from './notification-tools';
+import { registerHeatMappingTools } from './heat-mapping';
+import { registerMarketAnalysisTools } from './market-analysis';
+import { registerDashboardAnalyticsTools } from './dashboard-analytics';
 
 /**
  * Register all tool categories
@@ -30,6 +33,9 @@ export function registerAllTools(): void {
   registerCrmTools();
   registerSkipTraceTools();
   registerNotificationTools();
+  registerHeatMappingTools();
+  registerMarketAnalysisTools();
+  registerDashboardAnalyticsTools();
 
   console.log('[Tool Categories] All tools registered');
 }
@@ -44,3 +50,6 @@ export { registerDealPipelineTools } from './deal-pipeline';
 export { registerCrmTools } from './crm-tools';
 export { registerSkipTraceTools } from './skip-trace-tools';
 export { registerNotificationTools } from './notification-tools';
+export { registerHeatMappingTools } from './heat-mapping';
+export { registerMarketAnalysisTools } from './market-analysis';
+export { registerDashboardAnalyticsTools } from './dashboard-analytics';

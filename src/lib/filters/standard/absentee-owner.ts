@@ -56,15 +56,11 @@ function buildMailingAddress(property: PropertyData): string {
  * Build full property address from components
  */
 function buildPropertyAddress(property: PropertyData): string {
-  const parts = [
-    property.address,
-    property.city,
-    property.state,
-    property.zip,
-  ].filter(Boolean);
+  const parts = [property.address, property.city, property.state, property.zip].filter(Boolean);
   return parts.join(' ');
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface AbsenteeOwnerParams {
   // No configurable parameters for this filter
 }
@@ -143,15 +139,14 @@ export function applyAbsenteeOwnerFilter(
   // Compare full addresses
   if (propertyAddr !== mailingAddr) {
     // Check if zip codes differ (medium-strong indicator)
-    const zipsDiffer = property.zip && property.mailingZip && 
-      property.zip !== property.mailingZip;
-    
+    const zipsDiffer = property.zip && property.mailingZip && property.zip !== property.mailingZip;
+
     return {
       filterId: 'absentee_owner',
       matched: true,
       score: zipsDiffer ? 90 : 75,
-      reason: zipsDiffer 
-        ? 'Mailing address in different zip code' 
+      reason: zipsDiffer
+        ? 'Mailing address in different zip code'
         : 'Mailing address differs from property address',
       data: {
         propertyAddress: property.address,
@@ -167,4 +162,3 @@ export function applyAbsenteeOwnerFilter(
     reason: 'Mailing address matches property address',
   };
 }
-

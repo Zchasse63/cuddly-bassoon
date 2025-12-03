@@ -166,6 +166,63 @@ const QUICK_ACTIONS_BY_VIEW: Record<ViewType, QuickAction[]> = {
     { id: 'search', label: 'Search', icon: Search, prompt: 'Search properties on the map' },
     { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze this area' },
   ],
+  leads: [
+    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my leads' },
+    { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze lead quality' },
+    { id: 'add', label: 'Add', icon: Plus, prompt: 'Help me add a new lead' },
+  ],
+  'analytics-buyers': [
+    { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a buyer analytics report' },
+    {
+      id: 'insights',
+      label: 'Insights',
+      icon: Sparkles,
+      prompt: 'Give me insights about buyer behavior',
+    },
+  ],
+  'analytics-communications': [
+    { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a communications report' },
+    {
+      id: 'insights',
+      label: 'Insights',
+      icon: Sparkles,
+      prompt: 'Analyze my communication effectiveness',
+    },
+  ],
+  'analytics-deals': [
+    { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a deals analytics report' },
+    {
+      id: 'insights',
+      label: 'Insights',
+      icon: Sparkles,
+      prompt: 'Give me insights about deal performance',
+    },
+  ],
+  'analytics-heatmap': [
+    { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze this geographic area' },
+    {
+      id: 'search',
+      label: 'Search',
+      icon: Search,
+      prompt: 'Search for opportunities in this area',
+    },
+  ],
+  'analytics-markets': [
+    { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a market analysis report' },
+    { id: 'insights', label: 'Insights', icon: Sparkles, prompt: 'Give me market insights' },
+  ],
+  'analytics-reports': [
+    { id: 'generate', label: 'Generate', icon: Sparkles, prompt: 'Generate a new report' },
+    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my reports' },
+  ],
+  inbox: [
+    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my messages' },
+    { id: 'compose', label: 'Compose', icon: Plus, prompt: 'Help me compose a message' },
+  ],
+  onboarding: [
+    { id: 'help', label: 'Help', icon: Sparkles, prompt: 'Help me get started with the platform' },
+    { id: 'guide', label: 'Guide', icon: FileText, prompt: 'Show me a quick start guide' },
+  ],
 };
 
 interface QuickActionsProps {

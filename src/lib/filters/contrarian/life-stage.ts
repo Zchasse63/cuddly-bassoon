@@ -6,6 +6,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LifeStageParams {
   // No configurable parameters
 }
@@ -75,7 +76,7 @@ function detectLifeEvents(property: PropertyWithLifeStageData): LifeEvent[] {
       type: 'senior',
       detected: true,
       score: 70,
-      reason: property.ownerAge 
+      reason: property.ownerAge
         ? `Owner is ${property.ownerAge} years old`
         : 'Owner identified as senior',
       data: {
@@ -107,7 +108,7 @@ function detectLifeEvents(property: PropertyWithLifeStageData): LifeEvent[] {
   // Check owner name for estate/trust indicators
   if (property.ownerName) {
     const name = property.ownerName.toLowerCase();
-    
+
     if (name.includes('estate of') || name.includes('deceased')) {
       events.push({
         type: 'estate_name',
@@ -166,9 +167,8 @@ export function applyLifeStageFilter(
     filterId: 'life_stage',
     matched: true,
     score: combinedScore,
-    reason: primaryEvent.reason + (events.length > 1 
-      ? ` (+${events.length - 1} other indicators)` 
-      : ''),
+    reason:
+      primaryEvent.reason + (events.length > 1 ? ` (+${events.length - 1} other indicators)` : ''),
     data: {
       primaryEvent: primaryEvent.type,
       allEvents: events.map((e) => e.type),
@@ -176,4 +176,3 @@ export function applyLifeStageFilter(
     },
   };
 }
-

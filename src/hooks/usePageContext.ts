@@ -113,6 +113,30 @@ export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
     { id: 'report', label: 'Generate Report', action: () => {} },
     { id: 'insights', label: 'Get Insights', action: () => {} },
   ],
+  'analytics-buyers': [
+    { id: 'report', label: 'Buyer Report', action: () => {} },
+    { id: 'insights', label: 'Buyer Insights', action: () => {} },
+  ],
+  'analytics-communications': [
+    { id: 'report', label: 'Communication Report', action: () => {} },
+    { id: 'analyze', label: 'Analyze Outreach', action: () => {} },
+  ],
+  'analytics-deals': [
+    { id: 'report', label: 'Deal Report', action: () => {} },
+    { id: 'forecast', label: 'Pipeline Forecast', action: () => {} },
+  ],
+  'analytics-heatmap': [
+    { id: 'analyze', label: 'Analyze Area', action: () => {} },
+    { id: 'compare', label: 'Compare Regions', action: () => {} },
+  ],
+  'analytics-markets': [
+    { id: 'report', label: 'Market Report', action: () => {} },
+    { id: 'trends', label: 'Market Trends', action: () => {} },
+  ],
+  'analytics-reports': [
+    { id: 'create', label: 'Create Report', action: () => {} },
+    { id: 'schedule', label: 'Schedule Report', action: () => {} },
+  ],
   search: [
     { id: 'save', label: 'Save Search', action: () => {} },
     { id: 'export', label: 'Export Results', action: () => {} },
@@ -143,4 +167,13 @@ export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
     { id: 'search', label: 'Search Area', action: () => {} },
     { id: 'analyze', label: 'Analyze Area', action: () => {} },
   ],
+  inbox: [
+    { id: 'compose', label: 'New Message', action: () => {} },
+    { id: 'search', label: 'Search Messages', action: () => {} },
+  ],
+  leads: [
+    { id: 'add', label: 'Add Lead', action: () => {} },
+    { id: 'import', label: 'Import Leads', action: () => {} },
+  ],
+  onboarding: [],
 };

@@ -5,6 +5,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface FreeClearParams {
   // No configurable parameters
 }
@@ -62,7 +63,8 @@ export function applyFreeClearFilter(
   // Check if equity amount equals estimated value
   if (property.equityAmount && property.estimatedValue) {
     const equityRatio = property.equityAmount / property.estimatedValue;
-    if (equityRatio >= 0.99) { // Allow small rounding differences
+    if (equityRatio >= 0.99) {
+      // Allow small rounding differences
       return {
         filterId: 'free_clear',
         matched: true,
@@ -84,4 +86,3 @@ export function applyFreeClearFilter(
     reason: 'Unable to determine mortgage status (missing data)',
   };
 }
-

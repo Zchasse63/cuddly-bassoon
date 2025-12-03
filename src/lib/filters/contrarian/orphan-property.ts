@@ -6,6 +6,7 @@
 
 import type { PropertyData, FilterMatch } from '../types';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface OrphanPropertyParams {
   // No configurable parameters
 }
@@ -66,8 +67,10 @@ function detectOrphanIndicators(property: PropertyWithVacancyData): OrphanIndica
   }
 
   // Code violations
-  if (property.hasCodeViolations || 
-      (property.codeViolationCount && property.codeViolationCount > 0)) {
+  if (
+    property.hasCodeViolations ||
+    (property.codeViolationCount && property.codeViolationCount > 0)
+  ) {
     const count = property.codeViolationCount || 1;
     const weight = Math.min(40, 20 + count * 5);
 
@@ -109,9 +112,9 @@ function detectOrphanIndicators(property: PropertyWithVacancyData): OrphanIndica
     // Check for signs of neglect
     if (property.lastKnownOccupancy) {
       const lastOccupancy = new Date(property.lastKnownOccupancy);
-      const monthsSinceOccupancy = (Date.now() - lastOccupancy.getTime()) / 
-                                    (1000 * 60 * 60 * 24 * 30);
-      
+      const monthsSinceOccupancy =
+        (Date.now() - lastOccupancy.getTime()) / (1000 * 60 * 60 * 24 * 30);
+
       if (monthsSinceOccupancy > 12) {
         indicators.push({
           type: 'long_term_absentee',
@@ -157,9 +160,9 @@ export function applyOrphanPropertyFilter(
     filterId: 'orphan_property',
     matched: true,
     score,
-    reason: primaryReason + (indicators.length > 1 
-      ? ` (+${indicators.length - 1} other indicators)` 
-      : ''),
+    reason:
+      primaryReason +
+      (indicators.length > 1 ? ` (+${indicators.length - 1} other indicators)` : ''),
     data: {
       indicatorCount: indicators.length,
       indicators: indicators.map((i) => i.type),
@@ -167,4 +170,3 @@ export function applyOrphanPropertyFilter(
     },
   };
 }
-
