@@ -35,6 +35,10 @@ export const CachePrefix = {
   SEARCH: 'search:',
   API: 'api:',
   SESSION: 'session:',
+  // RAG system prefixes
+  RAG_QUERY: 'rag:query:',
+  RAG_EMBEDDING: 'rag:embed:',
+  RAG_RATE_LIMIT: 'rag:rate:',
 } as const;
 
 export type CachePrefixKey = keyof typeof CachePrefix;

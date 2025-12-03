@@ -2,18 +2,25 @@
 
 ---
 
-**Phase Number:** 7 of 12  
-**Duration:** 1 Week  
-**Dependencies:** [Phase 2: Database Schema](./PHASE_02_Database_Schema_2025-12-02.md), [Phase 4: Property Search](./PHASE_04_Property_Search_2025-12-02.md), [Phase 6: Knowledge Base & RAG](./PHASE_06_Knowledge_Base_RAG_2025-12-02.md)  
-**Status:** Not Started  
-**Start Date:** TBD  
-**Target Completion:** TBD  
+**Phase Number:** 7 of 12
+**Duration:** 2 Weeks
+**Dependencies:** [Phase 2: Database Schema](./PHASE_02_Database_Schema_2025-12-02.md), [Phase 4: Property Search](./PHASE_04_Property_Search_2025-12-02.md), [Phase 5: AI/LLM Integration](./PHASE_05_AI_LLM_Integration_2025-12-02.md), [Phase 6: Knowledge Base & RAG](./PHASE_06_Knowledge_Base_RAG_2025-12-02.md)
+**Status:** Not Started
+**Start Date:** TBD
+**Target Completion:** TBD
+**AI Tools in Phase:** 46
 
 ---
 
 ## Overview
 
 Build the buyer management system including profiles, preferences, qualification tracking, transaction history analysis, and intelligent deal-to-buyer matching algorithms. This phase creates the infrastructure for connecting deals with the right buyers.
+
+**Additionally, this phase implements 46 AI tools** from the AI Interaction Map specification:
+- **Search Tools** (10) - Natural language property search capabilities
+- **Property Detail Tools** (13) - AI-powered property analysis and valuation
+- **Filter System Tools** (11) - Intelligent filter recommendations and optimization
+- **Buyer Database Tools** (12) - AI-enhanced buyer matching and analysis
 
 ---
 
@@ -26,6 +33,10 @@ Build the buyer management system including profiles, preferences, qualification
 5. Create buyer scoring and tiering algorithm
 6. Build deal-to-buyer matching engine
 7. Implement buyer communication preferences
+8. **Implement 10 Search AI Tools**
+9. **Implement 13 Property Detail AI Tools**
+10. **Implement 11 Filter System AI Tools**
+11. **Implement 12 Buyer Database AI Tools**
 
 ---
 
@@ -270,6 +281,269 @@ Build the buyer management system including profiles, preferences, qualification
 
 ---
 
+### 9. Search AI Tools (10 Tools)
+- [ ] **9.1 searchPropertiesByDescription**
+  - [ ] Implement in lib/ai/tools/search-tools.ts
+  - [ ] Accept natural language property description
+  - [ ] Convert to filter criteria using AI
+  - [ ] Execute search and return results
+  - [ ] Register in tool registry
+
+- [ ] **9.2 executeFilter**
+  - [ ] Accept filter name and parameters
+  - [ ] Validate filter exists
+  - [ ] Execute filter query
+  - [ ] Return filtered property list
+
+- [ ] **9.3 saveSearchAsFilter**
+  - [ ] Accept current search criteria
+  - [ ] Generate filter name suggestion
+  - [ ] Save to user's saved filters
+  - [ ] Return confirmation
+
+- [ ] **9.4 getRecentSearches**
+  - [ ] Retrieve user's search history
+  - [ ] Include search criteria and result counts
+  - [ ] Support pagination
+
+- [ ] **9.5 refineSearch**
+  - [ ] Accept current results and refinement request
+  - [ ] Suggest additional filters
+  - [ ] Apply refinements
+  - [ ] Return updated results
+
+- [ ] **9.6 compareSearchResults**
+  - [ ] Accept two search result sets
+  - [ ] Identify overlapping properties
+  - [ ] Highlight differences
+  - [ ] Return comparison summary
+
+- [ ] **9.7 exportSearchResults**
+  - [ ] Accept search results and format
+  - [ ] Generate CSV/PDF export
+  - [ ] Return download link
+
+- [ ] **9.8 scheduleSearch**
+  - [ ] Accept search criteria and schedule
+  - [ ] Create scheduled search job
+  - [ ] Configure notification preferences
+
+- [ ] **9.9 getSearchSuggestions**
+  - [ ] Analyze user's search patterns
+  - [ ] Suggest new search criteria
+  - [ ] Based on successful deals
+
+- [ ] **9.10 analyzeSearchPerformance**
+  - [ ] Calculate search-to-deal conversion
+  - [ ] Identify most productive searches
+  - [ ] Recommend search optimizations
+
+---
+
+### 10. Property Detail AI Tools (13 Tools)
+- [ ] **10.1 analyzePropertyValue**
+  - [ ] Implement in lib/ai/tools/property-tools.ts
+  - [ ] Accept property ID
+  - [ ] Calculate ARV using comps
+  - [ ] Estimate repair costs
+  - [ ] Return valuation breakdown
+
+- [ ] **10.2 getComparables**
+  - [ ] Find similar sold properties
+  - [ ] Filter by distance, size, age
+  - [ ] Calculate adjusted values
+  - [ ] Return comp list with adjustments
+
+- [ ] **10.3 calculateMotivationScore**
+  - [ ] Analyze ownership indicators
+  - [ ] Check for distress signals
+  - [ ] Calculate 0-100 motivation score
+  - [ ] Return score with reasoning
+
+- [ ] **10.4 generatePropertySummary**
+  - [ ] Create AI-written property description
+  - [ ] Highlight investment potential
+  - [ ] Include key metrics
+  - [ ] Format for different audiences
+
+- [ ] **10.5 analyzeDealPotential**
+  - [ ] Calculate potential profit margins
+  - [ ] Assess risk factors
+  - [ ] Compare to user's typical deals
+  - [ ] Return deal score
+
+- [ ] **10.6 getOwnershipHistory**
+  - [ ] Retrieve ownership timeline
+  - [ ] Calculate ownership duration
+  - [ ] Identify ownership patterns
+
+- [ ] **10.7 estimateRepairCosts**
+  - [ ] Analyze property condition
+  - [ ] Generate repair estimate
+  - [ ] Break down by category
+  - [ ] Provide range (low/mid/high)
+
+- [ ] **10.8 predictTimeOnMarket**
+  - [ ] Analyze local market velocity
+  - [ ] Consider property characteristics
+  - [ ] Predict days to sell
+
+- [ ] **10.9 getNeighborhoodInsights**
+  - [ ] Analyze surrounding area
+  - [ ] Crime, schools, amenities
+  - [ ] Market trends
+  - [ ] Investment outlook
+
+- [ ] **10.10 compareToPortfolio**
+  - [ ] Compare property to user's past deals
+  - [ ] Identify similarities/differences
+  - [ ] Predict success likelihood
+
+- [ ] **10.11 generateOfferPrice**
+  - [ ] Calculate optimal offer price
+  - [ ] Consider ARV, repairs, profit margin
+  - [ ] Return offer with justification
+
+- [ ] **10.12 assessRentalPotential**
+  - [ ] Estimate rental income
+  - [ ] Calculate cap rate
+  - [ ] Compare to market rents
+
+- [ ] **10.13 flagPropertyIssues**
+  - [ ] Identify potential red flags
+  - [ ] Title issues, liens, violations
+  - [ ] Environmental concerns
+  - [ ] Return issue list with severity
+
+---
+
+### 11. Filter System AI Tools (11 Tools)
+- [ ] **11.1 suggestFilters**
+  - [ ] Implement in lib/ai/tools/filter-tools.ts
+  - [ ] Analyze user's goals
+  - [ ] Recommend filter combinations
+  - [ ] Explain reasoning
+
+- [ ] **11.2 explainFilter**
+  - [ ] Accept filter name
+  - [ ] Describe what filter does
+  - [ ] Provide usage examples
+  - [ ] Show typical results
+
+- [ ] **11.3 optimizeFilterCombination**
+  - [ ] Analyze current filter set
+  - [ ] Identify redundancies
+  - [ ] Suggest improvements
+  - [ ] Predict result count
+
+- [ ] **11.4 createCustomFilter**
+  - [ ] Accept natural language criteria
+  - [ ] Generate filter definition
+  - [ ] Validate filter logic
+  - [ ] Save to user's filters
+
+- [ ] **11.5 compareFilters**
+  - [ ] Accept two filter sets
+  - [ ] Show overlap and differences
+  - [ ] Recommend which to use
+
+- [ ] **11.6 getFilterPerformance**
+  - [ ] Track filter usage statistics
+  - [ ] Calculate lead-to-deal conversion
+  - [ ] Identify best-performing filters
+
+- [ ] **11.7 suggestFilterRefinements**
+  - [ ] Analyze current results
+  - [ ] Suggest tightening/loosening
+  - [ ] Predict impact on results
+
+- [ ] **11.8 exportFilterDefinition**
+  - [ ] Export filter as shareable format
+  - [ ] Include all criteria
+  - [ ] Support import by others
+
+- [ ] **11.9 importFilter**
+  - [ ] Accept filter definition
+  - [ ] Validate and import
+  - [ ] Add to user's filters
+
+- [ ] **11.10 getFilterRecommendations**
+  - [ ] Based on user's success patterns
+  - [ ] Suggest new filter combinations
+  - [ ] Explain expected outcomes
+
+- [ ] **11.11 validateFilterCriteria**
+  - [ ] Check filter for logical errors
+  - [ ] Identify impossible combinations
+  - [ ] Suggest corrections
+
+---
+
+### 12. Buyer Database AI Tools (12 Tools)
+- [ ] **12.1 matchBuyersToProperty**
+  - [ ] Implement in lib/ai/tools/buyer-tools.ts
+  - [ ] Accept property details
+  - [ ] Find matching buyers
+  - [ ] Rank by match score
+  - [ ] Return buyer list with scores
+
+- [ ] **12.2 analyzeBuyerActivity**
+  - [ ] Track buyer engagement
+  - [ ] Identify active vs dormant
+  - [ ] Predict purchase likelihood
+
+- [ ] **12.3 suggestBuyerOutreach**
+  - [ ] Identify buyers to contact
+  - [ ] Prioritize by opportunity
+  - [ ] Generate outreach suggestions
+
+- [ ] **12.4 getBuyerInsights**
+  - [ ] Analyze buyer's purchase history
+  - [ ] Identify preferences
+  - [ ] Predict future needs
+
+- [ ] **12.5 compareBuyers**
+  - [ ] Accept buyer IDs
+  - [ ] Compare preferences and history
+  - [ ] Recommend for specific deal
+
+- [ ] **12.6 predictBuyerBehavior**
+  - [ ] Analyze past patterns
+  - [ ] Predict response to deal
+  - [ ] Estimate close probability
+
+- [ ] **12.7 segmentBuyers**
+  - [ ] Group buyers by criteria
+  - [ ] Create buyer segments
+  - [ ] Enable targeted marketing
+
+- [ ] **12.8 identifyBuyerGaps**
+  - [ ] Analyze buyer network coverage
+  - [ ] Identify missing buyer types
+  - [ ] Suggest recruitment focus
+
+- [ ] **12.9 generateBuyerReport**
+  - [ ] Create buyer summary report
+  - [ ] Include activity metrics
+  - [ ] Export as PDF
+
+- [ ] **12.10 scoreBuyerFit**
+  - [ ] Accept buyer and property
+  - [ ] Calculate fit score
+  - [ ] Explain match factors
+
+- [ ] **12.11 trackBuyerPreferenceChanges**
+  - [ ] Monitor preference updates
+  - [ ] Alert on significant changes
+  - [ ] Suggest re-matching
+
+- [ ] **12.12 recommendBuyerActions**
+  - [ ] Analyze buyer status
+  - [ ] Suggest next actions
+  - [ ] Prioritize by impact
+
+---
+
 ## Success Criteria
 
 - [ ] CRUD operations for buyers functional
@@ -279,6 +553,12 @@ Build the buyer management system including profiles, preferences, qualification
 - [ ] Scoring algorithm calculating correctly
 - [ ] Matching algorithm returning relevant results
 - [ ] UI responsive and intuitive
+- [ ] **All 10 Search AI Tools implemented and tested**
+- [ ] **All 13 Property Detail AI Tools implemented and tested**
+- [ ] **All 11 Filter System AI Tools implemented and tested**
+- [ ] **All 12 Buyer Database AI Tools implemented and tested**
+- [ ] **AI tools registered in tool registry**
+- [ ] **AI tools accessible via chat interface**
 
 ---
 
@@ -289,6 +569,8 @@ Build the buyer management system including profiles, preferences, qualification
 | Matching algorithm not accurate | Medium | High | Iterative tuning, user feedback |
 | Transaction data incomplete | High | Medium | Manual entry fallback |
 | Scoring too subjective | Medium | Low | Clear criteria, transparency |
+| AI tool response latency | Medium | Medium | Caching, async execution |
+| Tool parameter validation failures | Medium | Low | Comprehensive Zod schemas |
 
 ---
 
@@ -296,7 +578,20 @@ Build the buyer management system including profiles, preferences, qualification
 
 - **Previous Phase:** [Phase 6: Knowledge Base & RAG](./PHASE_06_Knowledge_Base_RAG_2025-12-02.md)
 - **Next Phase:** [Phase 8: Deal Pipeline](./PHASE_08_Deal_Pipeline_2025-12-02.md)
-- **Dependent Phases:** Phase 8 (deal assignment), Phase 9 (buyer outreach)
+- **Dependent Phases:** Phase 8 (deal assignment, 24 more AI tools), Phase 9 (buyer outreach, 20 more AI tools)
+- **AI Framework:** Uses Tool Execution Framework from Phase 5
+
+---
+
+## AI Tool Summary
+
+| Category | Tool Count | Key Capabilities |
+|----------|------------|------------------|
+| Search Tools | 10 | Natural language search, filter execution, search analytics |
+| Property Detail Tools | 13 | Valuation, comps, motivation scoring, deal analysis |
+| Filter System Tools | 11 | Filter suggestions, optimization, performance tracking |
+| Buyer Database Tools | 12 | Buyer matching, activity analysis, segmentation |
+| **Total** | **46** | |
 
 ---
 
@@ -311,13 +606,14 @@ Build the buyer management system including profiles, preferences, qualification
 - [ ] Item (Reason: )
 
 ### Lessons Learned
-- 
+-
 
 ### Recommendations for Next Phase
-- 
+-
 
 ---
 
-**Phase Document Version:** 1.0  
+**Phase Document Version:** 2.0
 **Last Updated:** 2025-12-02
+**Major Updates:** Added 46 AI Tools (Search, Property Detail, Filter System, Buyer Database) from AI Interaction Map specification
 

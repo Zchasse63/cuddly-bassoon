@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
+import { AIChatSidebarWrapper } from './ai-chat-wrapper';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -26,6 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </header>
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </SidebarInset>
+      <AIChatSidebarWrapper />
     </SidebarProvider>
   );
 }
