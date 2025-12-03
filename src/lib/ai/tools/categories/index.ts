@@ -9,6 +9,8 @@ import { registerBuyerManagementTools } from './buyer-management';
 import { registerSearchTools } from './search-tools';
 import { registerPropertyDetailTools } from './property-detail-tools';
 import { registerFilterTools } from './filter-tools';
+import { registerDealPipelineTools } from './deal-pipeline';
+import { registerCrmTools } from './crm-tools';
 
 /**
  * Register all tool categories
@@ -22,6 +24,8 @@ export function registerAllTools(): void {
   registerSearchTools();
   registerPropertyDetailTools();
   registerFilterTools();
+  registerDealPipelineTools();
+  registerCrmTools();
 
   console.log('[Tool Categories] All tools registered');
 }
@@ -32,3 +36,5 @@ export { registerBuyerManagementTools } from './buyer-management';
 export { registerSearchTools } from './search-tools';
 export { registerPropertyDetailTools } from './property-detail-tools';
 export { registerFilterTools } from './filter-tools';
+export { registerDealPipelineTools } from './deal-pipeline';
+export { registerCrmTools } from './crm-tools';

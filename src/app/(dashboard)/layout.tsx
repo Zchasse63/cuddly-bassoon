@@ -1,11 +1,21 @@
 import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
+import { AppShell, AppShellProvider } from '@/components/layout/AppShell';
+import { NavigationSidebar } from '@/components/layout/NavigationSidebar';
+import { ViewContextProvider } from '@/contexts/ViewContext';
 import { AIChatSidebarWrapper } from './ai-chat-wrapper';
 
+/**
+ * Dashboard Layout
+ *
+ * Uses AppShell for three-column CSS Grid layout per UI_UX_DESIGN_SYSTEM_v1.md:
+ * - Left Sidebar: 240px (navigation)
+ * - Main Content: flexible (1fr)
+ * - Right Sidebar: 360px (AI Chat)
+ *
+ * ViewContextProvider enables AI context awareness across all pages.
+ */
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const {
@@ -17,17 +27,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="flex-1" />
-        </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </SidebarInset>
-      <AIChatSidebarWrapper />
-    </SidebarProvider>
+    <ViewContextProvider>
+      <AppShellProvider>
+        <AppShell
+          leftSidebar={<NavigationSidebar user={user} />}
+          rightSidebar={<AIChatSidebarWrapper />}
+        >
+          <div className="page-content">{children}</div>
+        </AppShell>
+      </AppShellProvider>
+    </ViewContextProvider>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, Building2, MoreVertical } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +20,10 @@ interface BuyerCardProps {
   onClick?: (buyer: BuyerWithDetails) => void;
 }
 
-const TIER_COLORS: Record<string, string> = {
-  A: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  B: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  C: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+const TIER_CLASSES: Record<string, string> = {
+  A: 'tier-badge tier-badge--a',
+  B: 'tier-badge tier-badge--b',
+  C: 'tier-badge tier-badge--c',
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -47,48 +47,52 @@ export function BuyerCard({ buyer, onEdit, onDelete, onClick }: BuyerCardProps) 
   };
 
   return (
-    <Card 
-      className="hover:border-primary/50 cursor-pointer transition-colors"
-      onClick={handleCardClick}
-    >
-      <CardHeader className="flex flex-row items-start justify-between pb-2">
-        <div className="space-y-1">
+    <div className="buyer-card" onClick={handleCardClick}>
+      {/* Header */}
+      <div className="flex items-start justify-between p-4 pb-2">
+        <div className="space-y-1 flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-lg">{buyer.name}</h3>
-            {buyer.tier && (
-              <Badge className={TIER_COLORS[buyer.tier]} variant="secondary">
-                Tier {buyer.tier}
-              </Badge>
-            )}
+            <h3 className="font-semibold text-lg truncate">{buyer.name}</h3>
+            {buyer.tier && <span className={cn(TIER_CLASSES[buyer.tier])}>Tier {buyer.tier}</span>}
           </div>
           {buyer.company_name && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <Building2 className="h-3 w-3" />
-              {buyer.company_name}
+              <Building2 className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{buyer.company_name}</span>
             </div>
           )}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(buyer); }}>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.(buyer);
+              }}
+            >
               Edit
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="text-destructive"
-              onClick={(e) => { e.stopPropagation(); onDelete?.(buyer); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.(buyer);
+              }}
             >
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </CardHeader>
-      <CardContent className="space-y-3">
+      </div>
+
+      {/* Content */}
+      <div className="px-4 pb-4 space-y-3">
         <div className="flex flex-wrap gap-2">
           {buyer.status && (
             <Badge className={STATUS_COLORS[buyer.status]} variant="secondary">
@@ -105,27 +109,26 @@ export function BuyerCard({ buyer, onEdit, onDelete, onClick }: BuyerCardProps) 
         <div className="space-y-1 text-sm">
           {buyer.phone && (
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-3 w-3" />
-              <span>{buyer.phone}</span>
+              <Phone className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{buyer.phone}</span>
             </div>
           )}
           {buyer.email && (
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Mail className="h-3 w-3" />
-              <span>{buyer.email}</span>
+              <Mail className="h-3 w-3 flex-shrink-0" />
+              <span className="truncate">{buyer.email}</span>
             </div>
           )}
         </div>
 
         {(buyer.transactionCount || 0) > 0 && (
-          <div className="pt-2 border-t">
+          <div className="pt-3 border-t">
             <span className="text-sm text-muted-foreground">
               {buyer.transactionCount} transaction{buyer.transactionCount !== 1 ? 's' : ''}
             </span>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
-

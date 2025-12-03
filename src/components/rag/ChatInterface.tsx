@@ -7,6 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useRagChat } from '@/hooks/use-rag-chat';
 import { ChatMessage } from './ChatMessage';
+import { InlineQuickActions } from '@/components/ai/QuickActions';
+import { useViewContextSafe } from '@/contexts/ViewContext';
 
 interface ChatInterfaceProps {
   className?: string;
@@ -27,6 +29,9 @@ export function ChatInterface({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Get view context for AI awareness
+  const viewContext = useViewContextSafe();
+
   const {
     messages,
     input,
@@ -41,6 +46,8 @@ export function ChatInterface({
   } = useRagChat({
     persistKey,
     onError,
+    // Pass context to the RAG system
+    systemContext: viewContext?.getAIContext(),
   });
 
   // Auto-scroll to bottom on new messages
@@ -117,6 +124,9 @@ export function ChatInterface({
         </div>
       )}
 
+      {/* Quick Actions */}
+      <InlineQuickActions onActionClick={sendMessage} />
+
       {/* Input area */}
       <div className="border-t p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
@@ -167,10 +177,10 @@ function EmptyState({
   onSelectQuestion: (q: string) => void;
 }) {
   const defaultQuestions = [
-    "What is the 70% rule in wholesaling?",
-    "How do I calculate MAO?",
-    "What makes a motivated seller?",
-    "Explain the assignment fee structure",
+    'What is the 70% rule in wholesaling?',
+    'How do I calculate MAO?',
+    'What makes a motivated seller?',
+    'Explain the assignment fee structure',
   ];
   const questions = suggestedQuestions ?? defaultQuestions;
 
@@ -182,12 +192,19 @@ function EmptyState({
       <div>
         <h3 className="text-lg font-semibold mb-1">Ask about Real Estate Wholesaling</h3>
         <p className="text-muted-foreground text-sm max-w-md">
-          Get expert answers powered by our knowledge base of 96+ documents on wholesaling strategies, deal analysis, and more.
+          Get expert answers powered by our knowledge base of 96+ documents on wholesaling
+          strategies, deal analysis, and more.
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-2 max-w-lg">
         {questions.map((q, idx) => (
-          <Button key={idx} variant="outline" size="sm" className="text-xs" onClick={() => onSelectQuestion(q)}>
+          <Button
+            key={idx}
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            onClick={() => onSelectQuestion(q)}
+          >
             {q}
           </Button>
         ))}
@@ -195,4 +212,3 @@ function EmptyState({
     </div>
   );
 }
-

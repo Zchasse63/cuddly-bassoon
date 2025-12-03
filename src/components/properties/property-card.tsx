@@ -1,13 +1,14 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import type { PropertySearchResultItem } from '@/lib/filters/types';
 import { getFilterById } from '@/lib/filters/registry';
 
 interface PropertyCardProps {
   result: PropertySearchResultItem;
   onClick?: () => void;
+  isSelected?: boolean;
 }
 
 function formatCurrency(value: number | null | undefined): string {
@@ -19,65 +20,60 @@ function formatCurrency(value: number | null | undefined): string {
   }).format(value);
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'bg-green-500';
-  if (score >= 60) return 'bg-yellow-500';
-  if (score >= 40) return 'bg-orange-500';
-  return 'bg-red-500';
+function getScoreVariant(score: number): 'high' | 'medium' | 'low' {
+  if (score >= 70) return 'high';
+  if (score >= 40) return 'medium';
+  return 'low';
 }
 
-export function PropertyCard({ result, onClick }: PropertyCardProps) {
+export function PropertyCard({ result, onClick, isSelected }: PropertyCardProps) {
   const { property, filterResults, rank } = result;
   const { matchedFilters, combinedScore } = filterResults;
+  const scoreVariant = getScoreVariant(combinedScore);
 
   return (
-    <Card 
-      className="cursor-pointer hover:shadow-md transition-shadow"
-      onClick={onClick}
-    >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-base font-semibold">
-              {property.address}
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
+    <div className={cn('property-card', isSelected && 'selected')} onClick={onClick}>
+      {/* Header with Address and Score */}
+      <div className="property-card__content">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <h3 className="property-card__address truncate">{property.address}</h3>
+            <p className="property-card__location">
               {property.city}, {property.state} {property.zip}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs text-muted-foreground">#{rank}</span>
-            <div 
-              className={`px-2 py-1 rounded text-white text-sm font-medium ${getScoreColor(combinedScore)}`}
-            >
+            <div className={cn('score-badge', `score-badge--${scoreVariant}`)}>
               {Math.round(combinedScore)}
             </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {/* Property Details */}
-        <div className="grid grid-cols-3 gap-2 text-sm">
-          <div>
-            <span className="text-muted-foreground">Value</span>
-            <p className="font-medium">{formatCurrency(property.estimatedValue)}</p>
+
+        {/* Property Stats */}
+        <div className="property-card__stats">
+          <div className="property-card__stat">
+            <div className="property-card__stat-value">
+              {formatCurrency(property.estimatedValue)}
+            </div>
+            <div className="property-card__stat-label">Value</div>
           </div>
-          <div>
-            <span className="text-muted-foreground">Equity</span>
-            <p className="font-medium">
+          <div className="property-card__stat">
+            <div className="property-card__stat-value">
               {property.equityPercent !== null && property.equityPercent !== undefined
                 ? `${property.equityPercent.toFixed(0)}%`
                 : 'N/A'}
-            </p>
+            </div>
+            <div className="property-card__stat-label">Equity</div>
           </div>
-          <div>
-            <span className="text-muted-foreground">Type</span>
-            <p className="font-medium">{property.propertyType || 'N/A'}</p>
+          <div className="property-card__stat">
+            <div className="property-card__stat-value">{property.propertyType || 'N/A'}</div>
+            <div className="property-card__stat-label">Type</div>
           </div>
         </div>
 
         {/* Property Specs */}
-        <div className="flex gap-4 text-sm text-muted-foreground">
+        <div className="flex gap-4 text-sm text-muted-foreground mt-3">
           {property.bedrooms && <span>{property.bedrooms} bed</span>}
           {property.bathrooms && <span>{property.bathrooms} bath</span>}
           {property.squareFootage && <span>{property.squareFootage.toLocaleString()} sqft</span>}
@@ -85,26 +81,27 @@ export function PropertyCard({ result, onClick }: PropertyCardProps) {
         </div>
 
         {/* Matched Filters */}
-        <div className="flex flex-wrap gap-1">
-          {matchedFilters.map((filterId) => {
-            const filter = getFilterById(filterId);
-            return (
-              <Badge key={filterId} variant="secondary" className="text-xs">
-                {filter?.name || filterId}
-              </Badge>
-            );
-          })}
-        </div>
+        {matchedFilters.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {matchedFilters.map((filterId) => {
+              const filter = getFilterById(filterId);
+              return (
+                <Badge key={filterId} variant="secondary" className="text-xs">
+                  {filter?.name || filterId}
+                </Badge>
+              );
+            })}
+          </div>
+        )}
 
         {/* Owner Info */}
         {property.ownerName && (
-          <div className="text-xs text-muted-foreground border-t pt-2">
+          <div className="text-xs text-muted-foreground border-t pt-3 mt-3">
             <span className="font-medium">Owner:</span> {property.ownerName}
             {property.ownerType && ` (${property.ownerType})`}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
-

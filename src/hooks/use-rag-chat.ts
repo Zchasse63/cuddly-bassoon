@@ -36,6 +36,7 @@ export interface UseRagChatOptions {
   onFinish?: (message: RAGMessage) => void;
   onError?: (error: Error) => void;
   persistKey?: string; // localStorage key for persistence
+  systemContext?: string; // Context from ViewContext for AI awareness
 }
 
 export interface UseRagChatReturn {
@@ -57,7 +58,7 @@ function generateId(): string {
 }
 
 export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
-  const { onFinish, onError, persistKey } = options;
+  const { onFinish, onError, persistKey, systemContext } = options;
 
   const [messages, setMessages] = useState<RAGMessage[]>([]);
   const [input, setInput] = useState('');
@@ -75,10 +76,12 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
         const saved = localStorage.getItem(persistKey);
         if (saved) {
           const parsed = JSON.parse(saved);
-          setMessages(parsed.map((m: RAGMessage) => ({
-            ...m,
-            timestamp: new Date(m.timestamp),
-          })));
+          setMessages(
+            parsed.map((m: RAGMessage) => ({
+              ...m,
+              timestamp: new Date(m.timestamp),
+            }))
+          );
         }
       } catch {
         // Ignore parse errors
@@ -93,149 +96,158 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
     }
   }, [messages, persistKey]);
 
-  const sendMessage = useCallback(async (content?: string) => {
-    const messageContent = content ?? input.trim();
-    if (!messageContent) return;
+  const sendMessage = useCallback(
+    async (content?: string) => {
+      const messageContent = content ?? input.trim();
+      if (!messageContent) return;
 
-    setError(null);
-    setIsLoading(true);
-    setInput('');
+      setError(null);
+      setIsLoading(true);
+      setInput('');
 
-    // Add user message
-    const userMessage: RAGMessage = {
-      id: generateId(),
-      role: 'user',
-      content: messageContent,
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, userMessage]);
+      // Add user message
+      const userMessage: RAGMessage = {
+        id: generateId(),
+        role: 'user',
+        content: messageContent,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
 
-    // Create placeholder for assistant message
-    const assistantId = generateId();
-    const assistantMessage: RAGMessage = {
-      id: assistantId,
-      role: 'assistant',
-      content: '',
-      timestamp: new Date(),
-    };
-    setMessages(prev => [...prev, assistantMessage]);
+      // Create placeholder for assistant message
+      const assistantId = generateId();
+      const assistantMessage: RAGMessage = {
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
 
-    // Create abort controller for cancellation
-    abortControllerRef.current = new AbortController();
+      // Create abort controller for cancellation
+      abortControllerRef.current = new AbortController();
 
-    try {
-      const response = await fetch('/api/rag/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: messageContent }),
-        signal: abortControllerRef.current.signal,
-      });
+      try {
+        const response = await fetch('/api/rag/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: messageContent,
+            context: systemContext, // Pass view context to API
+          }),
+          signal: abortControllerRef.current.signal,
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Request failed: ${response.status}`);
-      }
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Request failed: ${response.status}`);
+        }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error('No response body');
 
-      const decoder = new TextDecoder();
-      let accumulatedContent = '';
-      let sources: RAGSource[] = [];
-      let classification: RAGClassification | undefined;
-      let cached = false;
+        const decoder = new TextDecoder();
+        let accumulatedContent = '';
+        let sources: RAGSource[] = [];
+        let classification: RAGClassification | undefined;
+        let cached = false;
 
-      setIsStreaming(true);
+        setIsStreaming(true);
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
 
-        for (const line of lines) {
-          try {
-            const jsonStr = line.slice(6).trim();
-            if (!jsonStr) continue;
-            
-            const data = JSON.parse(jsonStr);
+          for (const line of lines) {
+            try {
+              const jsonStr = line.slice(6).trim();
+              if (!jsonStr) continue;
 
-            switch (data.type) {
-              case 'classification':
-                classification = data.content as RAGClassification;
-                setLastClassification(classification);
-                break;
-              
-              case 'sources':
-                sources = data.content as RAGSource[];
-                break;
-              
-              case 'text':
-                accumulatedContent += data.content;
-                setMessages(prev => prev.map(m => 
-                  m.id === assistantId 
-                    ? { ...m, content: accumulatedContent, sources, classification }
-                    : m
-                ));
-                break;
-              
-              case 'cached':
-                cached = data.content === true;
-                break;
-              
-              case 'done':
-                // Final update with all metadata
-                const finalMessage: RAGMessage = {
-                  id: assistantId,
-                  role: 'assistant',
-                  content: accumulatedContent,
-                  sources,
-                  classification,
-                  cached,
-                  timestamp: new Date(),
-                };
-                setMessages(prev => prev.map(m => 
-                  m.id === assistantId ? finalMessage : m
-                ));
-                onFinish?.(finalMessage);
-                break;
-              
-              case 'error':
-                throw new Error(data.content);
+              const data = JSON.parse(jsonStr);
+
+              switch (data.type) {
+                case 'classification':
+                  classification = data.content as RAGClassification;
+                  setLastClassification(classification);
+                  break;
+
+                case 'sources':
+                  sources = data.content as RAGSource[];
+                  break;
+
+                case 'text':
+                  accumulatedContent += data.content;
+                  setMessages((prev) =>
+                    prev.map((m) =>
+                      m.id === assistantId
+                        ? { ...m, content: accumulatedContent, sources, classification }
+                        : m
+                    )
+                  );
+                  break;
+
+                case 'cached':
+                  cached = data.content === true;
+                  break;
+
+                case 'done':
+                  // Final update with all metadata
+                  const finalMessage: RAGMessage = {
+                    id: assistantId,
+                    role: 'assistant',
+                    content: accumulatedContent,
+                    sources,
+                    classification,
+                    cached,
+                    timestamp: new Date(),
+                  };
+                  setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMessage : m)));
+                  onFinish?.(finalMessage);
+                  break;
+
+                case 'error':
+                  throw new Error(data.content);
+              }
+            } catch (parseError) {
+              // Skip invalid JSON lines
+              console.warn('Failed to parse SSE data:', parseError);
             }
-          } catch (parseError) {
-            // Skip invalid JSON lines
-            console.warn('Failed to parse SSE data:', parseError);
           }
         }
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') {
+          // User cancelled - remove the empty assistant message
+          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+        } else {
+          const error = err instanceof Error ? err : new Error('Unknown error');
+          setError(error);
+          onError?.(error);
+          // Update assistant message with error
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: `Error: ${error.message}` } : m
+            )
+          );
+        }
+      } finally {
+        setIsLoading(false);
+        setIsStreaming(false);
+        abortControllerRef.current = null;
       }
-    } catch (err) {
-      if ((err as Error).name === 'AbortError') {
-        // User cancelled - remove the empty assistant message
-        setMessages(prev => prev.filter(m => m.id !== assistantId));
-      } else {
-        const error = err instanceof Error ? err : new Error('Unknown error');
-        setError(error);
-        onError?.(error);
-        // Update assistant message with error
-        setMessages(prev => prev.map(m => 
-          m.id === assistantId 
-            ? { ...m, content: `Error: ${error.message}` }
-            : m
-        ));
-      }
-    } finally {
-      setIsLoading(false);
-      setIsStreaming(false);
-      abortControllerRef.current = null;
-    }
-  }, [input, onFinish, onError]);
+    },
+    [input, onFinish, onError, systemContext]
+  );
 
-  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    await sendMessage();
-  }, [sendMessage]);
+  const handleSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
+      await sendMessage();
+    },
+    [sendMessage]
+  );
 
   const cancel = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -268,4 +280,3 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
     lastClassification,
   };
 }
-

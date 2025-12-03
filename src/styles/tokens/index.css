@@ -1,0 +1,164 @@
+/**
+ * Design Tokens Index
+ * 
+ * Central import for all design token files.
+ * Import this file in globals.css to apply the design system.
+ * 
+ * Source: UI_UX_DESIGN_SYSTEM_v1.md
+ */
+
+/* Import all token files in dependency order */
+@import './colors.css';
+@import './typography.css';
+@import './spacing.css';
+@import './shadows.css';
+@import './animations.css';
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEMANTIC MAPPINGS
+   Map design tokens to shadcn/ui compatible CSS variables
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Primary (Brand Purple) */
+  --primary: var(--color-brand-500);
+  --primary-foreground: #ffffff;
+
+  /* Secondary */
+  --secondary: var(--color-gray-100);
+  --secondary-foreground: var(--color-gray-900);
+
+  /* Muted */
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+
+  /* Accent */
+  --accent: var(--color-brand-50);
+  --accent-foreground: var(--color-brand-700);
+
+  /* Destructive */
+  --destructive: var(--color-error-500);
+  --destructive-foreground: #ffffff;
+
+  /* Background & Foreground */
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
+
+  /* Card */
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+
+  /* Popover */
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+
+  /* Border */
+  --border: var(--color-border);
+  --input: var(--color-border);
+
+  /* Ring (Focus) */
+  --ring: var(--color-brand-500);
+
+  /* Radius */
+  --radius: var(--border-radius-lg);
+
+  /* Sidebar */
+  --sidebar: var(--color-gray-50);
+  --sidebar-foreground: var(--color-text-primary);
+  --sidebar-primary: var(--color-brand-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-brand-50);
+  --sidebar-accent-foreground: var(--color-brand-700);
+  --sidebar-border: var(--color-border);
+  --sidebar-ring: var(--color-brand-500);
+
+  /* Chart Colors */
+  --chart-1: var(--color-brand-500);
+  --chart-2: var(--color-secondary-500);
+  --chart-3: var(--color-success-500);
+  --chart-4: var(--color-warning-500);
+  --chart-5: var(--color-error-500);
+}
+
+/* Dark Mode Semantic Mappings */
+.dark {
+  /* Primary stays the same for brand consistency */
+  --primary: var(--color-brand-500);
+  --primary-foreground: #ffffff;
+
+  /* Secondary */
+  --secondary: var(--color-gray-800);
+  --secondary-foreground: var(--color-gray-100);
+
+  /* Muted */
+  --muted: var(--color-gray-800);
+  --muted-foreground: var(--color-gray-400);
+
+  /* Accent */
+  --accent: var(--color-gray-800);
+  --accent-foreground: var(--color-brand-300);
+
+  /* Background & Foreground */
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
+
+  /* Card */
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text-primary);
+
+  /* Popover */
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text-primary);
+
+  /* Border */
+  --border: var(--color-border);
+  --input: var(--color-border);
+
+  /* Sidebar */
+  --sidebar: var(--color-gray-900);
+  --sidebar-foreground: var(--color-gray-100);
+  --sidebar-primary: var(--color-brand-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-gray-800);
+  --sidebar-accent-foreground: var(--color-brand-300);
+  --sidebar-border: var(--color-gray-700);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL STYLES
+   Base styles applied to the entire application
+   ═══════════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family-primary);
+  font-size: 16px;
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
+
+.dark ::selection {
+  background-color: var(--color-brand-800);
+  color: var(--color-brand-100);
+}

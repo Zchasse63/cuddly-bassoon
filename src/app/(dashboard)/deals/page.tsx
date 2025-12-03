@@ -1,33 +1,55 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Suspense } from 'react';
+import { createClient } from '@/lib/supabase/server';
+import { DealService } from '@/lib/deals';
+import { DealsPageClient } from './DealsPageClient';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'Deals',
 };
 
+async function DealsContent() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  const service = new DealService(supabase);
+  const [dealsByStage, stats] = await Promise.all([
+    service.getDealsByStage(user.id),
+    service.getPipelineStats(user.id),
+  ]);
+
+  return <DealsPageClient initialDealsByStage={dealsByStage} initialStats={stats} />;
+}
+
 export default function DealsPage() {
+  return (
+    <Suspense fallback={<DealsPageSkeleton />}>
+      <DealsContent />
+    </Suspense>
+  );
+}
+
+function DealsPageSkeleton() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Deals</h1>
-          <p className="text-muted-foreground">Track your deals from lead to close.</p>
+          <div className="h-9 w-32 bg-muted animate-pulse rounded" />
+          <div className="h-5 w-64 bg-muted animate-pulse rounded mt-2" />
         </div>
-        <Button>Create Deal</Button>
+        <div className="h-10 w-28 bg-muted animate-pulse rounded" />
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>No Active Deals</CardTitle>
-          <CardDescription>Create your first deal to start tracking the pipeline.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Deals connect properties with buyers. Track status, communications, and documents all in
-            one place.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex gap-4 overflow-hidden">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="min-w-[280px] h-[400px] bg-muted/30 animate-pulse rounded-lg" />
+        ))}
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { SearchResults } from '@/components/properties/search-results';
 import { SavedSearchesDialog } from '@/components/properties/saved-searches-dialog';
 import { usePropertySearch } from '@/hooks/use-property-search';
 import { useSavedSearches } from '@/hooks/use-saved-searches';
+import { usePageContext } from '@/hooks/usePageContext';
 import type { PropertyData } from '@/lib/filters/types';
 import type { SavedSearch } from '@/lib/filters/saved-searches';
 
@@ -89,6 +90,9 @@ const MOCK_PROPERTIES: PropertyData[] = [
 export function PropertySearchClient() {
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
 
+  // Set page context for AI awareness
+  usePageContext('properties');
+
   const {
     activeFilters,
     filterMode,
@@ -113,29 +117,33 @@ export function PropertySearchClient() {
     search(MOCK_PROPERTIES);
   }, [search]);
 
-  const handlePropertyClick = useCallback((propertyId: string) => {
-    console.log('Property clicked:', propertyId);
+  const handlePropertyClick = useCallback((_propertyId: string) => {
     // TODO: Navigate to property detail page
   }, []);
 
-  const handleLoadSearch = useCallback((savedSearch: SavedSearch) => {
-    setActiveFilters(savedSearch.filters.activeFilters);
-    setFilterMode(savedSearch.filters.filterMode);
-    setSavedSearchesOpen(false);
-  }, [setActiveFilters, setFilterMode]);
+  const handleLoadSearch = useCallback(
+    (savedSearch: SavedSearch) => {
+      setActiveFilters(savedSearch.filters.activeFilters);
+      setFilterMode(savedSearch.filters.filterMode);
+      setSavedSearchesOpen(false);
+    },
+    [setActiveFilters, setFilterMode]
+  );
 
-  const handleSaveSearch = useCallback(async (name: string, description?: string) => {
-    await saveSearch(name, activeFilters, filterMode, description);
-  }, [saveSearch, activeFilters, filterMode]);
+  const handleSaveSearch = useCallback(
+    async (name: string, description?: string) => {
+      await saveSearch(name, activeFilters, filterMode, description);
+    },
+    [saveSearch, activeFilters, filterMode]
+  );
 
   return (
-    <div className="space-y-6">
+    <div className="page-container">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Property Search</h1>
-          <p className="text-muted-foreground">
-            Find motivated sellers using 21 intelligent filters
-          </p>
+        <div className="page-header">
+          <h1 className="page-title">Property Search</h1>
+          <p className="page-description">Find motivated sellers using 21 intelligent filters</p>
         </div>
         <Button variant="outline" onClick={() => setSavedSearchesOpen(true)}>
           Saved Searches ({savedSearches.length})
@@ -154,7 +162,7 @@ export function PropertySearchClient() {
         isLoading={savedSearchesLoading}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 mt-6">
         {/* Filter Sidebar */}
         <div className="lg:sticky lg:top-4 lg:self-start">
           <FilterSidebar
@@ -182,4 +190,3 @@ export function PropertySearchClient() {
     </div>
   );
 }
-

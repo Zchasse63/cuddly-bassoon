@@ -19,7 +19,9 @@ export type ToolCategory =
   | 'data_enrichment'
   | 'workflow_automation'
   | 'reporting'
-  | 'system';
+  | 'system'
+  | 'deal_pipeline'
+  | 'crm';
 
 /**
  * Permission levels for tool execution
@@ -114,8 +116,10 @@ export type ToolHandler<TInput, TOutput> = (
 /**
  * Registered tool with handler
  */
-export interface RegisteredTool<TInput = unknown, TOutput = unknown>
-  extends ToolDefinition<TInput, TOutput> {
+export interface RegisteredTool<TInput = unknown, TOutput = unknown> extends ToolDefinition<
+  TInput,
+  TOutput
+> {
   handler: ToolHandler<TInput, TOutput>;
 }
 
@@ -147,4 +151,3 @@ export interface ToolOrchestrationStep {
   dependsOn?: string[];
   condition?: string;
 }
-
