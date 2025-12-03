@@ -11,6 +11,8 @@ import { registerPropertyDetailTools } from './property-detail-tools';
 import { registerFilterTools } from './filter-tools';
 import { registerDealPipelineTools } from './deal-pipeline';
 import { registerCrmTools } from './crm-tools';
+import { registerSkipTraceTools } from './skip-trace-tools';
+import { registerNotificationTools } from './notification-tools';
 
 /**
  * Register all tool categories
@@ -26,6 +28,8 @@ export function registerAllTools(): void {
   registerFilterTools();
   registerDealPipelineTools();
   registerCrmTools();
+  registerSkipTraceTools();
+  registerNotificationTools();
 
   console.log('[Tool Categories] All tools registered');
 }
@@ -38,3 +42,5 @@ export { registerPropertyDetailTools } from './property-detail-tools';
 export { registerFilterTools } from './filter-tools';
 export { registerDealPipelineTools } from './deal-pipeline';
 export { registerCrmTools } from './crm-tools';
+export { registerSkipTraceTools } from './skip-trace-tools';
+export { registerNotificationTools } from './notification-tools';

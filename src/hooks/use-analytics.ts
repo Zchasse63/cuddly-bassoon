@@ -46,7 +46,7 @@ interface UseAnalyticsReturn {
   trackLeadCreated: (leadId: string, source?: string) => Promise<void>;
   trackOfferMade: (dealId: string, amount: number) => Promise<void>;
   trackDealClosed: (dealId: string, revenue: number) => Promise<void>;
-  sessionId: string;
+  getSessionId: () => string;
 }
 
 export function useAnalytics(): UseAnalyticsReturn {

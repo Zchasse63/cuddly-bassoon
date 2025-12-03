@@ -24,11 +24,18 @@ const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
 
-  // Communication Services (Optional)
+  // Communication Services (Optional - Phase 9)
+  // Twilio for SMS/Voice
   TWILIO_ACCOUNT_SID: z.string().optional(),
   TWILIO_AUTH_TOKEN: z.string().optional(),
   TWILIO_PHONE_NUMBER: z.string().optional(),
+  // SendGrid for Email
   SENDGRID_API_KEY: z.string().optional(),
+  SENDGRID_FROM_EMAIL: z.string().email().optional(),
+  SENDGRID_FROM_NAME: z.string().optional(),
+  // Webhook verification secrets
+  TWILIO_WEBHOOK_SECRET: z.string().optional(),
+  SENDGRID_WEBHOOK_SECRET: z.string().optional(),
 
   // Application Settings
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
