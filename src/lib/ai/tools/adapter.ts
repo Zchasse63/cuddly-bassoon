@@ -67,14 +67,19 @@ function convertTool(
 }
 
 /**
+ * AI SDK tool return type from our convertTool function
+ * Using ReturnType to ensure type consistency
+ */
+type ConvertedTool = ReturnType<typeof convertTool>;
+
+/**
  * Convert all registered tools to AI SDK v5 ToolSet format
- * Note: We use type assertion here because our dynamic tool creation
- * doesn't match the strict generic constraints of ToolSet
+ * Note: Type assertion required because ToolSet has stricter generic constraints
+ * than our dynamic tool generation supports
  */
 export function convertToAISDKTools(context: ToolExecutionContext): ToolSet {
   const allTools = toolRegistry.getAll();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const aiTools: Record<string, any> = {};
+  const aiTools: Record<string, ConvertedTool> = {};
 
   for (const registeredTool of allTools) {
     const toolKey = sanitizeToolId(registeredTool.id);
@@ -91,8 +96,7 @@ export function convertCategoryTools(
   categories: ToolCategory[],
   context: ToolExecutionContext
 ): ToolSet {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const aiTools: Record<string, any> = {};
+  const aiTools: Record<string, ConvertedTool> = {};
 
   for (const category of categories) {
     const categoryTools = toolRegistry.getByCategory(category);
