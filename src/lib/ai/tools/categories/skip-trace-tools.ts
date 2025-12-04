@@ -45,7 +45,7 @@ type SkipTraceLeadInput = z.infer<typeof skipTraceLeadInput>;
 type SkipTraceLeadOutput = z.infer<typeof skipTraceLeadOutput>;
 
 const skipTraceLeadDef: ToolDefinition<SkipTraceLeadInput, SkipTraceLeadOutput> = {
-  id: 'skipTrace.traceLead',
+  id: 'skip_trace.trace_lead',
   name: 'skipTraceLead',
   description: 'Skip trace a lead to find phone numbers, emails, and addresses',
   category: 'data_enrichment',
@@ -118,7 +118,7 @@ type BatchSkipTraceInput = z.infer<typeof batchSkipTraceInput>;
 type BatchSkipTraceOutput = z.infer<typeof batchSkipTraceOutput>;
 
 const batchSkipTraceDef: ToolDefinition<BatchSkipTraceInput, BatchSkipTraceOutput> = {
-  id: 'skipTrace.batchTrace',
+  id: 'skip_trace.batch_trace',
   name: 'batchSkipTrace',
   description: 'Queue multiple leads for skip tracing',
   category: 'data_enrichment',
@@ -163,7 +163,7 @@ type GetSkipTraceStatusInput = z.infer<typeof getSkipTraceStatusInput>;
 type GetSkipTraceStatusOutput = z.infer<typeof getSkipTraceStatusOutput>;
 
 const getSkipTraceStatusDef: ToolDefinition<GetSkipTraceStatusInput, GetSkipTraceStatusOutput> = {
-  id: 'skipTrace.getStatus',
+  id: 'skip_trace.get_status',
   name: 'getSkipTraceStatus',
   description: 'Check the status of a skip trace request',
   category: 'data_enrichment',
@@ -224,7 +224,7 @@ type ValidatePhoneInput = z.infer<typeof validatePhoneInput>;
 type ValidatePhoneOutput = z.infer<typeof validatePhoneOutput>;
 
 const validatePhoneDef: ToolDefinition<ValidatePhoneInput, ValidatePhoneOutput> = {
-  id: 'skipTrace.validatePhone',
+  id: 'skip_trace.validate_phone',
   name: 'validatePhoneNumber',
   description: 'Validate and get info about a phone number',
   category: 'data_enrichment',
@@ -271,7 +271,7 @@ type ValidateEmailInput = z.infer<typeof validateEmailInput>;
 type ValidateEmailOutput = z.infer<typeof validateEmailOutput>;
 
 const validateEmailDef: ToolDefinition<ValidateEmailInput, ValidateEmailOutput> = {
-  id: 'skipTrace.validateEmail',
+  id: 'skip_trace.validate_email',
   name: 'validateEmail',
   description: 'Validate an email address',
   category: 'data_enrichment',
@@ -314,7 +314,7 @@ type EnrichLeadInput = z.infer<typeof enrichLeadInput>;
 type EnrichLeadOutput = z.infer<typeof enrichLeadOutput>;
 
 const enrichLeadDef: ToolDefinition<EnrichLeadInput, EnrichLeadOutput> = {
-  id: 'skipTrace.enrichLead',
+  id: 'skip_trace.enrich_lead',
   name: 'enrichLeadData',
   description: 'Enrich lead with demographics, property, or financial data',
   category: 'data_enrichment',
@@ -363,7 +363,7 @@ type FindRelatedInput = z.infer<typeof findRelatedInput>;
 type FindRelatedOutput = z.infer<typeof findRelatedOutput>;
 
 const findRelatedDef: ToolDefinition<FindRelatedInput, FindRelatedOutput> = {
-  id: 'skipTrace.findRelated',
+  id: 'skip_trace.find_related',
   name: 'findRelatedContacts',
   description: 'Find relatives, associates, or neighbors of a lead',
   category: 'data_enrichment',
@@ -399,7 +399,7 @@ type ReversePhoneInput = z.infer<typeof reversePhoneInput>;
 type ReversePhoneOutput = z.infer<typeof reversePhoneOutput>;
 
 const reversePhoneDef: ToolDefinition<ReversePhoneInput, ReversePhoneOutput> = {
-  id: 'skipTrace.reversePhone',
+  id: 'skip_trace.reverse_phone',
   name: 'reversePhoneLookup',
   description: 'Look up owner information by phone number',
   category: 'data_enrichment',
@@ -443,7 +443,7 @@ type ReverseAddressInput = z.infer<typeof reverseAddressInput>;
 type ReverseAddressOutput = z.infer<typeof reverseAddressOutput>;
 
 const reverseAddressDef: ToolDefinition<ReverseAddressInput, ReverseAddressOutput> = {
-  id: 'skipTrace.reverseAddress',
+  id: 'skip_trace.reverse_address',
   name: 'reverseAddressLookup',
   description: 'Look up owner information by property address',
   category: 'data_enrichment',
@@ -478,7 +478,7 @@ type GetCreditsInput = z.infer<typeof getCreditsInput>;
 type GetCreditsOutput = z.infer<typeof getCreditsOutput>;
 
 const getCreditsDef: ToolDefinition<GetCreditsInput, GetCreditsOutput> = {
-  id: 'skipTrace.getCredits',
+  id: 'skip_trace.get_credits',
   name: 'getSkipTraceCredits',
   description: 'Check remaining skip trace credits',
   category: 'data_enrichment',
