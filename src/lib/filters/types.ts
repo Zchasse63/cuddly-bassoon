@@ -1,13 +1,22 @@
 /**
  * Property Filter Types
- * Defines types for all 21 property filters (6 Standard, 5 Enhanced, 10 Contrarian)
+ * Defines types for all property filters including Shovels-based and home services filters
  */
 
 // Filter categories
-export type FilterCategory = 'standard' | 'enhanced' | 'contrarian';
+export type FilterCategory =
+  | 'standard'
+  | 'enhanced'
+  | 'contrarian'
+  | 'shovels'
+  | 'combined'
+  | 'home-services';
+
+// Data source for filters
+export type FilterDataSource = 'rentcast' | 'shovels' | 'combined';
 
 // All filter identifiers
-export type StandardFilterId = 
+export type StandardFilterId =
   | 'absentee_owner'
   | 'high_equity'
   | 'free_clear'
@@ -34,7 +43,60 @@ export type ContrarianFilterId =
   | 'orphan_property'
   | 'competitor_exit';
 
-export type FilterId = StandardFilterId | EnhancedFilterId | ContrarianFilterId;
+// Shovels-only filter IDs (permit-based)
+export type ShovelsFilterId =
+  | 'stalled_permit'
+  | 'failed_inspection'
+  | 'expired_permit';
+
+// Combined filter IDs (RentCast + Shovels)
+export type CombinedFilterId =
+  | 'over_improved'
+  | 'sunk_cost'
+  | 'deferred_maintenance'
+  | 'falling_behind'
+  | 'major_system_due';
+
+// Home services filter IDs
+export type RoofingFilterId =
+  | 'aging_roof'
+  | 'storm_damage'
+  | 'no_reroof_history';
+
+export type HvacFilterId =
+  | 'hvac_replacement_due'
+  | 'heat_pump_candidate'
+  | 'no_hvac_history';
+
+export type ElectricalFilterId =
+  | 'panel_upgrade_candidate'
+  | 'ev_charger_ready'
+  | 'no_electrical_upgrades';
+
+export type PlumbingFilterId =
+  | 'repiping_candidate'
+  | 'water_heater_due'
+  | 'no_plumbing_permits';
+
+export type SolarFilterId =
+  | 'solar_ready'
+  | 'battery_upgrade'
+  | 'high_consumption_area';
+
+export type HomeServicesFilterId =
+  | RoofingFilterId
+  | HvacFilterId
+  | ElectricalFilterId
+  | PlumbingFilterId
+  | SolarFilterId;
+
+export type FilterId =
+  | StandardFilterId
+  | EnhancedFilterId
+  | ContrarianFilterId
+  | ShovelsFilterId
+  | CombinedFilterId
+  | HomeServicesFilterId;
 
 // Filter parameter configuration
 export interface FilterParameter {
@@ -146,6 +208,29 @@ export interface PropertyData {
   isRental?: boolean | null;
   latitude?: number | null;
   longitude?: number | null;
+
+  // Shovels-specific fields (from shovels_address_metrics join)
+  shovelsAddressId?: string | null;
+  totalPermits?: number | null;
+  activePermits?: number | null;
+  completedPermits?: number | null;
+  expiredPermits?: number | null;
+  totalJobValue?: number | null;
+  avgJobValue?: number | null;
+  permitsLast12Months?: number | null;
+  permitsPrior12Months?: number | null;
+  yoyPermitGrowth?: number | null;
+  avgInspectionPassRate?: number | null;
+  lastPermitDate?: string | null;
+  firstPermitDate?: string | null;
+  hasStalledPermit?: boolean | null;
+  hasExpiredPermit?: boolean | null;
+  lastRoofingDate?: string | null;
+  lastHvacDate?: string | null;
+  lastWaterHeaterDate?: string | null;
+  lastElectricalDate?: string | null;
+  lastPlumbingDate?: string | null;
+  lastSolarDate?: string | null;
 }
 
 // Filter combination mode

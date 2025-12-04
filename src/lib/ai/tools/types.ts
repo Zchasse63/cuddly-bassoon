@@ -6,7 +6,7 @@
 import { z } from 'zod';
 
 /**
- * Tool categories matching the 11 categories from the spec
+ * Tool categories matching the expanded categories from the spec
  */
 export type ToolCategory =
   | 'property_search'
@@ -21,7 +21,22 @@ export type ToolCategory =
   | 'reporting'
   | 'system'
   | 'deal_pipeline'
-  | 'crm';
+  | 'crm'
+  | 'permits'
+  | 'contractors'
+  | 'verticals'
+  | 'utility'
+  // New categories from AI Tools Expansion Plan
+  | 'batch_operations'
+  | 'documents'
+  | 'automation'
+  | 'predictive'
+  | 'intelligence'
+  | 'communications'
+  | 'portfolio'
+  | 'advanced_search'
+  | 'integrations'
+  | 'map';
 
 /**
  * Permission levels for tool execution

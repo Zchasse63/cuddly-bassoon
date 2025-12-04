@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import { toolRegistry } from '../registry';
 import { ToolDefinition, ToolHandler } from '../types';
+import { createClient } from '@/lib/supabase/client';
 
 // 1. Generate Insights
 const insightsInput = z.object({
@@ -42,19 +43,118 @@ const insightsDefinition: ToolDefinition<
 const insightsHandler: ToolHandler<
   z.infer<typeof insightsInput>,
   z.infer<typeof insightsOutput>
-> = async () => {
-  return {
-    insights: [
-      {
-        type: 'opportunity',
-        title: 'Hot Market Detected',
-        description: 'ZIP 33101 showing 15% increase in activity',
+> = async (input, context) => {
+  console.log('[Dashboard] Generating insights for period:', input.period);
+  try {
+    const supabase = createClient();
+    const userId = context.userId;
+
+    // Calculate date range based on period
+    const now = new Date();
+    const startDate = new Date();
+    switch (input.period) {
+      case 'day':
+        startDate.setDate(now.getDate() - 1);
+        break;
+      case 'week':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        startDate.setMonth(now.getMonth() - 1);
+        break;
+      case 'quarter':
+        startDate.setMonth(now.getMonth() - 3);
+        break;
+    }
+
+    // Fetch deals for the period
+    const { data: deals, error: dealsError } = await supabase
+      .from('deals')
+      .select('id, stage, assignment_fee, created_at')
+      .eq('user_id', userId)
+      .gte('created_at', startDate.toISOString());
+
+    if (dealsError) {
+      console.log('[Dashboard] Supabase deals query error:', dealsError.message);
+    }
+
+    // Fetch activities for the period
+    const { data: activities, error: activitiesError } = await supabase
+      .from('activities')
+      .select('id, activity_type, created_at')
+      .eq('user_id', userId)
+      .gte('created_at', startDate.toISOString());
+
+    if (activitiesError) {
+      console.log('[Dashboard] Supabase activities query error:', activitiesError.message);
+    }
+
+    console.log('[Dashboard] Supabase returned', deals?.length || 0, 'deals and', activities?.length || 0, 'activities');
+
+    // Generate insights based on real data
+    const insights: Array<{
+      type: string;
+      title: string;
+      description: string;
+      impact: 'high' | 'medium' | 'low';
+      actionable: boolean;
+    }> = [];
+
+    const closedDeals = deals?.filter((d) => d.stage === 'closed') || [];
+    const pendingDeals = deals?.filter((d) => d.stage === 'offer' || d.stage === 'contract') || [];
+    const totalRevenue = closedDeals.reduce((sum, d) => sum + (d.assignment_fee || 0), 0);
+
+    if (closedDeals.length > 0) {
+      insights.push({
+        type: 'success',
+        title: `${closedDeals.length} Deals Closed`,
+        description: `You closed ${closedDeals.length} deals generating $${totalRevenue.toLocaleString()} in revenue`,
         impact: 'high',
+        actionable: false,
+      });
+    }
+
+    if (pendingDeals.length > 0) {
+      insights.push({
+        type: 'opportunity',
+        title: `${pendingDeals.length} Deals in Pipeline`,
+        description: `You have ${pendingDeals.length} deals pending that need attention`,
+        impact: 'medium',
         actionable: true,
-      },
-    ],
-    summary: 'Strong week with 3 key opportunities identified',
-  };
+      });
+    }
+
+    if ((activities?.length || 0) < 10) {
+      insights.push({
+        type: 'warning',
+        title: 'Low Activity',
+        description: 'Your activity level is below average. Consider increasing outreach.',
+        impact: 'medium',
+        actionable: true,
+      });
+    }
+
+    // Default insight if no data
+    if (insights.length === 0) {
+      insights.push({
+        type: 'info',
+        title: 'Getting Started',
+        description: 'Start adding deals and activities to see personalized insights',
+        impact: 'low',
+        actionable: true,
+      });
+    }
+
+    const summary =
+      closedDeals.length > 0
+        ? `Strong ${input.period} with ${closedDeals.length} closed deals and $${totalRevenue.toLocaleString()} revenue`
+        : `${input.period} summary: ${deals?.length || 0} deals, ${activities?.length || 0} activities`;
+
+    return { insights, summary };
+  } catch (error) {
+    console.error('[Dashboard] Insights error:', error);
+    throw error;
+  }
 };
 
 // 2. Goal Tracking
@@ -89,21 +189,62 @@ const goalDefinition: ToolDefinition<z.infer<typeof goalInput>, z.infer<typeof g
 const goalHandler: ToolHandler<
   z.infer<typeof goalInput>,
   z.infer<typeof goalOutput>
-> = async () => {
-  return {
-    goals: [
+> = async (_input, context) => {
+  console.log('[Dashboard] Fetching goals for user');
+  try {
+    const supabase = createClient();
+    const userId = context.userId;
+
+    // Get current month's deals for goal tracking
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const { data: deals, error } = await supabase
+      .from('deals')
+      .select('id, stage, assignment_fee, created_at')
+      .eq('user_id', userId)
+      .gte('created_at', monthStart.toISOString())
+      .lte('created_at', monthEnd.toISOString());
+
+    if (error) {
+      console.log('[Dashboard] Supabase goals query error:', error.message);
+    }
+
+    console.log('[Dashboard] Supabase returned', deals?.length || 0, 'deals for goal tracking');
+
+    const closedDeals = deals?.filter((d) => d.stage === 'closed') || [];
+    const totalRevenue = closedDeals.reduce((sum, d) => sum + (d.assignment_fee || 0), 0);
+
+    // Create goals based on actual data
+    const goals = [
       {
-        id: '1',
+        id: 'monthly-deals',
         name: 'Monthly Deals',
         target: 5,
-        current: 3,
-        progress: 60,
-        onTrack: true,
-        dueDate: '2024-12-31',
+        current: closedDeals.length,
+        progress: Math.min(100, Math.round((closedDeals.length / 5) * 100)),
+        onTrack: closedDeals.length >= Math.floor(5 * (now.getDate() / monthEnd.getDate())),
+        dueDate: monthEnd.toISOString().split('T')[0]!,
       },
-    ],
-    overallProgress: 65,
-  };
+      {
+        id: 'monthly-revenue',
+        name: 'Monthly Revenue',
+        target: 25000,
+        current: totalRevenue,
+        progress: Math.min(100, Math.round((totalRevenue / 25000) * 100)),
+        onTrack: totalRevenue >= Math.floor(25000 * (now.getDate() / monthEnd.getDate())),
+        dueDate: monthEnd.toISOString().split('T')[0]!,
+      },
+    ];
+
+    const overallProgress = Math.round(goals.reduce((sum, g) => sum + g.progress, 0) / goals.length);
+
+    return { goals, overallProgress };
+  } catch (error) {
+    console.error('[Dashboard] Goals error:', error);
+    throw error;
+  }
 };
 
 // 3. Performance Summary
@@ -132,13 +273,96 @@ const perfDefinition: ToolDefinition<z.infer<typeof perfInput>, z.infer<typeof p
 const perfHandler: ToolHandler<
   z.infer<typeof perfInput>,
   z.infer<typeof perfOutput>
-> = async () => {
-  return {
-    deals: { closed: 4, pending: 8, lost: 2 },
-    revenue: { total: 52000, change: 15 },
-    activity: { searches: 245, calls: 89, emails: 156 },
-    ranking: { percentile: 78, trend: 'up' },
-  };
+> = async (input, context) => {
+  console.log('[Dashboard] Fetching performance for period:', input.period);
+  try {
+    const supabase = createClient();
+    const userId = context.userId;
+
+    // Calculate date range
+    const now = new Date();
+    const startDate = new Date();
+    const prevStartDate = new Date();
+    switch (input.period) {
+      case 'week':
+        startDate.setDate(now.getDate() - 7);
+        prevStartDate.setDate(now.getDate() - 14);
+        break;
+      case 'month':
+        startDate.setMonth(now.getMonth() - 1);
+        prevStartDate.setMonth(now.getMonth() - 2);
+        break;
+      case 'quarter':
+        startDate.setMonth(now.getMonth() - 3);
+        prevStartDate.setMonth(now.getMonth() - 6);
+        break;
+      case 'year':
+        startDate.setFullYear(now.getFullYear() - 1);
+        prevStartDate.setFullYear(now.getFullYear() - 2);
+        break;
+    }
+
+    // Fetch current period deals
+    const { data: deals, error: dealsError } = await supabase
+      .from('deals')
+      .select('id, stage, assignment_fee, created_at')
+      .eq('user_id', userId)
+      .gte('created_at', startDate.toISOString());
+
+    if (dealsError) {
+      console.log('[Dashboard] Supabase performance deals error:', dealsError.message);
+    }
+
+    // Fetch previous period deals for comparison
+    const { data: prevDeals } = await supabase
+      .from('deals')
+      .select('id, stage, assignment_fee')
+      .eq('user_id', userId)
+      .gte('created_at', prevStartDate.toISOString())
+      .lt('created_at', startDate.toISOString());
+
+    // Fetch activities
+    const { data: activities, error: activitiesError } = await supabase
+      .from('activities')
+      .select('id, activity_type')
+      .eq('user_id', userId)
+      .gte('created_at', startDate.toISOString());
+
+    if (activitiesError) {
+      console.log('[Dashboard] Supabase performance activities error:', activitiesError.message);
+    }
+
+    console.log('[Dashboard] Supabase returned', deals?.length || 0, 'deals,', activities?.length || 0, 'activities');
+
+    const closedDeals = deals?.filter((d) => d.stage === 'closed') || [];
+    const pendingDeals = deals?.filter((d) => d.stage && ['offer', 'contract', 'closing'].includes(d.stage)) || [];
+    const lostDeals = deals?.filter((d) => d.stage === 'lost') || [];
+
+    const currentRevenue = closedDeals.reduce((sum, d) => sum + (d.assignment_fee || 0), 0);
+    const prevRevenue = (prevDeals?.filter((d) => d.stage === 'closed') || []).reduce(
+      (sum, d) => sum + (d.assignment_fee || 0),
+      0
+    );
+    const revenueChange = prevRevenue > 0 ? Math.round(((currentRevenue - prevRevenue) / prevRevenue) * 100) : 0;
+
+    const calls = activities?.filter((a) => a.activity_type === 'call_logged').length || 0;
+    const emails = activities?.filter((a) => a.activity_type === 'email_sent').length || 0;
+    const searches = activities?.filter((a) => a.activity_type === 'viewed').length || 0;
+
+    // Determine trend
+    const trend: 'up' | 'stable' | 'down' =
+      revenueChange > 5 ? 'up' : revenueChange < -5 ? 'down' : 'stable';
+
+    return {
+      deals: { closed: closedDeals.length, pending: pendingDeals.length, lost: lostDeals.length },
+      revenue: { total: currentRevenue, change: revenueChange },
+      activity: { searches, calls, emails },
+      ranking: { percentile: Math.min(99, 50 + closedDeals.length * 10), trend },
+    };
+  } catch (error) {
+    console.error('[Dashboard] Performance error:', error);
+    throw error;
+  }
 };
 
 // 4. Automated Report Generation

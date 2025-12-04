@@ -24,7 +24,15 @@ export type HeatMapLayerType =
   | 'my_saved_properties'
   | 'my_deals'
   | 'my_buyer_matches'
-  | 'my_success_areas';
+  | 'my_success_areas'
+  // Shovels Layers (7) - from Multi-Vertical Lead Generation spec
+  | 'vitality'
+  | 'permit_activity'
+  | 'property_values'
+  | 'rent_growth'
+  | 'renovation_wave'
+  | 'electrification'
+  | 'contractor_saturation';
 
 export interface HeatMapDataPoint {
   lat: number;
@@ -38,12 +46,13 @@ export interface HeatMapLayerConfig {
   id: HeatMapLayerType;
   name: string;
   description: string;
-  category: 'global' | 'differentiator' | 'user';
+  category: 'global' | 'differentiator' | 'user' | 'shovels';
   colorScale: string[];
   minValue: number;
   maxValue: number;
   unit: string;
   enabled: boolean;
+  dataSource?: 'rentcast' | 'shovels' | 'combined';
 }
 
 export const HEAT_MAP_LAYERS: HeatMapLayerConfig[] = [
@@ -259,6 +268,91 @@ export const HEAT_MAP_LAYERS: HeatMapLayerConfig[] = [
     unit: 'score',
     enabled: false,
   },
+  // Shovels Layers (from Multi-Vertical Lead Generation spec)
+  {
+    id: 'vitality',
+    name: 'Vitality Score',
+    description: 'Overall construction activity health',
+    category: 'shovels',
+    colorScale: ['#ef4444', '#eab308', '#22c55e'],
+    minValue: 0,
+    maxValue: 100,
+    unit: 'score',
+    enabled: false,
+    dataSource: 'shovels',
+  },
+  {
+    id: 'permit_activity',
+    name: 'Permit Activity',
+    description: 'Recent permit volume',
+    category: 'shovels',
+    colorScale: ['#3b82f6', '#8b5cf6', '#ec4899'],
+    minValue: 0,
+    maxValue: 100,
+    unit: 'permits',
+    enabled: false,
+    dataSource: 'shovels',
+  },
+  {
+    id: 'property_values',
+    name: 'Property Values',
+    description: 'Average property values from permits',
+    category: 'shovels',
+    colorScale: ['#22c55e', '#eab308', '#ef4444'],
+    minValue: 0,
+    maxValue: 1000000,
+    unit: '$',
+    enabled: false,
+    dataSource: 'shovels',
+  },
+  {
+    id: 'rent_growth',
+    name: 'Rent Growth',
+    description: 'Year-over-year rent increase',
+    category: 'shovels',
+    colorScale: ['#ef4444', '#eab308', '#22c55e'],
+    minValue: -5,
+    maxValue: 15,
+    unit: '%',
+    enabled: false,
+    dataSource: 'combined',
+  },
+  {
+    id: 'renovation_wave',
+    name: 'Renovation Wave',
+    description: 'Areas with high renovation activity',
+    category: 'shovels',
+    colorScale: ['#3b82f6', '#8b5cf6', '#ec4899'],
+    minValue: 0,
+    maxValue: 100,
+    unit: 'score',
+    enabled: false,
+    dataSource: 'shovels',
+  },
+  {
+    id: 'electrification',
+    name: 'Electrification',
+    description: 'Solar/EV/battery adoption rate',
+    category: 'shovels',
+    colorScale: ['#ef4444', '#eab308', '#22c55e'],
+    minValue: 0,
+    maxValue: 50,
+    unit: '%',
+    enabled: false,
+    dataSource: 'shovels',
+  },
+  {
+    id: 'contractor_saturation',
+    name: 'Contractor Saturation',
+    description: 'Contractor density in area',
+    category: 'shovels',
+    colorScale: ['#22c55e', '#eab308', '#ef4444'],
+    minValue: 0,
+    maxValue: 100,
+    unit: 'contractors',
+    enabled: false,
+    dataSource: 'shovels',
+  },
 ];
 
 export function getLayerConfig(layerId: HeatMapLayerType): HeatMapLayerConfig | undefined {
@@ -266,7 +360,7 @@ export function getLayerConfig(layerId: HeatMapLayerType): HeatMapLayerConfig | 
 }
 
 export function getLayersByCategory(
-  category: 'global' | 'differentiator' | 'user'
+  category: 'global' | 'differentiator' | 'user' | 'shovels'
 ): HeatMapLayerConfig[] {
   return HEAT_MAP_LAYERS.filter((layer) => layer.category === category);
 }

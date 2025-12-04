@@ -14,7 +14,8 @@ declare namespace NodeJS {
     RENTCAST_API_KEY?: string;
 
     // AI Services (Phase 5)
-    ANTHROPIC_API_KEY?: string;
+    XAI_API_KEY?: string;
+    ANTHROPIC_API_KEY?: string; // Legacy - kept for backwards compatibility
     OPENAI_API_KEY?: string;
 
     // Twilio (Phase 9)

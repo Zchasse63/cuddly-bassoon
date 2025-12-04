@@ -1,12 +1,18 @@
 /**
  * Deal Analysis Tools
  * Tools for analyzing wholesale deals
+ *
+ * Uses REAL APIs:
+ * - RentCast for property valuations and comps
+ * - Supabase for property data
  */
 
 import { z } from 'zod';
 
 import { toolRegistry } from '../registry';
 import { ToolDefinition, ToolHandler } from '../types';
+import { getRentCastClient } from '@/lib/rentcast';
+import { createClient } from '@/lib/supabase/server';
 
 // Analyze Deal Tool
 const analyzeDealInput = z.object({
@@ -45,19 +51,87 @@ const analyzeDealDefinition: ToolDefinition<AnalyzeDealInput, AnalyzeDealOutput>
 };
 
 const analyzeDealHandler: ToolHandler<AnalyzeDealInput, AnalyzeDealOutput> = async (input, _context) => {
-  // TODO: Implement actual deal analysis
   console.log('[Deal Analysis] Analyzing deal for property:', input.propertyId);
-  
-  return {
-    arv: 0,
-    repairCost: input.estimatedRepairs || 0,
-    mao: 0,
-    potentialProfit: 0,
-    dealScore: 0,
-    recommendation: 'hold',
-    risks: [],
-    opportunities: [],
-  };
+
+  try {
+    // Get property data from Supabase first
+    const supabase = await createClient();
+    const { data: property } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('id', input.propertyId)
+      .single();
+
+    let arv = 0;
+    let compsCount = 0;
+
+    // Try to get valuation from RentCast
+    try {
+      const client = getRentCastClient();
+      if (property) {
+        const valuation = await client.getValuation(property.address);
+        arv = valuation.price || 0;
+        compsCount = valuation.comparables?.length || 0;
+        console.log(`[Deal Analysis] RentCast ARV: $${arv}`);
+      }
+    } catch (rentcastError) {
+      console.warn('[Deal Analysis] RentCast valuation failed:', rentcastError);
+      // Use property's stored ARV if available
+      arv = property?.arv || property?.estimated_value || 0;
+    }
+
+    const repairCost = input.estimatedRepairs || 0;
+    const assignmentFee = input.targetAssignmentFee;
+    const investorMargin = 0.7; // 70% of ARV rule
+
+    // MAO = ARV * 70% - Repairs - Assignment Fee
+    const mao = Math.max(0, (arv * investorMargin) - repairCost - assignmentFee);
+    const askingPrice = input.askingPrice || property?.asking_price || 0;
+    const potentialProfit = askingPrice > 0 ? mao - askingPrice + assignmentFee : assignmentFee;
+
+    // Calculate deal score (0-10)
+    const risks: string[] = [];
+    const opportunities: string[] = [];
+    let dealScore = 5; // Start neutral
+
+    // Adjust score based on margins
+    const spreadPercent = arv > 0 ? ((mao - askingPrice) / arv) * 100 : 0;
+    if (spreadPercent > 20) { dealScore += 2; opportunities.push('Excellent margin potential'); }
+    else if (spreadPercent > 10) { dealScore += 1; opportunities.push('Good margin potential'); }
+    else if (spreadPercent < 0) { dealScore -= 2; risks.push('Negative spread - deal not viable'); }
+    else if (spreadPercent < 5) { dealScore -= 1; risks.push('Thin margins'); }
+
+    // Adjust based on repair costs
+    if (repairCost > arv * 0.3) { dealScore -= 1; risks.push('High repair costs (>30% of ARV)'); }
+    if (repairCost < arv * 0.1) { dealScore += 1; opportunities.push('Low repair requirements'); }
+
+    // Adjust based on comps availability
+    if (compsCount >= 5) { opportunities.push(`Strong comp support (${compsCount} comps)`); }
+    else if (compsCount < 3) { risks.push('Limited comparable sales data'); }
+
+    // Clamp score
+    dealScore = Math.max(1, Math.min(10, dealScore));
+
+    // Determine recommendation
+    let recommendation: 'strong_buy' | 'buy' | 'hold' | 'pass' = 'hold';
+    if (dealScore >= 8) recommendation = 'strong_buy';
+    else if (dealScore >= 6) recommendation = 'buy';
+    else if (dealScore <= 3) recommendation = 'pass';
+
+    return {
+      arv,
+      repairCost,
+      mao,
+      potentialProfit,
+      dealScore,
+      recommendation,
+      risks,
+      opportunities,
+    };
+  } catch (error) {
+    console.error('[Deal Analysis] Error:', error);
+    throw new Error(`Deal analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 };
 
 // Calculate MAO Tool
@@ -144,14 +218,83 @@ const scoreDealDefinition: ToolDefinition<ScoreDealInput, ScoreDealOutput> = {
 };
 
 const scoreDealHandler: ToolHandler<ScoreDealInput, ScoreDealOutput> = async (input, _context) => {
-  // TODO: Implement actual deal scoring
   console.log('[Deal Analysis] Scoring deal for property:', input.propertyId);
-  
-  return {
-    overallScore: 5,
-    factorScores: {},
-    confidence: 0.5,
-  };
+
+  try {
+    const supabase = await createClient();
+    const { data: property } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('id', input.propertyId)
+      .single();
+
+    const factors = input.factors || {};
+    const factorScores: Record<string, number> = {};
+    let totalScore = 0;
+    let factorCount = 0;
+
+    // Score motivation (0-10)
+    if (factors.motivationScore !== undefined) {
+      factorScores['motivation'] = Math.min(10, factors.motivationScore / 10);
+      totalScore += factorScores['motivation'];
+      factorCount++;
+    }
+
+    // Score equity (higher = better, 0-10)
+    if (factors.equityPercent !== undefined) {
+      factorScores['equity'] = Math.min(10, factors.equityPercent / 10);
+      totalScore += factorScores['equity'];
+      factorCount++;
+    }
+
+    // Score days on market (longer = more motivated, 0-10)
+    if (factors.daysOnMarket !== undefined) {
+      factorScores['daysOnMarket'] = Math.min(10, factors.daysOnMarket / 30);
+      totalScore += factorScores['daysOnMarket'];
+      factorCount++;
+    }
+
+    // Score price reductions (more = more motivated, 0-10)
+    if (factors.priceReductions !== undefined) {
+      factorScores['priceReductions'] = Math.min(10, factors.priceReductions * 2.5);
+      totalScore += factorScores['priceReductions'];
+      factorCount++;
+    }
+
+    // Score market trend
+    if (factors.marketTrend) {
+      factorScores['marketTrend'] = factors.marketTrend === 'down' ? 8 : factors.marketTrend === 'stable' ? 5 : 3;
+      totalScore += factorScores['marketTrend'];
+      factorCount++;
+    }
+
+    // If no factors provided, use property data
+    if (factorCount === 0 && property) {
+      if (property.days_on_market) {
+        factorScores['daysOnMarket'] = Math.min(10, property.days_on_market / 30);
+        totalScore += factorScores['daysOnMarket'];
+        factorCount++;
+      }
+      if (property.condition) {
+        const conditionScores: Record<string, number> = { distressed: 9, poor: 7, fair: 5, good: 3, excellent: 2 };
+        factorScores['condition'] = conditionScores[property.condition] || 5;
+        totalScore += factorScores['condition'];
+        factorCount++;
+      }
+    }
+
+    const overallScore = factorCount > 0 ? totalScore / factorCount : 5;
+    const confidence = Math.min(1, factorCount / 5); // More factors = higher confidence
+
+    return {
+      overallScore: Math.round(overallScore * 10) / 10,
+      factorScores,
+      confidence,
+    };
+  } catch (error) {
+    console.error('[Deal Analysis] Scoring error:', error);
+    throw new Error(`Deal scoring failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 };
 
 /**

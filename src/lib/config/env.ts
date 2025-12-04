@@ -19,9 +19,12 @@ const envSchema = z.object({
 
   // External APIs (Optional - validate when present)
   RENTCAST_API_KEY: z.string().optional(),
+  SHOVELS_API_KEY: z.string().optional(),
+  SHOVELS_API_BASE_URL: z.string().url().optional().default('https://api.shovels.ai/v2'),
 
   // AI/LLM (Optional)
-  ANTHROPIC_API_KEY: z.string().optional(),
+  XAI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(), // Legacy - kept for backwards compatibility
   OPENAI_API_KEY: z.string().optional(),
 
   // Communication Services (Optional - Phase 9)

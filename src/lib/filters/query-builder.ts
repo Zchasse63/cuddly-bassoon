@@ -16,17 +16,20 @@ import { getFilterById, ALL_FILTERS } from './registry';
 import { getCachedOrCompute, filterCache } from './cache';
 
 // Import all filter functions
+// Standard filters
 import { applyAbsenteeOwnerFilter } from './standard/absentee-owner';
 import { applyHighEquityFilter } from './standard/high-equity';
 import { applyFreeClearFilter } from './standard/free-clear';
 import { applyTiredLandlordFilter } from './standard/tired-landlord';
 import { applyOutOfStateFilter } from './standard/out-of-state';
 import { applyFailedListingFilter } from './standard/failed-listing';
+// Enhanced filters
 import { applyNewAbsenteeFilter } from './enhanced/new-absentee';
 import { applyDistantOwnerFilter } from './enhanced/distant-owner';
 import { applyMultiPropertyFilter } from './enhanced/multi-property';
 import { applyEquitySweetSpotFilter } from './enhanced/equity-sweet-spot';
 import { applyAccidentalLandlordFilter } from './enhanced/accidental-landlord';
+// Contrarian filters
 import { applyAlmostSoldFilter } from './contrarian/almost-sold';
 import { applyShrinkingLandlordFilter } from './contrarian/shrinking-landlord';
 import { applyUnderwaterLandlordFilter } from './contrarian/underwater-landlord';
@@ -37,6 +40,12 @@ import { applyFSBOFatigueFilter } from './contrarian/fsbo-fatigue';
 import { applyLifeStageFilter } from './contrarian/life-stage';
 import { applyOrphanPropertyFilter } from './contrarian/orphan-property';
 import { applyCompetitorExitFilter } from './contrarian/competitor-exit';
+// Shovels filters
+import { applyStalledPermitFilter, applyFailedInspectionFilter, applyExpiredPermitFilter } from './shovels';
+// Combined filters
+import { applyOverImprovedFilter, applySunkCostFilter, applyDeferredMaintenanceFilter, applyFallingBehindFilter, applyMajorSystemDueFilter } from './combined';
+// Home services filters
+import { applyAgingRoofFilter, applyStormDamageFilter, applyNoReroofHistoryFilter, applyHvacReplacementDueFilter, applyHeatPumpCandidateFilter, applyNoHvacHistoryFilter, applyPanelUpgradeCandidateFilter, applyEvChargerReadyFilter, applyNoElectricalUpgradesFilter, applyRepipingCandidateFilter, applyWaterHeaterDueFilter, applyNoPlumbingPermitsFilter, applySolarReadyFilter, applyBatteryUpgradeFilter, applyHighConsumptionAreaFilter } from './home-services';
 
 /**
  * Filter function type
@@ -71,6 +80,36 @@ const FILTER_FUNCTIONS: Record<FilterId, FilterFunction> = {
   life_stage: applyLifeStageFilter as FilterFunction,
   orphan_property: applyOrphanPropertyFilter as FilterFunction,
   competitor_exit: applyCompetitorExitFilter as FilterFunction,
+  // Shovels
+  stalled_permit: applyStalledPermitFilter as FilterFunction,
+  failed_inspection: applyFailedInspectionFilter as FilterFunction,
+  expired_permit: applyExpiredPermitFilter as FilterFunction,
+  // Combined
+  over_improved: applyOverImprovedFilter as FilterFunction,
+  sunk_cost: applySunkCostFilter as FilterFunction,
+  deferred_maintenance: applyDeferredMaintenanceFilter as FilterFunction,
+  falling_behind: applyFallingBehindFilter as FilterFunction,
+  major_system_due: applyMajorSystemDueFilter as FilterFunction,
+  // Home Services - Roofing
+  aging_roof: applyAgingRoofFilter as FilterFunction,
+  storm_damage: applyStormDamageFilter as FilterFunction,
+  no_reroof_history: applyNoReroofHistoryFilter as FilterFunction,
+  // Home Services - HVAC
+  hvac_replacement_due: applyHvacReplacementDueFilter as FilterFunction,
+  heat_pump_candidate: applyHeatPumpCandidateFilter as FilterFunction,
+  no_hvac_history: applyNoHvacHistoryFilter as FilterFunction,
+  // Home Services - Electrical
+  panel_upgrade_candidate: applyPanelUpgradeCandidateFilter as FilterFunction,
+  ev_charger_ready: applyEvChargerReadyFilter as FilterFunction,
+  no_electrical_upgrades: applyNoElectricalUpgradesFilter as FilterFunction,
+  // Home Services - Plumbing
+  repiping_candidate: applyRepipingCandidateFilter as FilterFunction,
+  water_heater_due: applyWaterHeaterDueFilter as FilterFunction,
+  no_plumbing_permits: applyNoPlumbingPermitsFilter as FilterFunction,
+  // Home Services - Solar
+  solar_ready: applySolarReadyFilter as FilterFunction,
+  battery_upgrade: applyBatteryUpgradeFilter as FilterFunction,
+  high_consumption_area: applyHighConsumptionAreaFilter as FilterFunction,
 };
 
 /**

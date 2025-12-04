@@ -39,19 +39,22 @@ const searchByDescDef: ToolDefinition<SearchByDescInput, SearchByDescOutput> = {
 };
 
 const searchByDescHandler: ToolHandler<SearchByDescInput, SearchByDescOutput> = async (input, ctx) => {
+  console.log('[Search] Searching properties by description:', input.description);
   const supabase = await createClient();
   const criteria: Record<string, unknown> = {};
   const desc = input.description.toLowerCase();
-  
+
   const bedMatch = desc.match(/(\d+)\s*(?:bed|bedroom|br)/i);
   if (bedMatch && bedMatch[1]) criteria.minBedrooms = parseInt(bedMatch[1]);
 
-  let query = supabase.from('properties').select('*').eq('user_id', ctx.userId).limit(input.limit);
+  // Properties table doesn't have user_id - it's shared data
+  let query = supabase.from('properties').select('*').limit(input.limit);
   if (criteria.minBedrooms) query = query.gte('bedrooms', criteria.minBedrooms as number);
 
   const { data, error } = await query;
   if (error) throw new Error(`Search failed: ${error.message}`);
 
+  console.log('[Search] Found', data?.length || 0, 'properties');
   const properties = (data || []).map((p, idx) => ({
     id: p.id, address: p.address, city: p.city, state: p.state,
     bedrooms: p.bedrooms, bathrooms: p.bathrooms, matchScore: 100 - idx * 5,

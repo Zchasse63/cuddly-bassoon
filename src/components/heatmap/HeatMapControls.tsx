@@ -43,6 +43,7 @@ export function HeatMapControls({
       description: 'Investment opportunities',
     },
     { id: 'user', name: 'My Layers', icon: User, description: 'Your activity data' },
+    { id: 'shovels', name: 'Permit Data', icon: Layers, description: 'Construction & permits' },
   ];
 
   return (
@@ -88,7 +89,7 @@ export function HeatMapControls({
         <div className="space-y-2">
           {categories.map((category) => {
             const Icon = category.icon;
-            const layers = getLayersByCategory(category.id as 'global' | 'differentiator' | 'user');
+            const layers = getLayersByCategory(category.id as 'global' | 'differentiator' | 'user' | 'shovels');
             const isExpanded = expandedCategories.includes(category.id);
             const enabledCount = layers.filter((l) => enabledLayers.includes(l.id)).length;
 

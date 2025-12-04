@@ -1,3023 +1,3045 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.5';
-  };
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
-      activities: {
+      admin_notifications: {
         Row: {
-          activity_type: string;
-          created_at: string | null;
-          description: string | null;
-          entity_id: string;
-          entity_type: string;
-          id: string;
-          metadata: Json | null;
-          new_value: Json | null;
-          old_value: Json | null;
-          user_id: string;
-        };
+          created_at: string | null
+          id: string
+          message: string
+          priority: string
+          read_at: string | null
+          read_by: string | null
+          related_id: string | null
+          related_table: string | null
+          status: string
+          title: string
+          type: string
+        }
         Insert: {
-          activity_type: string;
-          created_at?: string | null;
-          description?: string | null;
-          entity_id: string;
-          entity_type: string;
-          id?: string;
-          metadata?: Json | null;
-          new_value?: Json | null;
-          old_value?: Json | null;
-          user_id: string;
-        };
+          created_at?: string | null
+          id?: string
+          message: string
+          priority?: string
+          read_at?: string | null
+          read_by?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          status?: string
+          title: string
+          type: string
+        }
         Update: {
-          activity_type?: string;
-          created_at?: string | null;
-          description?: string | null;
-          entity_id?: string;
-          entity_type?: string;
-          id?: string;
-          metadata?: Json | null;
-          new_value?: Json | null;
-          old_value?: Json | null;
-          user_id?: string;
-        };
+          created_at?: string | null
+          id?: string
+          message?: string
+          priority?: string
+          read_at?: string | null
+          read_by?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          status?: string
+          title?: string
+          type?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'activities_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "admin_notifications_read_by_fkey"
+            columns: ["read_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      analytics_daily: {
+        ]
+      }
+      amenities: {
         Row: {
-          appointments_set: number | null;
-          call_duration_seconds: number | null;
-          calls_connected: number | null;
-          calls_made: number | null;
-          contracts_signed: number | null;
-          created_at: string | null;
-          date: string;
-          deals_closed: number | null;
-          deals_lost: number | null;
-          emails_opened: number | null;
-          emails_replied: number | null;
-          emails_sent: number | null;
-          expenses: number | null;
-          id: string;
-          leads_contacted: number | null;
-          leads_created: number | null;
-          mail_responses: number | null;
-          mail_sent: number | null;
-          offers_made: number | null;
-          property_analyses: number | null;
-          property_saves: number | null;
-          property_views: number | null;
-          revenue: number | null;
-          searches: number | null;
-          skip_traces: number | null;
-          texts_received: number | null;
-          texts_sent: number | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          created_at: string | null
+          icon: string | null
+          id: number
+          name: string
+        }
         Insert: {
-          appointments_set?: number | null;
-          call_duration_seconds?: number | null;
-          calls_connected?: number | null;
-          calls_made?: number | null;
-          contracts_signed?: number | null;
-          created_at?: string | null;
-          date: string;
-          deals_closed?: number | null;
-          deals_lost?: number | null;
-          emails_opened?: number | null;
-          emails_replied?: number | null;
-          emails_sent?: number | null;
-          expenses?: number | null;
-          id?: string;
-          leads_contacted?: number | null;
-          leads_created?: number | null;
-          mail_responses?: number | null;
-          mail_sent?: number | null;
-          offers_made?: number | null;
-          property_analyses?: number | null;
-          property_saves?: number | null;
-          property_views?: number | null;
-          revenue?: number | null;
-          searches?: number | null;
-          skip_traces?: number | null;
-          texts_received?: number | null;
-          texts_sent?: number | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          created_at?: string | null
+          icon?: string | null
+          id?: number
+          name: string
+        }
         Update: {
-          appointments_set?: number | null;
-          call_duration_seconds?: number | null;
-          calls_connected?: number | null;
-          calls_made?: number | null;
-          contracts_signed?: number | null;
-          created_at?: string | null;
-          date?: string;
-          deals_closed?: number | null;
-          deals_lost?: number | null;
-          emails_opened?: number | null;
-          emails_replied?: number | null;
-          emails_sent?: number | null;
-          expenses?: number | null;
-          id?: string;
-          leads_contacted?: number | null;
-          leads_created?: number | null;
-          mail_responses?: number | null;
-          mail_sent?: number | null;
-          offers_made?: number | null;
-          property_analyses?: number | null;
-          property_saves?: number | null;
-          property_views?: number | null;
-          revenue?: number | null;
-          searches?: number | null;
-          skip_traces?: number | null;
-          texts_received?: number | null;
-          texts_sent?: number | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          created_at?: string | null
+          icon?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          amount_paid: number
+          booking_date: string
+          created_at: string | null
+          gym_id: number
+          gym_payout: number
+          id: number
+          pass_type: string
+          platform_fee: number
+          qr_code: Json | null
+          qr_scanned_at: string | null
+          qr_scanned_by: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          updated_at: string | null
+          user_id: string
+          waiver_ip_address: string | null
+          waiver_signed: boolean | null
+          waiver_signed_at: string | null
+          waiver_version: string | null
+        }
+        Insert: {
+          amount_paid: number
+          booking_date: string
+          created_at?: string | null
+          gym_id: number
+          gym_payout: number
+          id?: number
+          pass_type: string
+          platform_fee: number
+          qr_code?: Json | null
+          qr_scanned_at?: string | null
+          qr_scanned_by?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          waiver_ip_address?: string | null
+          waiver_signed?: boolean | null
+          waiver_signed_at?: string | null
+          waiver_version?: string | null
+        }
+        Update: {
+          amount_paid?: number
+          booking_date?: string
+          created_at?: string | null
+          gym_id?: number
+          gym_payout?: number
+          id?: number
+          pass_type?: string
+          platform_fee?: number
+          qr_code?: Json | null
+          qr_scanned_at?: string | null
+          qr_scanned_by?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          waiver_ip_address?: string | null
+          waiver_signed?: boolean | null
+          waiver_signed_at?: string | null
+          waiver_version?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'analytics_daily_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "bookings_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      analytics_events: {
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geo_vitality_scores: {
         Row: {
-          created_at: string | null;
-          event_data: Json | null;
-          event_type: string;
-          id: string;
-          session_id: string | null;
-          team_id: string | null;
-          user_id: string;
-        };
+          avg_inspection_pass_rate: number | null
+          avg_job_value: number | null
+          calculated_at: string | null
+          city: string | null
+          county: string | null
+          created_at: string | null
+          geo_key: string
+          geo_type: string
+          high_value_permit_count: number | null
+          high_value_ratio_score: number | null
+          id: string
+          improvement_permit_count: number | null
+          improvement_ratio_score: number | null
+          inspection_pass_score: number | null
+          permit_volume_score: number | null
+          permits_last_12_months: number | null
+          permits_prior_12_months: number | null
+          property_count: number | null
+          state: string
+          total_permits: number | null
+          updated_at: string | null
+          vertical_scores: Json | null
+          vitality_score: number | null
+          yoy_growth_rate: number | null
+          yoy_growth_score: number | null
+          zip_code: string | null
+        }
         Insert: {
-          created_at?: string | null;
-          event_data?: Json | null;
-          event_type: string;
-          id?: string;
-          session_id?: string | null;
-          team_id?: string | null;
-          user_id: string;
-        };
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          calculated_at?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          geo_key: string
+          geo_type?: string
+          high_value_permit_count?: number | null
+          high_value_ratio_score?: number | null
+          id?: string
+          improvement_permit_count?: number | null
+          improvement_ratio_score?: number | null
+          inspection_pass_score?: number | null
+          permit_volume_score?: number | null
+          permits_last_12_months?: number | null
+          permits_prior_12_months?: number | null
+          property_count?: number | null
+          state: string
+          total_permits?: number | null
+          updated_at?: string | null
+          vertical_scores?: Json | null
+          vitality_score?: number | null
+          yoy_growth_rate?: number | null
+          yoy_growth_score?: number | null
+          zip_code?: string | null
+        }
         Update: {
-          created_at?: string | null;
-          event_data?: Json | null;
-          event_type?: string;
-          id?: string;
-          session_id?: string | null;
-          team_id?: string | null;
-          user_id?: string;
-        };
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          calculated_at?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          geo_key?: string
+          geo_type?: string
+          high_value_permit_count?: number | null
+          high_value_ratio_score?: number | null
+          id?: string
+          improvement_permit_count?: number | null
+          improvement_ratio_score?: number | null
+          inspection_pass_score?: number | null
+          permit_volume_score?: number | null
+          permits_last_12_months?: number | null
+          permits_prior_12_months?: number | null
+          property_count?: number | null
+          state?: string
+          total_permits?: number | null
+          updated_at?: string | null
+          vertical_scores?: Json | null
+          vitality_score?: number | null
+          yoy_growth_rate?: number | null
+          yoy_growth_score?: number | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      gym_amenities: {
+        Row: {
+          amenity_id: number
+          created_at: string | null
+          gym_id: number
+          id: number
+          is_verified: boolean | null
+        }
+        Insert: {
+          amenity_id: number
+          created_at?: string | null
+          gym_id: number
+          id?: number
+          is_verified?: boolean | null
+        }
+        Update: {
+          amenity_id?: number
+          created_at?: string | null
+          gym_id?: number
+          id?: number
+          is_verified?: boolean | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'analytics_events_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_amenities_amenity_id_fkey"
+            columns: ["amenity_id"]
+            isOneToOne: false
+            referencedRelation: "amenities"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      analytics_team_daily: {
+          {
+            foreignKeyName: "gym_amenities_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gym_claims: {
         Row: {
-          appointments_set: number | null;
-          calls_connected: number | null;
-          calls_made: number | null;
-          contracts_signed: number | null;
-          created_at: string | null;
-          date: string;
-          deals_closed: number | null;
-          emails_opened: number | null;
-          emails_replied: number | null;
-          emails_sent: number | null;
-          id: string;
-          leads_contacted: number | null;
-          leads_created: number | null;
-          mail_sent: number | null;
-          offers_made: number | null;
-          property_analyses: number | null;
-          property_saves: number | null;
-          property_views: number | null;
-          revenue: number | null;
-          searches: number | null;
-          skip_traces: number | null;
-          team_id: string;
-          texts_received: number | null;
-          texts_sent: number | null;
-          updated_at: string | null;
-        };
+          additional_notes: string | null
+          business_email: string
+          claimant_email: string
+          claimant_name: string
+          claimant_phone: string
+          created_at: string | null
+          gym_id: number
+          id: string
+          proof_document_url: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
         Insert: {
-          appointments_set?: number | null;
-          calls_connected?: number | null;
-          calls_made?: number | null;
-          contracts_signed?: number | null;
-          created_at?: string | null;
-          date: string;
-          deals_closed?: number | null;
-          emails_opened?: number | null;
-          emails_replied?: number | null;
-          emails_sent?: number | null;
-          id?: string;
-          leads_contacted?: number | null;
-          leads_created?: number | null;
-          mail_sent?: number | null;
-          offers_made?: number | null;
-          property_analyses?: number | null;
-          property_saves?: number | null;
-          property_views?: number | null;
-          revenue?: number | null;
-          searches?: number | null;
-          skip_traces?: number | null;
-          team_id: string;
-          texts_received?: number | null;
-          texts_sent?: number | null;
-          updated_at?: string | null;
-        };
+          additional_notes?: string | null
+          business_email: string
+          claimant_email: string
+          claimant_name: string
+          claimant_phone: string
+          created_at?: string | null
+          gym_id: number
+          id?: string
+          proof_document_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
         Update: {
-          appointments_set?: number | null;
-          calls_connected?: number | null;
-          calls_made?: number | null;
-          contracts_signed?: number | null;
-          created_at?: string | null;
-          date?: string;
-          deals_closed?: number | null;
-          emails_opened?: number | null;
-          emails_replied?: number | null;
-          emails_sent?: number | null;
-          id?: string;
-          leads_contacted?: number | null;
-          leads_created?: number | null;
-          mail_sent?: number | null;
-          offers_made?: number | null;
-          property_analyses?: number | null;
-          property_saves?: number | null;
-          property_views?: number | null;
-          revenue?: number | null;
-          searches?: number | null;
-          skip_traces?: number | null;
-          team_id?: string;
-          texts_received?: number | null;
-          texts_sent?: number | null;
-          updated_at?: string | null;
-        };
+          additional_notes?: string | null
+          business_email?: string
+          claimant_email?: string
+          claimant_name?: string
+          claimant_phone?: string
+          created_at?: string | null
+          gym_id?: number
+          id?: string
+          proof_document_url?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'analytics_team_daily_team_id_fkey';
-            columns: ['team_id'];
-            isOneToOne: false;
-            referencedRelation: 'teams';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_claims_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      buyer_preferences: {
+          {
+            foreignKeyName: "gym_claims_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gym_claims_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gym_hours: {
         Row: {
-          bedroom_max: number | null;
-          bedroom_min: number | null;
-          buyer_id: string;
-          condition_tolerance: string | null;
-          created_at: string | null;
-          id: string;
-          markets: Json | null;
-          max_rehab_budget: number | null;
-          preferred_roi_percent: number | null;
-          price_range_max: number | null;
-          price_range_min: number | null;
-          property_types: Json | null;
-          updated_at: string | null;
-        };
+          closes_at: string | null
+          created_at: string | null
+          day_of_week: number
+          gym_id: number
+          id: number
+          is_closed: boolean | null
+          opens_at: string | null
+        }
         Insert: {
-          bedroom_max?: number | null;
-          bedroom_min?: number | null;
-          buyer_id: string;
-          condition_tolerance?: string | null;
-          created_at?: string | null;
-          id?: string;
-          markets?: Json | null;
-          max_rehab_budget?: number | null;
-          preferred_roi_percent?: number | null;
-          price_range_max?: number | null;
-          price_range_min?: number | null;
-          property_types?: Json | null;
-          updated_at?: string | null;
-        };
+          closes_at?: string | null
+          created_at?: string | null
+          day_of_week: number
+          gym_id: number
+          id?: number
+          is_closed?: boolean | null
+          opens_at?: string | null
+        }
         Update: {
-          bedroom_max?: number | null;
-          bedroom_min?: number | null;
-          buyer_id?: string;
-          condition_tolerance?: string | null;
-          created_at?: string | null;
-          id?: string;
-          markets?: Json | null;
-          max_rehab_budget?: number | null;
-          preferred_roi_percent?: number | null;
-          price_range_max?: number | null;
-          price_range_min?: number | null;
-          property_types?: Json | null;
-          updated_at?: string | null;
-        };
+          closes_at?: string | null
+          created_at?: string | null
+          day_of_week?: number
+          gym_id?: number
+          id?: number
+          is_closed?: boolean | null
+          opens_at?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'buyer_preferences_buyer_id_fkey';
-            columns: ['buyer_id'];
-            isOneToOne: true;
-            referencedRelation: 'buyers';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_hours_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      buyer_transactions: {
+        ]
+      }
+      gym_owners: {
         Row: {
-          buyer_id: string;
-          created_at: string | null;
-          data_source: string | null;
-          id: string;
-          property_address: string | null;
-          purchase_date: string | null;
-          purchase_price: number | null;
-          sale_date: string | null;
-          sale_price: number | null;
-          transaction_type: string | null;
-        };
+          created_at: string | null
+          gym_name: string
+          id: string
+          stripe_account_id: string | null
+          stripe_onboarding_complete: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          buyer_id: string;
-          created_at?: string | null;
-          data_source?: string | null;
-          id?: string;
-          property_address?: string | null;
-          purchase_date?: string | null;
-          purchase_price?: number | null;
-          sale_date?: string | null;
-          sale_price?: number | null;
-          transaction_type?: string | null;
-        };
+          created_at?: string | null
+          gym_name: string
+          id?: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          buyer_id?: string;
-          created_at?: string | null;
-          data_source?: string | null;
-          id?: string;
-          property_address?: string | null;
-          purchase_date?: string | null;
-          purchase_price?: number | null;
-          sale_date?: string | null;
-          sale_price?: number | null;
-          transaction_type?: string | null;
-        };
+          created_at?: string | null
+          gym_name?: string
+          id?: string
+          stripe_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'buyer_transactions_buyer_id_fkey';
-            columns: ['buyer_id'];
-            isOneToOne: false;
-            referencedRelation: 'buyers';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_owners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      buyers: {
+        ]
+      }
+      gym_photos: {
         Row: {
-          buyer_type: string | null;
-          company_name: string | null;
-          created_at: string | null;
-          email: string | null;
-          id: string;
-          name: string;
-          notes: string | null;
-          phone: string | null;
-          rating: number | null;
-          status: string | null;
-          tier: string | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          created_at: string | null
+          display_order: number | null
+          gym_id: number
+          id: number
+          url: string
+        }
         Insert: {
-          buyer_type?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          email?: string | null;
-          id?: string;
-          name: string;
-          notes?: string | null;
-          phone?: string | null;
-          rating?: number | null;
-          status?: string | null;
-          tier?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          created_at?: string | null
+          display_order?: number | null
+          gym_id: number
+          id?: number
+          url: string
+        }
         Update: {
-          buyer_type?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          email?: string | null;
-          id?: string;
-          name?: string;
-          notes?: string | null;
-          phone?: string | null;
-          rating?: number | null;
-          status?: string | null;
-          tier?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          created_at?: string | null
+          display_order?: number | null
+          gym_id?: number
+          id?: number
+          url?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'buyers_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_photos_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      campaigns: {
+        ]
+      }
+      gym_reviews: {
         Row: {
-          channel: string;
-          completed_at: string | null;
-          created_at: string | null;
-          deal_id: string | null;
-          description: string | null;
-          id: string;
-          messages_clicked: number | null;
-          messages_delivered: number | null;
-          messages_failed: number | null;
-          messages_opened: number | null;
-          messages_sent: number | null;
-          messages_total: number | null;
-          name: string;
-          recipient_criteria: Json | null;
-          scheduled_at: string | null;
-          started_at: string | null;
-          status: string;
-          template_id: string | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          booking_id: number | null
+          comment: string
+          created_at: string | null
+          gym_id: number
+          helpful_count: number | null
+          id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          moderation_status: string
+          rating: number
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          channel?: string;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          id?: string;
-          messages_clicked?: number | null;
-          messages_delivered?: number | null;
-          messages_failed?: number | null;
-          messages_opened?: number | null;
-          messages_sent?: number | null;
-          messages_total?: number | null;
-          name: string;
-          recipient_criteria?: Json | null;
-          scheduled_at?: string | null;
-          started_at?: string | null;
-          status?: string;
-          template_id?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          booking_id?: number | null
+          comment: string
+          created_at?: string | null
+          gym_id: number
+          helpful_count?: number | null
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
+          rating: number
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          channel?: string;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          id?: string;
-          messages_clicked?: number | null;
-          messages_delivered?: number | null;
-          messages_failed?: number | null;
-          messages_opened?: number | null;
-          messages_sent?: number | null;
-          messages_total?: number | null;
-          name?: string;
-          recipient_criteria?: Json | null;
-          scheduled_at?: string | null;
-          started_at?: string | null;
-          status?: string;
-          template_id?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          booking_id?: number | null
+          comment?: string
+          created_at?: string | null
+          gym_id?: number
+          helpful_count?: number | null
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          moderation_status?: string
+          rating?: number
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'campaigns_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'campaigns_template_id_fkey';
-            columns: ['template_id'];
-            isOneToOne: false;
-            referencedRelation: 'templates';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_reviews_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'campaigns_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_reviews_moderated_by_fkey"
+            columns: ["moderated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      deal_activities: {
+          {
+            foreignKeyName: "gym_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gym_verification_queue: {
         Row: {
-          activity_type: string;
-          created_at: string | null;
-          deal_id: string;
-          description: string | null;
-          id: string;
-          metadata: Json | null;
-          user_id: string;
-        };
+          created_at: string | null
+          field_name: string
+          gym_id: number
+          id: string
+          new_value: string
+          old_value: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source: string
+          status: string
+          submitter_id: string | null
+        }
         Insert: {
-          activity_type: string;
-          created_at?: string | null;
-          deal_id: string;
-          description?: string | null;
-          id?: string;
-          metadata?: Json | null;
-          user_id: string;
-        };
+          created_at?: string | null
+          field_name: string
+          gym_id: number
+          id?: string
+          new_value: string
+          old_value?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source: string
+          status?: string
+          submitter_id?: string | null
+        }
         Update: {
-          activity_type?: string;
-          created_at?: string | null;
-          deal_id?: string;
-          description?: string | null;
-          id?: string;
-          metadata?: Json | null;
-          user_id?: string;
-        };
+          created_at?: string | null
+          field_name?: string
+          gym_id?: number
+          id?: string
+          new_value?: string
+          old_value?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string
+          status?: string
+          submitter_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'deal_activities_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_verification_queue_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'deal_activities_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "gym_verification_queue_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      deals: {
+          {
+            foreignKeyName: "gym_verification_queue_submitter_id_fkey"
+            columns: ["submitter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gyms: {
         Row: {
-          asking_price: number | null;
-          assigned_buyer_id: string | null;
-          assigned_to: string | null;
-          assignment_fee: number | null;
-          contract_price: number | null;
-          created_at: string | null;
-          estimated_arv: number | null;
-          estimated_repairs: number | null;
-          id: string;
-          notes: string | null;
-          offer_price: number | null;
-          property_address: string;
-          property_id: string | null;
-          seller_email: string | null;
-          seller_name: string | null;
-          seller_phone: string | null;
-          stage: string | null;
-          status: string | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          address: string
+          city: string
+          country: string
+          created_at: string | null
+          day_pass_price: number | null
+          description: string | null
+          google_place_id: string | null
+          id: number
+          is_verified: boolean | null
+          latitude: number
+          location: unknown
+          longitude: number
+          month_pass_price: number | null
+          name: string
+          owner_id: string
+          phone: string | null
+          rating: number | null
+          review_count: number | null
+          state: string
+          updated_at: string | null
+          website: string | null
+          week_pass_price: number | null
+        }
         Insert: {
-          asking_price?: number | null;
-          assigned_buyer_id?: string | null;
-          assigned_to?: string | null;
-          assignment_fee?: number | null;
-          contract_price?: number | null;
-          created_at?: string | null;
-          estimated_arv?: number | null;
-          estimated_repairs?: number | null;
-          id?: string;
-          notes?: string | null;
-          offer_price?: number | null;
-          property_address: string;
-          property_id?: string | null;
-          seller_email?: string | null;
-          seller_name?: string | null;
-          seller_phone?: string | null;
-          stage?: string | null;
-          status?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          address: string
+          city: string
+          country: string
+          created_at?: string | null
+          day_pass_price?: number | null
+          description?: string | null
+          google_place_id?: string | null
+          id?: number
+          is_verified?: boolean | null
+          latitude: number
+          location?: unknown
+          longitude: number
+          month_pass_price?: number | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          state: string
+          updated_at?: string | null
+          website?: string | null
+          week_pass_price?: number | null
+        }
         Update: {
-          asking_price?: number | null;
-          assigned_buyer_id?: string | null;
-          assigned_to?: string | null;
-          assignment_fee?: number | null;
-          contract_price?: number | null;
-          created_at?: string | null;
-          estimated_arv?: number | null;
-          estimated_repairs?: number | null;
-          id?: string;
-          notes?: string | null;
-          offer_price?: number | null;
-          property_address?: string;
-          property_id?: string | null;
-          seller_email?: string | null;
-          seller_name?: string | null;
-          seller_phone?: string | null;
-          stage?: string | null;
-          status?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          address?: string
+          city?: string
+          country?: string
+          created_at?: string | null
+          day_pass_price?: number | null
+          description?: string | null
+          google_place_id?: string | null
+          id?: number
+          is_verified?: boolean | null
+          latitude?: number
+          location?: unknown
+          longitude?: number
+          month_pass_price?: number | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          state?: string
+          updated_at?: string | null
+          website?: string | null
+          week_pass_price?: number | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'deals_assigned_buyer_id_fkey';
-            columns: ['assigned_buyer_id'];
-            isOneToOne: false;
-            referencedRelation: 'buyers';
-            referencedColumns: ['id'];
+            foreignKeyName: "gyms_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "gym_owners"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'deals_assigned_to_fkey';
-            columns: ['assigned_to'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'deals_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'deals_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      document_chunks: {
+        ]
+      }
+      partner_applications: {
         Row: {
-          chunk_index: number;
-          content: string;
-          created_at: string | null;
-          document_id: string;
-          id: string;
-          metadata: Json | null;
-          token_count: number | null;
-        };
+          address: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          created_at: string | null
+          description: string
+          gym_name: string
+          id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string | null
+          website: string | null
+          why_partner: string
+        }
         Insert: {
-          chunk_index: number;
-          content: string;
-          created_at?: string | null;
-          document_id: string;
-          id?: string;
-          metadata?: Json | null;
-          token_count?: number | null;
-        };
+          address: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          created_at?: string | null
+          description: string
+          gym_name: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          website?: string | null
+          why_partner: string
+        }
         Update: {
-          chunk_index?: number;
-          content?: string;
-          created_at?: string | null;
-          document_id?: string;
-          id?: string;
-          metadata?: Json | null;
-          token_count?: number | null;
-        };
+          address?: string
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string | null
+          description?: string
+          gym_name?: string
+          id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          website?: string | null
+          why_partner?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'document_chunks_document_id_fkey';
-            columns: ['document_id'];
-            isOneToOne: false;
-            referencedRelation: 'documents';
-            referencedColumns: ['id'];
+            foreignKeyName: "partner_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      documents: {
+        ]
+      }
+      partners: {
         Row: {
-          category: string | null;
-          content: string;
-          created_at: string | null;
-          difficulty_level: string | null;
-          id: string;
-          is_active: boolean | null;
-          related_docs: Json | null;
-          slug: string;
-          subcategory: string | null;
-          tags: Json | null;
-          title: string;
-          updated_at: string | null;
-          version: number | null;
-        };
+          business_name: string
+          created_at: string | null
+          gym_id: number | null
+          id: string
+          status: string
+          stripe_account_id: string | null
+          stripe_charges_enabled: boolean | null
+          stripe_onboarding_complete: boolean | null
+          stripe_payouts_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          category?: string | null;
-          content: string;
-          created_at?: string | null;
-          difficulty_level?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          related_docs?: Json | null;
-          slug: string;
-          subcategory?: string | null;
-          tags?: Json | null;
-          title: string;
-          updated_at?: string | null;
-          version?: number | null;
-        };
+          business_name: string
+          created_at?: string | null
+          gym_id?: number | null
+          id?: string
+          status?: string
+          stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean | null
+          stripe_onboarding_complete?: boolean | null
+          stripe_payouts_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          category?: string | null;
-          content?: string;
-          created_at?: string | null;
-          difficulty_level?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          related_docs?: Json | null;
-          slug?: string;
-          subcategory?: string | null;
-          tags?: Json | null;
-          title?: string;
-          updated_at?: string | null;
-          version?: number | null;
-        };
-        Relationships: [];
-      };
-      embeddings: {
-        Row: {
-          chunk_id: string;
-          created_at: string | null;
-          embedding: string;
-          id: string;
-          model_version: string | null;
-        };
-        Insert: {
-          chunk_id: string;
-          created_at?: string | null;
-          embedding: string;
-          id?: string;
-          model_version?: string | null;
-        };
-        Update: {
-          chunk_id?: string;
-          created_at?: string | null;
-          embedding?: string;
-          id?: string;
-          model_version?: string | null;
-        };
+          business_name?: string
+          created_at?: string | null
+          gym_id?: number | null
+          id?: string
+          status?: string
+          stripe_account_id?: string | null
+          stripe_charges_enabled?: boolean | null
+          stripe_onboarding_complete?: boolean | null
+          stripe_payouts_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'embeddings_chunk_id_fkey';
-            columns: ['chunk_id'];
-            isOneToOne: true;
-            referencedRelation: 'document_chunks';
-            referencedColumns: ['id'];
+            foreignKeyName: "partners_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: true
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      lead_contact_history: {
+          {
+            foreignKeyName: "partners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      passes: {
         Row: {
-          contact_type: string;
-          contacted_at: string | null;
-          created_at: string | null;
-          duration_seconds: number | null;
-          id: string;
-          lead_id: string;
-          notes: string | null;
-          outcome: string | null;
-          user_id: string;
-        };
+          booking_id: number
+          check_in_count: number | null
+          created_at: string | null
+          gym_id: number
+          id: string
+          last_check_in_at: string | null
+          pass_type: string
+          qr_code_data: Json
+          status: string
+          updated_at: string | null
+          user_id: string
+          valid_from: string
+          valid_until: string
+        }
         Insert: {
-          contact_type: string;
-          contacted_at?: string | null;
-          created_at?: string | null;
-          duration_seconds?: number | null;
-          id?: string;
-          lead_id: string;
-          notes?: string | null;
-          outcome?: string | null;
-          user_id: string;
-        };
+          booking_id: number
+          check_in_count?: number | null
+          created_at?: string | null
+          gym_id: number
+          id?: string
+          last_check_in_at?: string | null
+          pass_type: string
+          qr_code_data: Json
+          status?: string
+          updated_at?: string | null
+          user_id: string
+          valid_from: string
+          valid_until: string
+        }
         Update: {
-          contact_type?: string;
-          contacted_at?: string | null;
-          created_at?: string | null;
-          duration_seconds?: number | null;
-          id?: string;
-          lead_id?: string;
-          notes?: string | null;
-          outcome?: string | null;
-          user_id?: string;
-        };
+          booking_id?: number
+          check_in_count?: number | null
+          created_at?: string | null
+          gym_id?: number
+          id?: string
+          last_check_in_at?: string | null
+          pass_type?: string
+          qr_code_data?: Json
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+          valid_from?: string
+          valid_until?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'lead_contact_history_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
+            foreignKeyName: "passes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'lead_contact_history_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "passes_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      lead_list_items: {
+          {
+            foreignKeyName: "passes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
         Row: {
-          added_at: string | null;
-          id: string;
-          lead_id: string;
-          list_id: string;
-          position: number | null;
-        };
+          booking_id: number
+          comment: string | null
+          created_at: string | null
+          gym_id: number
+          helpful_count: number | null
+          id: number
+          rating: number
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          added_at?: string | null;
-          id?: string;
-          lead_id: string;
-          list_id: string;
-          position?: number | null;
-        };
+          booking_id: number
+          comment?: string | null
+          created_at?: string | null
+          gym_id: number
+          helpful_count?: number | null
+          id?: number
+          rating: number
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          added_at?: string | null;
-          id?: string;
-          lead_id?: string;
-          list_id?: string;
-          position?: number | null;
-        };
+          booking_id?: number
+          comment?: string | null
+          created_at?: string | null
+          gym_id?: number
+          helpful_count?: number | null
+          id?: number
+          rating?: number
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'lead_list_items_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'lead_list_items_list_id_fkey';
-            columns: ['list_id'];
-            isOneToOne: false;
-            referencedRelation: 'lead_lists';
-            referencedColumns: ['id'];
+            foreignKeyName: "reviews_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      lead_list_members: {
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_gyms: {
         Row: {
-          added_at: string | null;
-          added_by: string | null;
-          id: string;
-          lead_id: string;
-          lead_list_id: string;
-          metadata: Json | null;
-        };
+          created_at: string | null
+          gym_id: number
+          id: number
+          user_id: string
+        }
         Insert: {
-          added_at?: string | null;
-          added_by?: string | null;
-          id?: string;
-          lead_id: string;
-          lead_list_id: string;
-          metadata?: Json | null;
-        };
+          created_at?: string | null
+          gym_id: number
+          id?: number
+          user_id: string
+        }
         Update: {
-          added_at?: string | null;
-          added_by?: string | null;
-          id?: string;
-          lead_id?: string;
-          lead_list_id?: string;
-          metadata?: Json | null;
-        };
+          created_at?: string | null
+          gym_id?: number
+          id?: number
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'lead_list_members_added_by_fkey';
-            columns: ['added_by'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "saved_gyms_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'lead_list_members_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
+            foreignKeyName: "saved_gyms_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'lead_list_members_lead_list_id_fkey';
-            columns: ['lead_list_id'];
-            isOneToOne: false;
-            referencedRelation: 'lead_lists';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      lead_lists: {
+        ]
+      }
+      scraping_queue: {
         Row: {
-          created_at: string | null;
-          description: string | null;
-          filter_criteria: Json | null;
-          id: string;
-          is_active: boolean | null;
-          list_type: string | null;
-          name: string;
-          updated_at: string | null;
-          user_id: string;
-        };
+          attempts: number | null
+          created_at: string | null
+          error_message: string | null
+          gym_id: number | null
+          id: string
+          max_attempts: number | null
+          priority: number | null
+          processed_at: string | null
+          result: Json | null
+          source: string
+          started_at: string | null
+          status: string
+          url: string
+        }
         Insert: {
-          created_at?: string | null;
-          description?: string | null;
-          filter_criteria?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          list_type?: string | null;
-          name: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          attempts?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          gym_id?: number | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          processed_at?: string | null
+          result?: Json | null
+          source: string
+          started_at?: string | null
+          status?: string
+          url: string
+        }
         Update: {
-          created_at?: string | null;
-          description?: string | null;
-          filter_criteria?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          list_type?: string | null;
-          name?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          attempts?: number | null
+          created_at?: string | null
+          error_message?: string | null
+          gym_id?: number | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          processed_at?: string | null
+          result?: Json | null
+          source?: string
+          started_at?: string | null
+          status?: string
+          url?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'lead_lists_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "scraping_queue_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      leads: {
+        ]
+      }
+      sent_alerts: {
         Row: {
-          assigned_to: string | null;
-          created_at: string | null;
-          id: string;
-          lost_reason: string | null;
-          motivation_score: number | null;
-          notes: string | null;
-          owner_email: string | null;
-          owner_name: string | null;
-          owner_phone: string | null;
-          property_address: string | null;
-          property_id: string | null;
-          source: string | null;
-          status: string | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          alert_key: string
+          alert_type: string
+          id: number
+          sent_at: string | null
+          user_id: string
+        }
         Insert: {
-          assigned_to?: string | null;
-          created_at?: string | null;
-          id?: string;
-          lost_reason?: string | null;
-          motivation_score?: number | null;
-          notes?: string | null;
-          owner_email?: string | null;
-          owner_name?: string | null;
-          owner_phone?: string | null;
-          property_address?: string | null;
-          property_id?: string | null;
-          source?: string | null;
-          status?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          alert_key: string
+          alert_type: string
+          id?: number
+          sent_at?: string | null
+          user_id: string
+        }
         Update: {
-          assigned_to?: string | null;
-          created_at?: string | null;
-          id?: string;
-          lost_reason?: string | null;
-          motivation_score?: number | null;
-          notes?: string | null;
-          owner_email?: string | null;
-          owner_name?: string | null;
-          owner_phone?: string | null;
-          property_address?: string | null;
-          property_id?: string | null;
-          source?: string | null;
-          status?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          alert_key?: string
+          alert_type?: string
+          id?: number
+          sent_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'leads_assigned_to_fkey';
-            columns: ['assigned_to'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "sent_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'leads_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'leads_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      listings: {
+        ]
+      }
+      shovels_address_metrics: {
         Row: {
-          created_at: string | null;
-          days_on_market: number | null;
-          description: string | null;
-          expiration_date: string | null;
-          id: string;
-          list_price: number | null;
-          listing_agent: string | null;
-          listing_date: string | null;
-          listing_office: string | null;
-          listing_status: string | null;
-          mls_number: string | null;
-          original_list_price: number | null;
-          photos: Json | null;
-          price_changes: Json | null;
-          property_id: string;
-          updated_at: string | null;
-        };
+          active_permits: number | null
+          avg_inspection_pass_rate: number | null
+          avg_job_value: number | null
+          calculated_at: string | null
+          city: string | null
+          completed_permits: number | null
+          county: string | null
+          created_at: string | null
+          expired_permits: number | null
+          first_permit_date: string | null
+          has_expired_permit: boolean | null
+          has_stalled_permit: boolean | null
+          high_value_permit_ratio: number | null
+          id: string
+          improvement_permit_ratio: number | null
+          last_electrical_date: string | null
+          last_hvac_date: string | null
+          last_permit_date: string | null
+          last_plumbing_date: string | null
+          last_roofing_date: string | null
+          last_solar_date: string | null
+          last_water_heater_date: string | null
+          max_job_value: number | null
+          permit_counts_by_tag: Json | null
+          permits_last_12_months: number | null
+          permits_prior_12_months: number | null
+          shovels_address_id: string
+          state: string | null
+          street_address: string
+          total_job_value: number | null
+          total_permits: number | null
+          updated_at: string | null
+          yoy_permit_growth: number | null
+          zip_code: string | null
+        }
         Insert: {
-          created_at?: string | null;
-          days_on_market?: number | null;
-          description?: string | null;
-          expiration_date?: string | null;
-          id?: string;
-          list_price?: number | null;
-          listing_agent?: string | null;
-          listing_date?: string | null;
-          listing_office?: string | null;
-          listing_status?: string | null;
-          mls_number?: string | null;
-          original_list_price?: number | null;
-          photos?: Json | null;
-          price_changes?: Json | null;
-          property_id: string;
-          updated_at?: string | null;
-        };
+          active_permits?: number | null
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          calculated_at?: string | null
+          city?: string | null
+          completed_permits?: number | null
+          county?: string | null
+          created_at?: string | null
+          expired_permits?: number | null
+          first_permit_date?: string | null
+          has_expired_permit?: boolean | null
+          has_stalled_permit?: boolean | null
+          high_value_permit_ratio?: number | null
+          id?: string
+          improvement_permit_ratio?: number | null
+          last_electrical_date?: string | null
+          last_hvac_date?: string | null
+          last_permit_date?: string | null
+          last_plumbing_date?: string | null
+          last_roofing_date?: string | null
+          last_solar_date?: string | null
+          last_water_heater_date?: string | null
+          max_job_value?: number | null
+          permit_counts_by_tag?: Json | null
+          permits_last_12_months?: number | null
+          permits_prior_12_months?: number | null
+          shovels_address_id: string
+          state?: string | null
+          street_address: string
+          total_job_value?: number | null
+          total_permits?: number | null
+          updated_at?: string | null
+          yoy_permit_growth?: number | null
+          zip_code?: string | null
+        }
         Update: {
-          created_at?: string | null;
-          days_on_market?: number | null;
-          description?: string | null;
-          expiration_date?: string | null;
-          id?: string;
-          list_price?: number | null;
-          listing_agent?: string | null;
-          listing_date?: string | null;
-          listing_office?: string | null;
-          listing_status?: string | null;
-          mls_number?: string | null;
-          original_list_price?: number | null;
-          photos?: Json | null;
-          price_changes?: Json | null;
-          property_id?: string;
-          updated_at?: string | null;
-        };
+          active_permits?: number | null
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          calculated_at?: string | null
+          city?: string | null
+          completed_permits?: number | null
+          county?: string | null
+          created_at?: string | null
+          expired_permits?: number | null
+          first_permit_date?: string | null
+          has_expired_permit?: boolean | null
+          has_stalled_permit?: boolean | null
+          high_value_permit_ratio?: number | null
+          id?: string
+          improvement_permit_ratio?: number | null
+          last_electrical_date?: string | null
+          last_hvac_date?: string | null
+          last_permit_date?: string | null
+          last_plumbing_date?: string | null
+          last_roofing_date?: string | null
+          last_solar_date?: string | null
+          last_water_heater_date?: string | null
+          max_job_value?: number | null
+          permit_counts_by_tag?: Json | null
+          permits_last_12_months?: number | null
+          permits_prior_12_months?: number | null
+          shovels_address_id?: string
+          state?: string | null
+          street_address?: string
+          total_job_value?: number | null
+          total_permits?: number | null
+          updated_at?: string | null
+          yoy_permit_growth?: number | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      shovels_contractors: {
+        Row: {
+          active_permits: number | null
+          avg_inspection_pass_rate: number | null
+          avg_job_value: number | null
+          city: string | null
+          created_at: string | null
+          email: string | null
+          first_permit_date: string | null
+          id: string
+          last_permit_date: string | null
+          license_number: string | null
+          license_status: string | null
+          license_type: string | null
+          name: string
+          on_time_completion_rate: number | null
+          phone: string | null
+          raw_data: Json | null
+          shovels_contractor_id: string
+          specializations: string[] | null
+          state: string | null
+          street_address: string | null
+          total_job_value: number | null
+          total_permits: number | null
+          updated_at: string | null
+          website: string | null
+          years_active: number | null
+          zip_code: string | null
+        }
+        Insert: {
+          active_permits?: number | null
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_permit_date?: string | null
+          id?: string
+          last_permit_date?: string | null
+          license_number?: string | null
+          license_status?: string | null
+          license_type?: string | null
+          name: string
+          on_time_completion_rate?: number | null
+          phone?: string | null
+          raw_data?: Json | null
+          shovels_contractor_id: string
+          specializations?: string[] | null
+          state?: string | null
+          street_address?: string | null
+          total_job_value?: number | null
+          total_permits?: number | null
+          updated_at?: string | null
+          website?: string | null
+          years_active?: number | null
+          zip_code?: string | null
+        }
+        Update: {
+          active_permits?: number | null
+          avg_inspection_pass_rate?: number | null
+          avg_job_value?: number | null
+          city?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_permit_date?: string | null
+          id?: string
+          last_permit_date?: string | null
+          license_number?: string | null
+          license_status?: string | null
+          license_type?: string | null
+          name?: string
+          on_time_completion_rate?: number | null
+          phone?: string | null
+          raw_data?: Json | null
+          shovels_contractor_id?: string
+          specializations?: string[] | null
+          state?: string | null
+          street_address?: string | null
+          total_job_value?: number | null
+          total_permits?: number | null
+          updated_at?: string | null
+          website?: string | null
+          years_active?: number | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      shovels_permits: {
+        Row: {
+          approval_days: number | null
+          city: string | null
+          construction_days: number | null
+          contractor_id: string | null
+          contractor_license: string | null
+          contractor_name: string | null
+          county: string | null
+          created_at: string | null
+          expiration_date: string | null
+          failed_inspections: number | null
+          fee_total: number | null
+          file_date: string | null
+          final_date: string | null
+          id: string
+          inspection_pass_rate: number | null
+          issue_date: string | null
+          job_value: number | null
+          latitude: number | null
+          longitude: number | null
+          passed_inspections: number | null
+          permit_description: string | null
+          permit_number: string | null
+          permit_status: string | null
+          permit_type: string | null
+          raw_data: Json | null
+          shovels_address_id: string
+          shovels_permit_id: string
+          state: string | null
+          street_address: string | null
+          tags: string[] | null
+          total_inspections: number | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          approval_days?: number | null
+          city?: string | null
+          construction_days?: number | null
+          contractor_id?: string | null
+          contractor_license?: string | null
+          contractor_name?: string | null
+          county?: string | null
+          created_at?: string | null
+          expiration_date?: string | null
+          failed_inspections?: number | null
+          fee_total?: number | null
+          file_date?: string | null
+          final_date?: string | null
+          id?: string
+          inspection_pass_rate?: number | null
+          issue_date?: string | null
+          job_value?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          passed_inspections?: number | null
+          permit_description?: string | null
+          permit_number?: string | null
+          permit_status?: string | null
+          permit_type?: string | null
+          raw_data?: Json | null
+          shovels_address_id: string
+          shovels_permit_id: string
+          state?: string | null
+          street_address?: string | null
+          tags?: string[] | null
+          total_inspections?: number | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          approval_days?: number | null
+          city?: string | null
+          construction_days?: number | null
+          contractor_id?: string | null
+          contractor_license?: string | null
+          contractor_name?: string | null
+          county?: string | null
+          created_at?: string | null
+          expiration_date?: string | null
+          failed_inspections?: number | null
+          fee_total?: number | null
+          file_date?: string | null
+          final_date?: string | null
+          id?: string
+          inspection_pass_rate?: number | null
+          issue_date?: string | null
+          job_value?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          passed_inspections?: number | null
+          permit_description?: string | null
+          permit_number?: string | null
+          permit_status?: string | null
+          permit_type?: string | null
+          raw_data?: Json | null
+          shovels_address_id?: string
+          shovels_permit_id?: string
+          state?: string | null
+          street_address?: string | null
+          tags?: string[] | null
+          total_inspections?: number | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
+      spatial_ref_sys: {
+        Row: {
+          auth_name: string | null
+          auth_srid: number | null
+          proj4text: string | null
+          srid: number
+          srtext: string | null
+        }
+        Insert: {
+          auth_name?: string | null
+          auth_srid?: number | null
+          proj4text?: string | null
+          srid: number
+          srtext?: string | null
+        }
+        Update: {
+          auth_name?: string | null
+          auth_srid?: number | null
+          proj4text?: string | null
+          srid?: number
+          srtext?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string | null
+          description: string
+          id: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string | null
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: string
+          created_at?: string | null
+          description: string
+          id?: string
+          priority?: string
+          status?: string
+          subject: string
+          updated_at?: string | null
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          priority?: string
+          status?: string
+          subject?: string
+          updated_at?: string | null
+          user_email?: string
+          user_id?: string
+          user_name?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'listings_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
+            foreignKeyName: "support_tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      market_data: {
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_messages: {
         Row: {
-          absorption_rate: number | null;
-          city: string | null;
-          county: string | null;
-          created_at: string | null;
-          data_date: string | null;
-          data_source: string | null;
-          days_on_market_avg: number | null;
-          id: string;
-          inventory_count: number | null;
-          median_home_value: number | null;
-          median_rent: number | null;
-          price_per_sqft: number | null;
-          rent_per_sqft: number | null;
-          state: string | null;
-          updated_at: string | null;
-          year_over_year_change: number | null;
-          zip_code: string;
-        };
+          created_at: string | null
+          id: string
+          message: string
+          sender_id: string | null
+          sender_name: string
+          sender_type: string
+          ticket_id: string
+        }
         Insert: {
-          absorption_rate?: number | null;
-          city?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          data_date?: string | null;
-          data_source?: string | null;
-          days_on_market_avg?: number | null;
-          id?: string;
-          inventory_count?: number | null;
-          median_home_value?: number | null;
-          median_rent?: number | null;
-          price_per_sqft?: number | null;
-          rent_per_sqft?: number | null;
-          state?: string | null;
-          updated_at?: string | null;
-          year_over_year_change?: number | null;
-          zip_code: string;
-        };
+          created_at?: string | null
+          id?: string
+          message: string
+          sender_id?: string | null
+          sender_name: string
+          sender_type: string
+          ticket_id: string
+        }
         Update: {
-          absorption_rate?: number | null;
-          city?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          data_date?: string | null;
-          data_source?: string | null;
-          days_on_market_avg?: number | null;
-          id?: string;
-          inventory_count?: number | null;
-          median_home_value?: number | null;
-          median_rent?: number | null;
-          price_per_sqft?: number | null;
-          rent_per_sqft?: number | null;
-          state?: string | null;
-          updated_at?: string | null;
-          year_over_year_change?: number | null;
-          zip_code?: string;
-        };
-        Relationships: [];
-      };
-      messages: {
-        Row: {
-          body: string;
-          buyer_id: string | null;
-          channel: string;
-          created_at: string | null;
-          deal_id: string | null;
-          direction: string;
-          external_id: string | null;
-          id: string;
-          is_read: boolean | null;
-          lead_id: string | null;
-          metadata: Json | null;
-          read_at: string | null;
-          recipient: string | null;
-          sender: string | null;
-          sensitivity_flags: Json | null;
-          status: string | null;
-          subject: string | null;
-          thread_id: string | null;
-          transcription: string | null;
-          user_id: string;
-          voicemail_url: string | null;
-        };
-        Insert: {
-          body: string;
-          buyer_id?: string | null;
-          channel: string;
-          created_at?: string | null;
-          deal_id?: string | null;
-          direction: string;
-          external_id?: string | null;
-          id?: string;
-          is_read?: boolean | null;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          read_at?: string | null;
-          recipient?: string | null;
-          sender?: string | null;
-          sensitivity_flags?: Json | null;
-          status?: string | null;
-          subject?: string | null;
-          thread_id?: string | null;
-          transcription?: string | null;
-          user_id: string;
-          voicemail_url?: string | null;
-        };
-        Update: {
-          body?: string;
-          buyer_id?: string | null;
-          channel?: string;
-          created_at?: string | null;
-          deal_id?: string | null;
-          direction?: string;
-          external_id?: string | null;
-          id?: string;
-          is_read?: boolean | null;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          read_at?: string | null;
-          recipient?: string | null;
-          sender?: string | null;
-          sensitivity_flags?: Json | null;
-          status?: string | null;
-          subject?: string | null;
-          thread_id?: string | null;
-          transcription?: string | null;
-          user_id?: string;
-          voicemail_url?: string | null;
-        };
+          created_at?: string | null
+          id?: string
+          message?: string
+          sender_id?: string | null
+          sender_name?: string
+          sender_type?: string
+          ticket_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'messages_buyer_id_fkey';
-            columns: ['buyer_id'];
-            isOneToOne: false;
-            referencedRelation: 'buyers';
-            referencedColumns: ['id'];
+            foreignKeyName: "ticket_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'messages_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'messages_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'messages_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      notifications: {
+        ]
+      }
+      travel_periods: {
         Row: {
-          created_at: string | null;
-          dismissed_at: string | null;
-          entity_id: string | null;
-          entity_type: string | null;
-          id: string;
-          is_read: boolean | null;
-          link: string | null;
-          message: string | null;
-          priority: string | null;
-          read_at: string | null;
-          snoozed_until: string | null;
-          title: string;
-          type: string;
-          user_id: string;
-        };
+          confidence_score: number | null
+          created_at: string | null
+          destination_city: string
+          destination_country: string
+          destination_lat: number
+          destination_lng: number
+          destination_state: string | null
+          dismissed: boolean | null
+          end_date: string
+          id: number
+          source: string
+          source_event_id: string | null
+          start_date: string
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          created_at?: string | null;
-          dismissed_at?: string | null;
-          entity_id?: string | null;
-          entity_type?: string | null;
-          id?: string;
-          is_read?: boolean | null;
-          link?: string | null;
-          message?: string | null;
-          priority?: string | null;
-          read_at?: string | null;
-          snoozed_until?: string | null;
-          title: string;
-          type: string;
-          user_id: string;
-        };
+          confidence_score?: number | null
+          created_at?: string | null
+          destination_city: string
+          destination_country: string
+          destination_lat: number
+          destination_lng: number
+          destination_state?: string | null
+          dismissed?: boolean | null
+          end_date: string
+          id?: number
+          source: string
+          source_event_id?: string | null
+          start_date: string
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          created_at?: string | null;
-          dismissed_at?: string | null;
-          entity_id?: string | null;
-          entity_type?: string | null;
-          id?: string;
-          is_read?: boolean | null;
-          link?: string | null;
-          message?: string | null;
-          priority?: string | null;
-          read_at?: string | null;
-          snoozed_until?: string | null;
-          title?: string;
-          type?: string;
-          user_id?: string;
-        };
+          confidence_score?: number | null
+          created_at?: string | null
+          destination_city?: string
+          destination_country?: string
+          destination_lat?: number
+          destination_lng?: number
+          destination_state?: string | null
+          dismissed?: boolean | null
+          end_date?: string
+          id?: number
+          source?: string
+          source_event_id?: string | null
+          start_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'notifications_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "travel_periods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      offer_strategies: {
+        ]
+      }
+      user_achievements: {
         Row: {
-          arv: number | null;
-          created_at: string | null;
-          deal_id: string;
-          id: string;
-          is_active: boolean | null;
-          market_factor: number | null;
-          maximum_price: number | null;
-          negotiation_tips: Json | null;
-          optimal_price: number | null;
-          profit_margin: number | null;
-          repair_estimate: number | null;
-          strategy_reasoning: string | null;
-          target_price: number | null;
-          updated_at: string | null;
-          user_id: string;
-          walk_away_price: number | null;
-        };
+          badge_category: string
+          badge_id: string
+          badge_name: string
+          badge_tier: string | null
+          earned_at: string | null
+          id: string
+          points_awarded: number
+          user_id: string
+        }
         Insert: {
-          arv?: number | null;
-          created_at?: string | null;
-          deal_id: string;
-          id?: string;
-          is_active?: boolean | null;
-          market_factor?: number | null;
-          maximum_price?: number | null;
-          negotiation_tips?: Json | null;
-          optimal_price?: number | null;
-          profit_margin?: number | null;
-          repair_estimate?: number | null;
-          strategy_reasoning?: string | null;
-          target_price?: number | null;
-          updated_at?: string | null;
-          user_id: string;
-          walk_away_price?: number | null;
-        };
+          badge_category: string
+          badge_id: string
+          badge_name: string
+          badge_tier?: string | null
+          earned_at?: string | null
+          id?: string
+          points_awarded?: number
+          user_id: string
+        }
         Update: {
-          arv?: number | null;
-          created_at?: string | null;
-          deal_id?: string;
-          id?: string;
-          is_active?: boolean | null;
-          market_factor?: number | null;
-          maximum_price?: number | null;
-          negotiation_tips?: Json | null;
-          optimal_price?: number | null;
-          profit_margin?: number | null;
-          repair_estimate?: number | null;
-          strategy_reasoning?: string | null;
-          target_price?: number | null;
-          updated_at?: string | null;
-          user_id?: string;
-          walk_away_price?: number | null;
-        };
+          badge_category?: string
+          badge_id?: string
+          badge_name?: string
+          badge_tier?: string | null
+          earned_at?: string | null
+          id?: string
+          points_awarded?: number
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'offer_strategies_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'offer_strategies_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      offers: {
+        ]
+      }
+      user_activity_log: {
         Row: {
-          counter_amount: number | null;
-          created_at: string | null;
-          deal_id: string;
-          expiration_date: string | null;
-          id: string;
-          notes: string | null;
-          offer_amount: number;
-          offer_date: string;
-          status: string | null;
-          updated_at: string | null;
-        };
+          activity_type: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          points_earned: number
+          related_id: string | null
+          user_id: string
+        }
         Insert: {
-          counter_amount?: number | null;
-          created_at?: string | null;
-          deal_id: string;
-          expiration_date?: string | null;
-          id?: string;
-          notes?: string | null;
-          offer_amount: number;
-          offer_date: string;
-          status?: string | null;
-          updated_at?: string | null;
-        };
+          activity_type: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned?: number
+          related_id?: string | null
+          user_id: string
+        }
         Update: {
-          counter_amount?: number | null;
-          created_at?: string | null;
-          deal_id?: string;
-          expiration_date?: string | null;
-          id?: string;
-          notes?: string | null;
-          offer_amount?: number;
-          offer_date?: string;
-          status?: string | null;
-          updated_at?: string | null;
-        };
+          activity_type?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          points_earned?: number
+          related_id?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'offers_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "user_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      opt_outs: {
+        ]
+      }
+      user_stats: {
         Row: {
-          channel: string;
-          contact_identifier: string;
-          id: string;
-          opted_out_at: string | null;
-          reason: string | null;
-          user_id: string;
-        };
+          cities_visited: string[] | null
+          created_at: string | null
+          current_level: number | null
+          current_streak: number | null
+          gyms_visited: number | null
+          last_check_in_date: string | null
+          level_progress: number | null
+          longest_streak: number | null
+          photos_submitted: number | null
+          referrals_made: number | null
+          reviews_submitted: number | null
+          total_bookings: number | null
+          total_check_ins: number | null
+          total_points: number | null
+          total_workouts: number | null
+          unique_gyms_visited: number | null
+          unlocked_badges: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
         Insert: {
-          channel: string;
-          contact_identifier: string;
-          id?: string;
-          opted_out_at?: string | null;
-          reason?: string | null;
-          user_id: string;
-        };
+          cities_visited?: string[] | null
+          created_at?: string | null
+          current_level?: number | null
+          current_streak?: number | null
+          gyms_visited?: number | null
+          last_check_in_date?: string | null
+          level_progress?: number | null
+          longest_streak?: number | null
+          photos_submitted?: number | null
+          referrals_made?: number | null
+          reviews_submitted?: number | null
+          total_bookings?: number | null
+          total_check_ins?: number | null
+          total_points?: number | null
+          total_workouts?: number | null
+          unique_gyms_visited?: number | null
+          unlocked_badges?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
         Update: {
-          channel?: string;
-          contact_identifier?: string;
-          id?: string;
-          opted_out_at?: string | null;
-          reason?: string | null;
-          user_id?: string;
-        };
+          cities_visited?: string[] | null
+          created_at?: string | null
+          current_level?: number | null
+          current_streak?: number | null
+          gyms_visited?: number | null
+          last_check_in_date?: string | null
+          level_progress?: number | null
+          longest_streak?: number | null
+          photos_submitted?: number | null
+          referrals_made?: number | null
+          reviews_submitted?: number | null
+          total_bookings?: number | null
+          total_check_ins?: number | null
+          total_points?: number | null
+          total_workouts?: number | null
+          unique_gyms_visited?: number | null
+          unlocked_badges?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'opt_outs_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "user_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-      properties: {
+        ]
+      }
+      user_verticals: {
         Row: {
-          address: string;
-          arv: number | null;
-          asking_price: number | null;
-          bathrooms: number | null;
-          bedrooms: number | null;
-          city: string | null;
-          condition: string | null;
-          county: string | null;
-          created_at: string | null;
-          days_on_market: number | null;
-          estimated_value: number | null;
-          id: string;
-          is_listed: boolean | null;
-          last_sale_date: string | null;
-          last_sale_price: number | null;
-          latitude: number | null;
-          listing_status: string | null;
-          longitude: number | null;
-          lot_size: number | null;
-          owner_name: string | null;
-          owner_type: string | null;
-          ownership_length_months: number | null;
-          property_type: string | null;
-          rentcast_id: string | null;
-          square_footage: number | null;
-          state: string | null;
-          updated_at: string | null;
-          year_built: number | null;
-          zip: string | null;
-        };
+          active_vertical: string
+          created_at: string | null
+          enabled_verticals: string[] | null
+          filter_presets: Json | null
+          id: string
+          primary_vertical: string
+          updated_at: string | null
+          user_id: string
+          vertical_settings: Json | null
+        }
         Insert: {
-          address: string;
-          arv?: number | null;
-          asking_price?: number | null;
-          bathrooms?: number | null;
-          bedrooms?: number | null;
-          city?: string | null;
-          condition?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          days_on_market?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          is_listed?: boolean | null;
-          last_sale_date?: string | null;
-          last_sale_price?: number | null;
-          latitude?: number | null;
-          listing_status?: string | null;
-          longitude?: number | null;
-          lot_size?: number | null;
-          owner_name?: string | null;
-          owner_type?: string | null;
-          ownership_length_months?: number | null;
-          property_type?: string | null;
-          rentcast_id?: string | null;
-          square_footage?: number | null;
-          state?: string | null;
-          updated_at?: string | null;
-          year_built?: number | null;
-          zip?: string | null;
-        };
+          active_vertical?: string
+          created_at?: string | null
+          enabled_verticals?: string[] | null
+          filter_presets?: Json | null
+          id?: string
+          primary_vertical?: string
+          updated_at?: string | null
+          user_id: string
+          vertical_settings?: Json | null
+        }
         Update: {
-          address?: string;
-          arv?: number | null;
-          asking_price?: number | null;
-          bathrooms?: number | null;
-          bedrooms?: number | null;
-          city?: string | null;
-          condition?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          days_on_market?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          is_listed?: boolean | null;
-          last_sale_date?: string | null;
-          last_sale_price?: number | null;
-          latitude?: number | null;
-          listing_status?: string | null;
-          longitude?: number | null;
-          lot_size?: number | null;
-          owner_name?: string | null;
-          owner_type?: string | null;
-          ownership_length_months?: number | null;
-          property_type?: string | null;
-          rentcast_id?: string | null;
-          square_footage?: number | null;
-          state?: string | null;
-          updated_at?: string | null;
-          year_built?: number | null;
-          zip?: string | null;
-        };
-        Relationships: [];
-      };
-      sales_reports: {
+          active_vertical?: string
+          created_at?: string | null
+          enabled_verticals?: string[] | null
+          filter_presets?: Json | null
+          id?: string
+          primary_vertical?: string
+          updated_at?: string | null
+          user_id?: string
+          vertical_settings?: Json | null
+        }
+        Relationships: []
+      }
+      users: {
         Row: {
-          content: Json;
-          created_at: string | null;
-          deal_id: string | null;
-          expires_at: string | null;
-          generated_at: string | null;
-          id: string;
-          is_archived: boolean | null;
-          lead_id: string | null;
-          report_type: string;
-          title: string;
-          user_id: string;
-        };
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          preferences: Json | null
+          updated_at: string | null
+        }
         Insert: {
-          content?: Json;
-          created_at?: string | null;
-          deal_id?: string | null;
-          expires_at?: string | null;
-          generated_at?: string | null;
-          id?: string;
-          is_archived?: boolean | null;
-          lead_id?: string | null;
-          report_type: string;
-          title: string;
-          user_id: string;
-        };
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          preferences?: Json | null
+          updated_at?: string | null
+        }
         Update: {
-          content?: Json;
-          created_at?: string | null;
-          deal_id?: string | null;
-          expires_at?: string | null;
-          generated_at?: string | null;
-          id?: string;
-          is_archived?: boolean | null;
-          lead_id?: string | null;
-          report_type?: string;
-          title?: string;
-          user_id?: string;
-        };
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          preferences?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          additional_context: string | null
+          created_at: string | null
+          current_value: string | null
+          gym_id: number | null
+          id: string
+          requester_email: string
+          requester_name: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          suggested_value: string
+          verification_type: string
+        }
+        Insert: {
+          additional_context?: string | null
+          created_at?: string | null
+          current_value?: string | null
+          gym_id?: number | null
+          id?: string
+          requester_email: string
+          requester_name: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          suggested_value: string
+          verification_type: string
+        }
+        Update: {
+          additional_context?: string | null
+          created_at?: string | null
+          current_value?: string | null
+          gym_id?: number | null
+          id?: string
+          requester_email?: string
+          requester_name?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          suggested_value?: string
+          verification_type?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'sales_reports_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "verification_requests_gym_id_fkey"
+            columns: ["gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'sales_reports_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
+            foreignKeyName: "verification_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'sales_reports_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      saved_searches: {
+        ]
+      }
+      voice_queries: {
         Row: {
-          created_at: string | null;
-          description: string | null;
-          filters: Json;
-          id: string;
-          is_active: boolean | null;
-          last_run_at: string | null;
-          name: string;
-          notify_on_new: boolean | null;
-          results_count: number | null;
-          updated_at: string | null;
-          user_id: string;
-        };
+          created_at: string | null
+          id: number
+          parsed_intent: Json | null
+          processing_time_ms: number | null
+          results_count: number | null
+          selected_gym_id: number | null
+          transcript: string
+          transcription_method: string | null
+          user_id: string
+        }
         Insert: {
-          created_at?: string | null;
-          description?: string | null;
-          filters?: Json;
-          id?: string;
-          is_active?: boolean | null;
-          last_run_at?: string | null;
-          name: string;
-          notify_on_new?: boolean | null;
-          results_count?: number | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
+          created_at?: string | null
+          id?: number
+          parsed_intent?: Json | null
+          processing_time_ms?: number | null
+          results_count?: number | null
+          selected_gym_id?: number | null
+          transcript: string
+          transcription_method?: string | null
+          user_id: string
+        }
         Update: {
-          created_at?: string | null;
-          description?: string | null;
-          filters?: Json;
-          id?: string;
-          is_active?: boolean | null;
-          last_run_at?: string | null;
-          name?: string;
-          notify_on_new?: boolean | null;
-          results_count?: number | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
+          created_at?: string | null
+          id?: number
+          parsed_intent?: Json | null
+          processing_time_ms?: number | null
+          results_count?: number | null
+          selected_gym_id?: number | null
+          transcript?: string
+          transcription_method?: string | null
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'saved_searches_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      scheduled_searches: {
-        Row: {
-          created_at: string | null;
-          criteria: Json;
-          description: string | null;
-          frequency: string;
-          id: string;
-          is_active: boolean | null;
-          last_results_count: number | null;
-          last_run_at: string | null;
-          name: string;
-          new_results_count: number | null;
-          next_run_at: string | null;
-          notify_via: string;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          criteria?: Json;
-          description?: string | null;
-          frequency?: string;
-          id?: string;
-          is_active?: boolean | null;
-          last_results_count?: number | null;
-          last_run_at?: string | null;
-          name: string;
-          new_results_count?: number | null;
-          next_run_at?: string | null;
-          notify_via?: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          criteria?: Json;
-          description?: string | null;
-          frequency?: string;
-          id?: string;
-          is_active?: boolean | null;
-          last_results_count?: number | null;
-          last_run_at?: string | null;
-          name?: string;
-          new_results_count?: number | null;
-          next_run_at?: string | null;
-          notify_via?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'scheduled_searches_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      search_history: {
-        Row: {
-          action_type: string | null;
-          created_at: string | null;
-          criteria: Json;
-          execution_time_ms: number | null;
-          id: string;
-          led_to_action: boolean | null;
-          natural_language_query: string | null;
-          properties_viewed: number | null;
-          query_type: string;
-          results_count: number | null;
-          user_id: string;
-        };
-        Insert: {
-          action_type?: string | null;
-          created_at?: string | null;
-          criteria?: Json;
-          execution_time_ms?: number | null;
-          id?: string;
-          led_to_action?: boolean | null;
-          natural_language_query?: string | null;
-          properties_viewed?: number | null;
-          query_type?: string;
-          results_count?: number | null;
-          user_id: string;
-        };
-        Update: {
-          action_type?: string | null;
-          created_at?: string | null;
-          criteria?: Json;
-          execution_time_ms?: number | null;
-          id?: string;
-          led_to_action?: boolean | null;
-          natural_language_query?: string | null;
-          properties_viewed?: number | null;
-          query_type?: string;
-          results_count?: number | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'search_history_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      search_performance: {
-        Row: {
-          avg_results_per_search: number | null;
-          conversion_rate: number | null;
-          created_at: string | null;
-          deals_from_searches: number | null;
-          id: string;
-          offers_from_searches: number | null;
-          period_end: string;
-          period_start: string;
-          period_type: string;
-          searches_with_actions: number | null;
-          top_criteria: Json | null;
-          total_searches: number | null;
-          unique_criteria_count: number | null;
-          user_id: string;
-        };
-        Insert: {
-          avg_results_per_search?: number | null;
-          conversion_rate?: number | null;
-          created_at?: string | null;
-          deals_from_searches?: number | null;
-          id?: string;
-          offers_from_searches?: number | null;
-          period_end: string;
-          period_start: string;
-          period_type?: string;
-          searches_with_actions?: number | null;
-          top_criteria?: Json | null;
-          total_searches?: number | null;
-          unique_criteria_count?: number | null;
-          user_id: string;
-        };
-        Update: {
-          avg_results_per_search?: number | null;
-          conversion_rate?: number | null;
-          created_at?: string | null;
-          deals_from_searches?: number | null;
-          id?: string;
-          offers_from_searches?: number | null;
-          period_end?: string;
-          period_start?: string;
-          period_type?: string;
-          searches_with_actions?: number | null;
-          top_criteria?: Json | null;
-          total_searches?: number | null;
-          unique_criteria_count?: number | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'search_performance_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      tasks: {
-        Row: {
-          assigned_to: string | null;
-          completed_at: string | null;
-          created_at: string | null;
-          deal_id: string | null;
-          description: string | null;
-          due_date: string | null;
-          id: string;
-          lead_id: string | null;
-          metadata: Json | null;
-          priority: string;
-          property_id: string | null;
-          status: string;
-          title: string;
-          updated_at: string | null;
-          user_id: string;
-          workflow_execution_id: string | null;
-          workflow_id: string | null;
-        };
-        Insert: {
-          assigned_to?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          priority?: string;
-          property_id?: string | null;
-          status?: string;
-          title: string;
-          updated_at?: string | null;
-          user_id: string;
-          workflow_execution_id?: string | null;
-          workflow_id?: string | null;
-        };
-        Update: {
-          assigned_to?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          priority?: string;
-          property_id?: string | null;
-          status?: string;
-          title?: string;
-          updated_at?: string | null;
-          user_id?: string;
-          workflow_execution_id?: string | null;
-          workflow_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'tasks_assigned_to_fkey';
-            columns: ['assigned_to'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
+            foreignKeyName: "voice_queries_selected_gym_id_fkey"
+            columns: ["selected_gym_id"]
+            isOneToOne: false
+            referencedRelation: "gyms"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'tasks_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
+            foreignKeyName: "voice_queries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: 'tasks_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_workflow_execution_id_fkey';
-            columns: ['workflow_execution_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflow_executions';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_workflow_id_fkey';
-            columns: ['workflow_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflows';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      team_members: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          invited_at: string | null;
-          invited_by: string | null;
-          joined_at: string | null;
-          permissions: Json | null;
-          role: string;
-          status: string | null;
-          team_id: string;
-          territories: Json | null;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          invited_at?: string | null;
-          invited_by?: string | null;
-          joined_at?: string | null;
-          permissions?: Json | null;
-          role?: string;
-          status?: string | null;
-          team_id: string;
-          territories?: Json | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          invited_at?: string | null;
-          invited_by?: string | null;
-          joined_at?: string | null;
-          permissions?: Json | null;
-          role?: string;
-          status?: string | null;
-          team_id?: string;
-          territories?: Json | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'team_members_invited_by_fkey';
-            columns: ['invited_by'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'team_members_team_id_fkey';
-            columns: ['team_id'];
-            isOneToOne: false;
-            referencedRelation: 'teams';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'team_members_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      teams: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          is_active: boolean | null;
-          lead_assignment_mode: string | null;
-          monthly_report_day: number | null;
-          name: string;
-          owner_id: string;
-          settings: Json | null;
-          territory_mode: string | null;
-          updated_at: string | null;
-          weekly_report_recipients: Json | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          lead_assignment_mode?: string | null;
-          monthly_report_day?: number | null;
-          name: string;
-          owner_id: string;
-          settings?: Json | null;
-          territory_mode?: string | null;
-          updated_at?: string | null;
-          weekly_report_recipients?: Json | null;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          lead_assignment_mode?: string | null;
-          monthly_report_day?: number | null;
-          name?: string;
-          owner_id?: string;
-          settings?: Json | null;
-          territory_mode?: string | null;
-          updated_at?: string | null;
-          weekly_report_recipients?: Json | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'teams_owner_id_fkey';
-            columns: ['owner_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      templates: {
-        Row: {
-          approval_required: boolean | null;
-          body_template: string;
-          category: string | null;
-          channel: string;
-          created_at: string | null;
-          forbidden_topics: Json | null;
-          id: string;
-          is_active: boolean | null;
-          name: string;
-          sensitivity_level: string | null;
-          subject_template: string | null;
-          template_type: string | null;
-          updated_at: string | null;
-          user_id: string;
-          variables: Json | null;
-        };
-        Insert: {
-          approval_required?: boolean | null;
-          body_template: string;
-          category?: string | null;
-          channel: string;
-          created_at?: string | null;
-          forbidden_topics?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          name: string;
-          sensitivity_level?: string | null;
-          subject_template?: string | null;
-          template_type?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-          variables?: Json | null;
-        };
-        Update: {
-          approval_required?: boolean | null;
-          body_template?: string;
-          category?: string | null;
-          channel?: string;
-          created_at?: string | null;
-          forbidden_topics?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          name?: string;
-          sensitivity_level?: string | null;
-          subject_template?: string | null;
-          template_type?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-          variables?: Json | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'templates_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_preferences: {
-        Row: {
-          created_at: string | null;
-          default_filters: Json | null;
-          default_markets: Json | null;
-          id: string;
-          notification_settings: Json | null;
-          ui_preferences: Json | null;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          default_filters?: Json | null;
-          default_markets?: Json | null;
-          id?: string;
-          notification_settings?: Json | null;
-          ui_preferences?: Json | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          default_filters?: Json | null;
-          default_markets?: Json | null;
-          id?: string;
-          notification_settings?: Json | null;
-          ui_preferences?: Json | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_preferences_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: true;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_profiles: {
-        Row: {
-          api_calls_remaining: number | null;
-          api_calls_reset_date: string | null;
-          company_name: string | null;
-          created_at: string | null;
-          current_team_id: string | null;
-          email: string;
-          full_name: string | null;
-          id: string;
-          phone: string | null;
-          preferences: Json | null;
-          subscription_status: string | null;
-          subscription_tier: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          api_calls_remaining?: number | null;
-          api_calls_reset_date?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          current_team_id?: string | null;
-          email: string;
-          full_name?: string | null;
-          id: string;
-          phone?: string | null;
-          preferences?: Json | null;
-          subscription_status?: string | null;
-          subscription_tier?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          api_calls_remaining?: number | null;
-          api_calls_reset_date?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          current_team_id?: string | null;
-          email?: string;
-          full_name?: string | null;
-          id?: string;
-          phone?: string | null;
-          preferences?: Json | null;
-          subscription_status?: string | null;
-          subscription_tier?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_profiles_current_team_id_fkey';
-            columns: ['current_team_id'];
-            isOneToOne: false;
-            referencedRelation: 'teams';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      valuations: {
-        Row: {
-          arv_estimate: number | null;
-          created_at: string | null;
-          data_source: string | null;
-          equity_amount: number | null;
-          equity_percent: number | null;
-          estimated_value: number | null;
-          id: string;
-          price_range_high: number | null;
-          price_range_low: number | null;
-          property_id: string;
-          rent_estimate: number | null;
-          rent_range_high: number | null;
-          rent_range_low: number | null;
-          updated_at: string | null;
-          valuation_date: string | null;
-        };
-        Insert: {
-          arv_estimate?: number | null;
-          created_at?: string | null;
-          data_source?: string | null;
-          equity_amount?: number | null;
-          equity_percent?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          price_range_high?: number | null;
-          price_range_low?: number | null;
-          property_id: string;
-          rent_estimate?: number | null;
-          rent_range_high?: number | null;
-          rent_range_low?: number | null;
-          updated_at?: string | null;
-          valuation_date?: string | null;
-        };
-        Update: {
-          arv_estimate?: number | null;
-          created_at?: string | null;
-          data_source?: string | null;
-          equity_amount?: number | null;
-          equity_percent?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          price_range_high?: number | null;
-          price_range_low?: number | null;
-          property_id?: string;
-          rent_estimate?: number | null;
-          rent_range_high?: number | null;
-          rent_range_low?: number | null;
-          updated_at?: string | null;
-          valuation_date?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'valuations_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      workflow_executions: {
-        Row: {
-          actions_completed: number | null;
-          actions_total: number | null;
-          completed_at: string | null;
-          created_at: string | null;
-          error_message: string | null;
-          execution_log: Json | null;
-          id: string;
-          started_at: string | null;
-          status: string;
-          trigger_data: Json;
-          workflow_id: string;
-        };
-        Insert: {
-          actions_completed?: number | null;
-          actions_total?: number | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          error_message?: string | null;
-          execution_log?: Json | null;
-          id?: string;
-          started_at?: string | null;
-          status?: string;
-          trigger_data?: Json;
-          workflow_id: string;
-        };
-        Update: {
-          actions_completed?: number | null;
-          actions_total?: number | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          error_message?: string | null;
-          execution_log?: Json | null;
-          id?: string;
-          started_at?: string | null;
-          status?: string;
-          trigger_data?: Json;
-          workflow_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'workflow_executions_workflow_id_fkey';
-            columns: ['workflow_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflows';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      workflows: {
-        Row: {
-          actions: Json;
-          conditions: Json | null;
-          created_at: string | null;
-          description: string | null;
-          execution_count: number | null;
-          id: string;
-          is_active: boolean | null;
-          last_executed_at: string | null;
-          name: string;
-          trigger_config: Json;
-          trigger_type: string;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          actions?: Json;
-          conditions?: Json | null;
-          created_at?: string | null;
-          description?: string | null;
-          execution_count?: number | null;
-          id?: string;
-          is_active?: boolean | null;
-          last_executed_at?: string | null;
-          name: string;
-          trigger_config?: Json;
-          trigger_type: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          actions?: Json;
-          conditions?: Json | null;
-          created_at?: string | null;
-          description?: string | null;
-          execution_count?: number | null;
-          id?: string;
-          is_active?: boolean | null;
-          last_executed_at?: string | null;
-          name?: string;
-          trigger_config?: Json;
-          trigger_type?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'workflows_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      // Phase 11: Analytics & Reporting Tables
-      heat_map_cache: {
-        Row: {
-          id: string;
-          layer_type: string;
-          geographic_bounds: Json;
-          data: Json;
-          generated_at: string;
-          expires_at: string;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          layer_type: string;
-          geographic_bounds: Json;
-          data: Json;
-          generated_at?: string;
-          expires_at: string;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          layer_type?: string;
-          geographic_bounds?: Json;
-          data?: Json;
-          generated_at?: string;
-          expires_at?: string;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
-      user_heat_map_data: {
-        Row: {
-          id: string;
-          user_id: string;
-          layer_type: string;
-          data: Json;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          layer_type: string;
-          data: Json;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          layer_type?: string;
-          data?: Json;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_heat_map_data_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_success_profiles: {
-        Row: {
-          id: string;
-          user_id: string;
-          profile_data: Json;
-          pattern_weights: Json;
-          closed_deals_count: number | null;
-          last_updated: string | null;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          profile_data?: Json;
-          pattern_weights?: Json;
-          closed_deals_count?: number | null;
-          last_updated?: string | null;
-          created_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          profile_data?: Json;
-          pattern_weights?: Json;
-          closed_deals_count?: number | null;
-          last_updated?: string | null;
-          created_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_success_profiles_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: true;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      recommendation_interactions: {
-        Row: {
-          id: string;
-          user_id: string;
-          recommendation_id: string;
-          interaction_type: string;
-          feedback_data: Json | null;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          recommendation_id: string;
-          interaction_type: string;
-          feedback_data?: Json | null;
-          created_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          recommendation_id?: string;
-          interaction_type?: string;
-          feedback_data?: Json | null;
-          created_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'recommendation_interactions_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'recommendation_interactions_recommendation_id_fkey';
-            columns: ['recommendation_id'];
-            isOneToOne: false;
-            referencedRelation: 'pending_recommendations';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      pending_recommendations: {
-        Row: {
-          id: string;
-          user_id: string;
-          recommendation_type: string;
-          entity_type: string;
-          entity_id: string;
-          score: number;
-          reasoning: Json;
-          status: string;
-          expires_at: string | null;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          recommendation_type: string;
-          entity_type: string;
-          entity_id: string;
-          score: number;
-          reasoning: Json;
-          status?: string;
-          expires_at?: string | null;
-          created_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          recommendation_type?: string;
-          entity_type?: string;
-          entity_id?: string;
-          score?: number;
-          reasoning?: Json;
-          status?: string;
-          expires_at?: string | null;
-          created_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'pending_recommendations_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_tasks: {
-        Row: {
-          id: string;
-          user_id: string;
-          title: string;
-          description: string | null;
-          priority: string;
-          status: string;
-          due_date: string | null;
-          entity_type: string | null;
-          entity_id: string | null;
-          ai_generated: boolean;
-          source_tool: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-          completed_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          title: string;
-          description?: string | null;
-          priority?: string;
-          status?: string;
-          due_date?: string | null;
-          entity_type?: string | null;
-          entity_id?: string | null;
-          ai_generated?: boolean;
-          source_tool?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-          completed_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          title?: string;
-          description?: string | null;
-          priority?: string;
-          status?: string;
-          due_date?: string | null;
-          entity_type?: string | null;
-          entity_id?: string | null;
-          ai_generated?: boolean;
-          source_tool?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-          completed_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_tasks_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-    };
+        ]
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      geography_columns: {
+        Row: {
+          coord_dimension: number | null
+          f_geography_column: unknown
+          f_table_catalog: unknown
+          f_table_name: unknown
+          f_table_schema: unknown
+          srid: number | null
+          type: string | null
+        }
+        Relationships: []
+      }
+      geometry_columns: {
+        Row: {
+          coord_dimension: number | null
+          f_geometry_column: unknown
+          f_table_catalog: string | null
+          f_table_name: unknown
+          f_table_schema: unknown
+          srid: number | null
+          type: string | null
+        }
+        Insert: {
+          coord_dimension?: number | null
+          f_geometry_column?: unknown
+          f_table_catalog?: string | null
+          f_table_name?: unknown
+          f_table_schema?: unknown
+          srid?: number | null
+          type?: string | null
+        }
+        Update: {
+          coord_dimension?: number | null
+          f_geometry_column?: unknown
+          f_table_catalog?: string | null
+          f_table_name?: unknown
+          f_table_schema?: unknown
+          srid?: number | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+    }
     Functions: {
-      get_activity_kpis: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          avg_daily_searches: number;
-          avg_daily_views: number;
-          save_to_analyze_rate: number;
-          search_to_save_rate: number;
-          total_analyses: number;
-          total_saves: number;
-          total_searches: number;
-          total_skip_traces: number;
-          total_views: number;
-        }[];
-      };
-      get_buyer_statistics: {
-        Args: { p_user_id: string };
-        Returns: {
-          active_buyers: number;
-          buyers_by_type: Json;
-          qualified_buyers: number;
-          tier_a_count: number;
-          tier_b_count: number;
-          tier_c_count: number;
-          total_buyers: number;
-        }[];
-      };
-      get_communication_stats: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          delivered_count: number;
-          email_count: number;
-          failed_count: number;
-          inbound_count: number;
-          messages_by_status: Json;
-          outbound_count: number;
-          sms_count: number;
-          total_messages: number;
-        }[];
-      };
-      get_dashboard_summary: {
-        Args: { p_days?: number; p_user_id: string };
-        Returns: {
-          active_deals: number;
-          active_leads: number;
-          avg_assignment_fee: number;
-          deals_closed_period: number;
-          deals_trend: number;
-          properties_analyzed: number;
-          properties_saved: number;
-          properties_searched: number;
-          revenue_period: number;
-          revenue_trend: number;
-          searches_trend: number;
-        }[];
-      };
-      get_deal_statistics: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          active_deals: number;
-          avg_assignment_fee: number;
-          closed_deals: number;
-          deals_by_stage: Json;
-          lost_deals: number;
-          total_assignment_fees: number;
-          total_contract_value: number;
-          total_deals: number;
-        }[];
-      };
-      get_financial_kpis: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          avg_deal_revenue: number;
-          cost_per_lead: number;
-          deals_count: number;
-          net_profit: number;
-          revenue_per_lead: number;
-          roi_percentage: number;
-          total_expenses: number;
-          total_revenue: number;
-        }[];
-      };
-      get_outreach_kpis: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          avg_calls_per_day: number;
-          call_connect_rate: number;
-          connected_calls: number;
-          email_open_rate: number;
-          email_reply_rate: number;
-          total_call_duration: number;
-          total_calls: number;
-          total_emails_opened: number;
-          total_emails_replied: number;
-          total_emails_sent: number;
-          total_texts_received: number;
-          total_texts_sent: number;
-        }[];
-      };
-      get_pipeline_kpis: {
-        Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
-        Returns: {
-          appointment_to_offer_rate: number;
-          appointments_set: number;
-          contact_to_appointment_rate: number;
-          contract_to_close_rate: number;
-          contracts_signed: number;
-          deals_closed: number;
-          deals_lost: number;
-          lead_to_contact_rate: number;
-          leads_contacted: number;
-          offer_to_contract_rate: number;
-          offers_made: number;
-          overall_conversion_rate: number;
-          total_leads: number;
-        }[];
-      };
-      get_search_statistics: {
-        Args: { p_days?: number; p_user_id: string };
-        Returns: {
-          avg_results: number;
-          conversion_rate: number;
-          most_used_criteria: Json;
-          total_searches: number;
-          unique_criteria: number;
-        }[];
-      };
-      log_search: {
+      _postgis_deprecate: {
+        Args: { newname: string; oldname: string; version: string }
+        Returns: undefined
+      }
+      _postgis_index_extent: {
+        Args: { col: string; tbl: unknown }
+        Returns: unknown
+      }
+      _postgis_pgsql_version: { Args: never; Returns: string }
+      _postgis_scripts_pgsql_version: { Args: never; Returns: string }
+      _postgis_selectivity: {
+        Args: { att_name: string; geom: unknown; mode?: string; tbl: unknown }
+        Returns: number
+      }
+      _postgis_stats: {
+        Args: { ""?: string; att_name: string; tbl: unknown }
+        Returns: string
+      }
+      _st_3dintersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_containsproperly: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_coveredby:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_covers:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_crosses: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_dwithin: {
         Args: {
-          p_criteria?: Json;
-          p_execution_time_ms?: number;
-          p_natural_language_query?: string;
-          p_query_type?: string;
-          p_results_count?: number;
-          p_user_id: string;
-        };
-        Returns: string;
-      };
-      match_documents: {
+          geog1: unknown
+          geog2: unknown
+          tolerance: number
+          use_spheroid?: boolean
+        }
+        Returns: boolean
+      }
+      _st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      _st_intersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_linecrossingdirection: {
+        Args: { line1: unknown; line2: unknown }
+        Returns: number
+      }
+      _st_longestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      _st_maxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      _st_orderingequals: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_sortablehash: { Args: { geom: unknown }; Returns: number }
+      _st_touches: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_voronoi: {
         Args: {
-          filter_category?: string;
-          match_count?: number;
-          query_embedding: string;
-          similarity_threshold?: number;
-        };
+          clip?: unknown
+          g1: unknown
+          return_polygons?: boolean
+          tolerance?: number
+        }
+        Returns: unknown
+      }
+      _st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      addauth: { Args: { "": string }; Returns: boolean }
+      addgeometrycolumn:
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              column_name: string
+              new_dim: number
+              new_srid: number
+              new_type: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              new_dim: number
+              new_srid_in: number
+              new_type: string
+              schema_name: string
+              table_name: string
+              use_typmod?: boolean
+            }
+            Returns: string
+          }
+      cleanup_old_sent_alerts: { Args: never; Returns: undefined }
+      disablelongtransactions: { Args: never; Returns: string }
+      dropgeometrycolumn:
+        | {
+            Args: {
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+        | { Args: { column_name: string; table_name: string }; Returns: string }
+        | {
+            Args: {
+              catalog_name: string
+              column_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+      dropgeometrytable:
+        | { Args: { schema_name: string; table_name: string }; Returns: string }
+        | { Args: { table_name: string }; Returns: string }
+        | {
+            Args: {
+              catalog_name: string
+              schema_name: string
+              table_name: string
+            }
+            Returns: string
+          }
+      enablelongtransactions: { Args: never; Returns: string }
+      equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      generate_qr_payload: {
+        Args: {
+          booking_date: string
+          booking_id: number
+          gym_id: number
+          user_id: string
+        }
+        Returns: Json
+      }
+      geometry: { Args: { "": string }; Returns: unknown }
+      geometry_above: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_below: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_cmp: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_contained_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_contains_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_distance_box: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_distance_centroid: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      geometry_eq: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_ge: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_gt: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_le: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_left: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_lt: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overabove: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overbelow: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overlaps_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overleft: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_overright: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_right: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_same: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_same_3d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geometry_within: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_trip_gyms: {
+        Args: {
+          limit_count?: number
+          radius_meters?: number
+          trip_lat: number
+          trip_lng: number
+        }
         Returns: {
-          category: string;
-          chunk_content: string;
-          document_id: string;
-          document_slug: string;
-          document_title: string;
-          id: string;
-          similarity: number;
-        }[];
-      };
-      search_properties: {
+          day_pass_price: number
+          distance_km: number
+          id: number
+          name: string
+          rating: number
+        }[]
+      }
+      gettransactionid: { Args: never; Returns: unknown }
+      has_abandoned_project: {
+        Args: { p_min_stall_days?: number; p_shovels_address_id: string }
+        Returns: boolean
+      }
+      longtransactionsenabled: { Args: never; Returns: boolean }
+      major_system_due: {
         Args: {
-          p_city?: string;
-          p_is_listed?: boolean;
-          p_limit?: number;
-          p_max_bathrooms?: number;
-          p_max_bedrooms?: number;
-          p_max_sqft?: number;
-          p_max_year_built?: number;
-          p_min_bathrooms?: number;
-          p_min_bedrooms?: number;
-          p_min_sqft?: number;
-          p_min_year_built?: number;
-          p_offset?: number;
-          p_owner_type?: string;
-          p_property_type?: string;
-          p_state?: string;
-          p_zip?: string;
-        };
+          p_max_age_years: number
+          p_shovels_address_id: string
+          p_system_type: string
+        }
+        Returns: boolean
+      }
+      neighborhood_permit_percentile: {
+        Args: { p_shovels_address_id: string; p_zip_code?: string }
+        Returns: number
+      }
+      populate_geometry_columns:
+        | { Args: { use_typmod?: boolean }; Returns: string }
+        | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
+      postgis_constraint_dims: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: number
+      }
+      postgis_constraint_srid: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: number
+      }
+      postgis_constraint_type: {
+        Args: { geomcolumn: string; geomschema: string; geomtable: string }
+        Returns: string
+      }
+      postgis_extensions_upgrade: { Args: never; Returns: string }
+      postgis_full_version: { Args: never; Returns: string }
+      postgis_geos_version: { Args: never; Returns: string }
+      postgis_lib_build_date: { Args: never; Returns: string }
+      postgis_lib_revision: { Args: never; Returns: string }
+      postgis_lib_version: { Args: never; Returns: string }
+      postgis_libjson_version: { Args: never; Returns: string }
+      postgis_liblwgeom_version: { Args: never; Returns: string }
+      postgis_libprotobuf_version: { Args: never; Returns: string }
+      postgis_libxml_version: { Args: never; Returns: string }
+      postgis_proj_version: { Args: never; Returns: string }
+      postgis_scripts_build_date: { Args: never; Returns: string }
+      postgis_scripts_installed: { Args: never; Returns: string }
+      postgis_scripts_released: { Args: never; Returns: string }
+      postgis_svn_version: { Args: never; Returns: string }
+      postgis_type_name: {
+        Args: {
+          coord_dimension: number
+          geomname: string
+          use_new_name?: boolean
+        }
+        Returns: string
+      }
+      postgis_version: { Args: never; Returns: string }
+      postgis_wagyu_version: { Args: never; Returns: string }
+      search_gyms_nearby: {
+        Args: { lat: number; lng: number; radius_meters?: number }
         Returns: {
-          address: string;
-          bathrooms: number;
-          bedrooms: number;
-          city: string;
-          estimated_value: number;
-          id: string;
-          is_listed: boolean;
-          owner_type: string;
-          property_type: string;
-          rent_estimate: number;
-          square_footage: number;
-          state: string;
-          year_built: number;
-          zip: string;
-        }[];
-      };
-      show_limit: { Args: never; Returns: number };
-      show_trgm: { Args: { '': string }; Returns: string[] };
-      upsert_daily_analytics: {
+          address: string
+          day_pass_price: number
+          distance_meters: number
+          id: number
+          name: string
+          rating: number
+        }[]
+      }
+      st_3dclosestpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3ddistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_3dintersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_3dlongestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3dmakebox: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_3dmaxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_3dshortestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_addpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_angle:
+        | { Args: { line1: unknown; line2: unknown }; Returns: number }
+        | {
+            Args: { pt1: unknown; pt2: unknown; pt3: unknown; pt4?: unknown }
+            Returns: number
+          }
+      st_area:
+        | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
+        | { Args: { "": string }; Returns: number }
+      st_asencodedpolyline: {
+        Args: { geom: unknown; nprecision?: number }
+        Returns: string
+      }
+      st_asewkt: { Args: { "": string }; Returns: string }
+      st_asgeojson:
+        | {
+            Args: {
+              geom_column?: string
+              maxdecimaldigits?: number
+              pretty_bool?: boolean
+              r: Record<string, unknown>
+            }
+            Returns: string
+          }
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_asgml:
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+            Returns: string
+          }
+        | {
+            Args: {
+              geom: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+              version: number
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              geog: unknown
+              id?: string
+              maxdecimaldigits?: number
+              nprefix?: string
+              options?: number
+            }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_askml:
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Returns: string
+          }
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_aslatlontext: {
+        Args: { geom: unknown; tmpl?: string }
+        Returns: string
+      }
+      st_asmarc21: { Args: { format?: string; geom: unknown }; Returns: string }
+      st_asmvtgeom: {
         Args: {
-          p_date: string;
-          p_field: string;
-          p_increment?: number;
-          p_user_id: string;
-        };
-        Returns: undefined;
-      };
-    };
+          bounds: unknown
+          buffer?: number
+          clip_geom?: boolean
+          extent?: number
+          geom: unknown
+        }
+        Returns: unknown
+      }
+      st_assvg:
+        | {
+            Args: { geom: unknown; maxdecimaldigits?: number; rel?: number }
+            Returns: string
+          }
+        | {
+            Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
+            Returns: string
+          }
+        | { Args: { "": string }; Returns: string }
+      st_astext: { Args: { "": string }; Returns: string }
+      st_astwkb:
+        | {
+            Args: {
+              geom: unknown[]
+              ids: number[]
+              prec?: number
+              prec_m?: number
+              prec_z?: number
+              with_boxes?: boolean
+              with_sizes?: boolean
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              geom: unknown
+              prec?: number
+              prec_m?: number
+              prec_z?: number
+              with_boxes?: boolean
+              with_sizes?: boolean
+            }
+            Returns: string
+          }
+      st_asx3d: {
+        Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
+        Returns: string
+      }
+      st_azimuth:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: number }
+      st_boundingdiagonal: {
+        Args: { fits?: boolean; geom: unknown }
+        Returns: unknown
+      }
+      st_buffer:
+        | {
+            Args: { geom: unknown; options?: string; radius: number }
+            Returns: unknown
+          }
+        | {
+            Args: { geom: unknown; quadsegs: number; radius: number }
+            Returns: unknown
+          }
+      st_centroid: { Args: { "": string }; Returns: unknown }
+      st_clipbybox2d: {
+        Args: { box: unknown; geom: unknown }
+        Returns: unknown
+      }
+      st_closestpoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_collect: { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+      st_concavehull: {
+        Args: {
+          param_allow_holes?: boolean
+          param_geom: unknown
+          param_pctconvex: number
+        }
+        Returns: unknown
+      }
+      st_contains: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_containsproperly: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_coorddim: { Args: { geometry: unknown }; Returns: number }
+      st_coveredby:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_covers:
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_crosses: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_curvetoline: {
+        Args: { flags?: number; geom: unknown; tol?: number; toltype?: number }
+        Returns: unknown
+      }
+      st_delaunaytriangles: {
+        Args: { flags?: number; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_difference: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_disjoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_distance:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+        | {
+            Args: { geog1: unknown; geog2: unknown; use_spheroid?: boolean }
+            Returns: number
+          }
+      st_distancesphere:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: number }
+        | {
+            Args: { geom1: unknown; geom2: unknown; radius: number }
+            Returns: number
+          }
+      st_distancespheroid: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_dwithin: {
+        Args: {
+          geog1: unknown
+          geog2: unknown
+          tolerance: number
+          use_spheroid?: boolean
+        }
+        Returns: boolean
+      }
+      st_equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_expand:
+        | {
+            Args: {
+              dm?: number
+              dx: number
+              dy: number
+              dz?: number
+              geom: unknown
+            }
+            Returns: unknown
+          }
+        | {
+            Args: { box: unknown; dx: number; dy: number; dz?: number }
+            Returns: unknown
+          }
+        | { Args: { box: unknown; dx: number; dy: number }; Returns: unknown }
+      st_force3d: { Args: { geom: unknown; zvalue?: number }; Returns: unknown }
+      st_force3dm: {
+        Args: { geom: unknown; mvalue?: number }
+        Returns: unknown
+      }
+      st_force3dz: {
+        Args: { geom: unknown; zvalue?: number }
+        Returns: unknown
+      }
+      st_force4d: {
+        Args: { geom: unknown; mvalue?: number; zvalue?: number }
+        Returns: unknown
+      }
+      st_generatepoints:
+        | { Args: { area: unknown; npoints: number }; Returns: unknown }
+        | {
+            Args: { area: unknown; npoints: number; seed: number }
+            Returns: unknown
+          }
+      st_geogfromtext: { Args: { "": string }; Returns: unknown }
+      st_geographyfromtext: { Args: { "": string }; Returns: unknown }
+      st_geohash:
+        | { Args: { geom: unknown; maxchars?: number }; Returns: string }
+        | { Args: { geog: unknown; maxchars?: number }; Returns: string }
+      st_geomcollfromtext: { Args: { "": string }; Returns: unknown }
+      st_geometricmedian: {
+        Args: {
+          fail_if_not_converged?: boolean
+          g: unknown
+          max_iter?: number
+          tolerance?: number
+        }
+        Returns: unknown
+      }
+      st_geometryfromtext: { Args: { "": string }; Returns: unknown }
+      st_geomfromewkt: { Args: { "": string }; Returns: unknown }
+      st_geomfromgeojson:
+        | { Args: { "": Json }; Returns: unknown }
+        | { Args: { "": Json }; Returns: unknown }
+        | { Args: { "": string }; Returns: unknown }
+      st_geomfromgml: { Args: { "": string }; Returns: unknown }
+      st_geomfromkml: { Args: { "": string }; Returns: unknown }
+      st_geomfrommarc21: { Args: { marc21xml: string }; Returns: unknown }
+      st_geomfromtext: { Args: { "": string }; Returns: unknown }
+      st_gmltosql: { Args: { "": string }; Returns: unknown }
+      st_hasarc: { Args: { geometry: unknown }; Returns: boolean }
+      st_hausdorffdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_hexagon: {
+        Args: { cell_i: number; cell_j: number; origin?: unknown; size: number }
+        Returns: unknown
+      }
+      st_hexagongrid: {
+        Args: { bounds: unknown; size: number }
+        Returns: Record<string, unknown>[]
+      }
+      st_interpolatepoint: {
+        Args: { line: unknown; point: unknown }
+        Returns: number
+      }
+      st_intersection: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_intersects:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+        | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
+      st_isvaliddetail: {
+        Args: { flags?: number; geom: unknown }
+        Returns: Database["public"]["CompositeTypes"]["valid_detail"]
+        SetofOptions: {
+          from: "*"
+          to: "valid_detail"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      st_length:
+        | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
+        | { Args: { "": string }; Returns: number }
+      st_letters: { Args: { font?: Json; letters: string }; Returns: unknown }
+      st_linecrossingdirection: {
+        Args: { line1: unknown; line2: unknown }
+        Returns: number
+      }
+      st_linefromencodedpolyline: {
+        Args: { nprecision?: number; txtin: string }
+        Returns: unknown
+      }
+      st_linefromtext: { Args: { "": string }; Returns: unknown }
+      st_linelocatepoint: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_linetocurve: { Args: { geometry: unknown }; Returns: unknown }
+      st_locatealong: {
+        Args: { geometry: unknown; leftrightoffset?: number; measure: number }
+        Returns: unknown
+      }
+      st_locatebetween: {
+        Args: {
+          frommeasure: number
+          geometry: unknown
+          leftrightoffset?: number
+          tomeasure: number
+        }
+        Returns: unknown
+      }
+      st_locatebetweenelevations: {
+        Args: { fromelevation: number; geometry: unknown; toelevation: number }
+        Returns: unknown
+      }
+      st_longestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makebox2d: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makeline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_makevalid: {
+        Args: { geom: unknown; params: string }
+        Returns: unknown
+      }
+      st_maxdistance: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_minimumboundingcircle: {
+        Args: { inputgeom: unknown; segs_per_quarter?: number }
+        Returns: unknown
+      }
+      st_mlinefromtext: { Args: { "": string }; Returns: unknown }
+      st_mpointfromtext: { Args: { "": string }; Returns: unknown }
+      st_mpolyfromtext: { Args: { "": string }; Returns: unknown }
+      st_multilinestringfromtext: { Args: { "": string }; Returns: unknown }
+      st_multipointfromtext: { Args: { "": string }; Returns: unknown }
+      st_multipolygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_node: { Args: { g: unknown }; Returns: unknown }
+      st_normalize: { Args: { geom: unknown }; Returns: unknown }
+      st_offsetcurve: {
+        Args: { distance: number; line: unknown; params?: string }
+        Returns: unknown
+      }
+      st_orderingequals: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_overlaps: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      st_perimeter: {
+        Args: { geog: unknown; use_spheroid?: boolean }
+        Returns: number
+      }
+      st_pointfromtext: { Args: { "": string }; Returns: unknown }
+      st_pointm: {
+        Args: {
+          mcoordinate: number
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+        }
+        Returns: unknown
+      }
+      st_pointz: {
+        Args: {
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+          zcoordinate: number
+        }
+        Returns: unknown
+      }
+      st_pointzm: {
+        Args: {
+          mcoordinate: number
+          srid?: number
+          xcoordinate: number
+          ycoordinate: number
+          zcoordinate: number
+        }
+        Returns: unknown
+      }
+      st_polyfromtext: { Args: { "": string }; Returns: unknown }
+      st_polygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_project: {
+        Args: { azimuth: number; distance: number; geog: unknown }
+        Returns: unknown
+      }
+      st_quantizecoordinates: {
+        Args: {
+          g: unknown
+          prec_m?: number
+          prec_x: number
+          prec_y?: number
+          prec_z?: number
+        }
+        Returns: unknown
+      }
+      st_reduceprecision: {
+        Args: { geom: unknown; gridsize: number }
+        Returns: unknown
+      }
+      st_relate: { Args: { geom1: unknown; geom2: unknown }; Returns: string }
+      st_removerepeatedpoints: {
+        Args: { geom: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_segmentize: {
+        Args: { geog: unknown; max_segment_length: number }
+        Returns: unknown
+      }
+      st_setsrid:
+        | { Args: { geom: unknown; srid: number }; Returns: unknown }
+        | { Args: { geog: unknown; srid: number }; Returns: unknown }
+      st_sharedpaths: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_shortestline: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_simplifypolygonhull: {
+        Args: { geom: unknown; is_outer?: boolean; vertex_fraction: number }
+        Returns: unknown
+      }
+      st_split: { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+      st_square: {
+        Args: { cell_i: number; cell_j: number; origin?: unknown; size: number }
+        Returns: unknown
+      }
+      st_squaregrid: {
+        Args: { bounds: unknown; size: number }
+        Returns: Record<string, unknown>[]
+      }
+      st_srid:
+        | { Args: { geom: unknown }; Returns: number }
+        | { Args: { geog: unknown }; Returns: number }
+      st_subdivide: {
+        Args: { geom: unknown; gridsize?: number; maxvertices?: number }
+        Returns: unknown[]
+      }
+      st_swapordinates: {
+        Args: { geom: unknown; ords: unknown }
+        Returns: unknown
+      }
+      st_symdifference: {
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
+        Returns: unknown
+      }
+      st_symmetricdifference: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_tileenvelope: {
+        Args: {
+          bounds?: unknown
+          margin?: number
+          x: number
+          y: number
+          zoom: number
+        }
+        Returns: unknown
+      }
+      st_touches: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_transform:
+        | { Args: { geom: unknown; to_proj: string }; Returns: unknown }
+        | {
+            Args: { from_proj: string; geom: unknown; to_srid: number }
+            Returns: unknown
+          }
+        | {
+            Args: { from_proj: string; geom: unknown; to_proj: string }
+            Returns: unknown
+          }
+      st_triangulatepolygon: { Args: { g1: unknown }; Returns: unknown }
+      st_union:
+        | { Args: { geom1: unknown; geom2: unknown }; Returns: unknown }
+        | {
+            Args: { geom1: unknown; geom2: unknown; gridsize: number }
+            Returns: unknown
+          }
+      st_voronoilines: {
+        Args: { extend_to?: unknown; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_voronoipolygons: {
+        Args: { extend_to?: unknown; g1: unknown; tolerance?: number }
+        Returns: unknown
+      }
+      st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      st_wkbtosql: { Args: { wkb: string }; Returns: unknown }
+      st_wkttosql: { Args: { "": string }; Returns: unknown }
+      st_wrapx: {
+        Args: { geom: unknown; move: number; wrap: number }
+        Returns: unknown
+      }
+      unlockrows: { Args: { "": string }; Returns: number }
+      updategeometrysrid: {
+        Args: {
+          catalogn_name: string
+          column_name: string
+          new_srid_in: number
+          schema_name: string
+          table_name: string
+        }
+        Returns: string
+      }
+      validate_qr_code: {
+        Args: { p_booking_id: number; p_check_date: string }
+        Returns: {
+          gym_name: string
+          is_valid: boolean
+          message: string
+          user_name: string
+        }[]
+      }
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      geometry_dump: {
+        path: number[] | null
+        geom: unknown
+      }
+      valid_detail: {
+        valid: boolean | null
+        reason: string | null
+        location: unknown
+      }
+    }
+  }
+}
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
+  schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const;
+} as const

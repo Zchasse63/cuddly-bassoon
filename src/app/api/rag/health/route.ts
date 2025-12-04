@@ -6,11 +6,13 @@
  * - Supabase database connection (embeddings table)
  * - Upstash Redis connection (cache)
  * - OpenAI API (embeddings)
- * - Anthropic API (generation)
+ * - xAI Grok API (generation)
  *
  * Returns:
  * - 200: All systems operational
  * - 503: One or more systems unavailable
+ *
+ * Updated December 2025 - Migrated from Anthropic to xAI Grok
  */
 
 import { NextRequest } from 'next/server';
@@ -18,7 +20,8 @@ import { createClient } from '@supabase/supabase-js';
 import { redis } from '@/lib/cache/redis';
 import { ragCache } from '@/lib/rag/cache';
 import OpenAI from 'openai';
-import Anthropic from '@anthropic-ai/sdk';
+import { createXai } from '@ai-sdk/xai';
+import { generateText } from 'ai';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -30,7 +33,7 @@ interface HealthStatus {
     supabase: ServiceStatus;
     redis: ServiceStatus;
     openai: ServiceStatus;
-    anthropic: ServiceStatus;
+    xai: ServiceStatus;
   };
   cache: {
     queryCount: number;
@@ -124,29 +127,29 @@ async function checkOpenAI(): Promise<ServiceStatus> {
   }
 }
 
-async function checkAnthropic(): Promise<ServiceStatus> {
+async function checkXai(): Promise<ServiceStatus> {
   const start = Date.now();
   try {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
+    const xai = createXai({
+      apiKey: process.env.XAI_API_KEY,
     });
-    
-    // Minimal message request with fastest model
-    await client.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 10,
+
+    // Minimal message request with fast model (Grok 4.1 Fast)
+    await generateText({
+      model: xai('grok-4-1-fast-non-reasoning'),
+      maxOutputTokens: 10,
       messages: [{ role: 'user', content: 'Reply with OK' }],
     });
-    
+
     const latencyMs = Date.now() - start;
-    
-    return { 
-      status: latencyMs > 5000 ? 'slow' : 'up', 
+
+    return {
+      status: latencyMs > 5000 ? 'slow' : 'up',
       latencyMs,
     };
   } catch (error) {
-    return { 
-      status: 'down', 
+    return {
+      status: 'down',
       latencyMs: Date.now() - start,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
@@ -157,15 +160,15 @@ async function checkAnthropic(): Promise<ServiceStatus> {
 export async function GET(_request: NextRequest) {
   try {
     // Run all health checks in parallel
-    const [supabase, redisStatus, openai, anthropic, cacheStats] = await Promise.all([
+    const [supabase, redisStatus, openai, xaiStatus, cacheStats] = await Promise.all([
       checkSupabase(),
       checkRedis(),
       checkOpenAI(),
-      checkAnthropic(),
+      checkXai(),
       ragCache.getStats(),
     ]);
 
-    const services = { supabase, redis: redisStatus, openai, anthropic };
+    const services = { supabase, redis: redisStatus, openai, xai: xaiStatus };
     
     // Determine overall status
     const statuses = Object.values(services).map(s => s.status);

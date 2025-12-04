@@ -1,20 +1,21 @@
 /**
  * AI Streaming Utilities
  * Provides streaming response handling with Vercel AI SDK
+ * Updated December 2025 - Migrated from Anthropic to xAI Grok
  */
 
-import { createAnthropic } from '@ai-sdk/anthropic';
+import { createXai } from '@ai-sdk/xai';
 import { streamText, CoreMessage, LanguageModel } from 'ai';
 
-import { CLAUDE_MODELS, ClaudeModelId, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE } from './models';
+import { GROK_MODELS, GrokModelId, DEFAULT_MAX_TOKENS, DEFAULT_TEMPERATURE } from './models';
 
-// Initialize Anthropic provider
-const anthropic = createAnthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
+// Initialize xAI Grok provider
+const xai = createXai({
+  apiKey: process.env.XAI_API_KEY || '',
 });
 
 export interface StreamingOptions {
-  model?: ClaudeModelId;
+  model?: GrokModelId;
   maxTokens?: number;
   temperature?: number;
   systemPrompt?: string;
@@ -30,11 +31,14 @@ export interface StreamingMessage {
 type StreamingResult = Awaited<ReturnType<typeof streamText>>;
 
 /**
- * Get the Anthropic model for Vercel AI SDK
+ * Get the xAI Grok model for Vercel AI SDK
  */
-export function getAnthropicModel(modelId: ClaudeModelId = CLAUDE_MODELS.SONNET): LanguageModel {
-  return anthropic(modelId);
+export function getXaiModel(modelId: GrokModelId = GROK_MODELS.FAST): LanguageModel {
+  return xai(modelId);
 }
+
+// Backwards compatibility alias
+export const getAnthropicModel = getXaiModel;
 
 /**
  * Create a streaming text response
@@ -44,7 +48,7 @@ export async function createStreamingResponse(
   options: StreamingOptions = {}
 ): Promise<StreamingResult> {
   const {
-    model = CLAUDE_MODELS.SONNET,
+    model = GROK_MODELS.FAST,
     maxTokens = DEFAULT_MAX_TOKENS,
     temperature = DEFAULT_TEMPERATURE,
     systemPrompt,
@@ -57,7 +61,7 @@ export async function createStreamingResponse(
   }));
 
   const result = await streamText({
-    model: anthropic(model),
+    model: xai(model),
     messages: coreMessages,
     system: systemPrompt,
     maxOutputTokens: maxTokens,

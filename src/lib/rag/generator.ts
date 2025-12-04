@@ -14,8 +14,8 @@ import { searchDocuments, type SearchResult } from './search';
 import { buildContext, formatPrompt, type RAGContext } from './context-builder';
 import { ragCache, type CachedRAGResponse } from './cache';
 
-const CLAUDE_SONNET = 'claude-sonnet-4-20250514';
-const CLAUDE_HAIKU = 'claude-3-5-haiku-20241022';
+const CLAUDE_SONNET = 'claude-sonnet-4-5-20250929';
+const CLAUDE_HAIKU = 'claude-haiku-4-5-20251001';
 
 // Buffering configuration
 const BUFFER_FLUSH_INTERVAL_MS = 100; // Time-based flush interval

@@ -1,66 +1,71 @@
 /**
  * AI Model Constants and Configuration
- * Defines available Claude 4.5 models with their capabilities and limits
- * Updated December 2025
+ * Defines available xAI Grok models with their capabilities and limits
+ * Updated December 2025 - Migrated from Claude to xAI Grok
  */
 
-// Claude 4.5 Model Identifiers (from platform.claude.com/docs)
-export const CLAUDE_MODELS = {
-  OPUS: 'claude-opus-4-5-20251101',     // Premium model - maximum intelligence
-  SONNET: 'claude-sonnet-4-5-20250929', // Best balance of intelligence, speed, cost
-  HAIKU: 'claude-haiku-4-5-20251001',   // Fastest, most cost-efficient
+// xAI Grok Model Identifiers (from docs.x.ai)
+// Note: FAST and STANDARD use the same model ID (per user requirement: no dumbing down)
+export const GROK_MODELS = {
+  // High tier: Frontier reasoning model with full capabilities
+  REASONING: 'grok-4-1-fast-reasoning',
+  // Medium/Low tier: Fast variant without reasoning overhead (full capabilities)
+  FAST: 'grok-4-1-fast-non-reasoning',
 } as const;
 
-export type ClaudeModelId = (typeof CLAUDE_MODELS)[keyof typeof CLAUDE_MODELS];
+// Backwards compatibility aliases for Claude model names
+export const CLAUDE_MODELS = {
+  OPUS: GROK_MODELS.REASONING,
+  SONNET: GROK_MODELS.FAST,
+  HAIKU: GROK_MODELS.FAST, // Same as SONNET - full capabilities, no dumbing down
+} as const;
+
+export type GrokModelId = (typeof GROK_MODELS)[keyof typeof GROK_MODELS];
+// Backwards compatibility
+export type ClaudeModelId = GrokModelId;
 
 // Model Display Names
-export const MODEL_DISPLAY_NAMES: Record<ClaudeModelId, string> = {
-  [CLAUDE_MODELS.OPUS]: 'Claude Opus 4.5',
-  [CLAUDE_MODELS.SONNET]: 'Claude Sonnet 4.5',
-  [CLAUDE_MODELS.HAIKU]: 'Claude Haiku 4.5',
+export const MODEL_DISPLAY_NAMES: Record<GrokModelId, string> = {
+  [GROK_MODELS.REASONING]: 'Grok 4.1 Fast Reasoning',
+  [GROK_MODELS.FAST]: 'Grok 4.1 Fast',
 };
 
-// Context Window Limits (input tokens)
-export const MODEL_CONTEXT_LIMITS: Record<ClaudeModelId, number> = {
-  [CLAUDE_MODELS.OPUS]: 200000,
-  [CLAUDE_MODELS.SONNET]: 200000, // Supports 1M tokens with beta header
-  [CLAUDE_MODELS.HAIKU]: 200000,
+// Context Window Limits (input tokens) - Grok 4.1 has 2M context
+export const MODEL_CONTEXT_LIMITS: Record<GrokModelId, number> = {
+  [GROK_MODELS.REASONING]: 2000000,
+  [GROK_MODELS.FAST]: 2000000,
 };
 
 // Maximum Output Tokens
-export const MODEL_OUTPUT_LIMITS: Record<ClaudeModelId, number> = {
-  [CLAUDE_MODELS.OPUS]: 64000,
-  [CLAUDE_MODELS.SONNET]: 64000,
-  [CLAUDE_MODELS.HAIKU]: 64000,
+export const MODEL_OUTPUT_LIMITS: Record<GrokModelId, number> = {
+  [GROK_MODELS.REASONING]: 131072,
+  [GROK_MODELS.FAST]: 131072,
 };
 
-// Cost per 1M tokens (in USD) - from platform.claude.com/docs
+// Cost per 1M tokens (in USD) - xAI pricing (estimated)
 export const MODEL_COSTS = {
-  [CLAUDE_MODELS.OPUS]: { input: 5, output: 25 },
-  [CLAUDE_MODELS.SONNET]: { input: 3, output: 15 },
-  [CLAUDE_MODELS.HAIKU]: { input: 1, output: 5 },
+  [GROK_MODELS.REASONING]: { input: 3, output: 15 },
+  [GROK_MODELS.FAST]: { input: 3, output: 15 },
 } as const;
 
 // Model tier for routing decisions
 export type ModelTier = 'high' | 'medium' | 'low';
 
-export const MODEL_TIERS: Record<ClaudeModelId, ModelTier> = {
-  [CLAUDE_MODELS.OPUS]: 'high',
-  [CLAUDE_MODELS.SONNET]: 'medium',
-  [CLAUDE_MODELS.HAIKU]: 'low',
+export const MODEL_TIERS: Record<GrokModelId, ModelTier> = {
+  [GROK_MODELS.REASONING]: 'high',
+  [GROK_MODELS.FAST]: 'medium', // Also used for 'low' tier
 };
 
 // Get model by tier
-export function getModelByTier(tier: ModelTier): ClaudeModelId {
+export function getModelByTier(tier: ModelTier): GrokModelId {
   switch (tier) {
     case 'high':
-      return CLAUDE_MODELS.OPUS;
+      return GROK_MODELS.REASONING;
     case 'medium':
-      return CLAUDE_MODELS.SONNET;
-    case 'low':
-      return CLAUDE_MODELS.HAIKU;
+    case 'low': // Low tier uses same model as medium (full capabilities)
+      return GROK_MODELS.FAST;
     default:
-      return CLAUDE_MODELS.SONNET;
+      return GROK_MODELS.FAST;
   }
 }
 
@@ -72,29 +77,23 @@ export interface ModelCapabilities {
   costEfficient: boolean;
 }
 
-export const MODEL_CAPABILITIES: Record<ClaudeModelId, ModelCapabilities> = {
-  [CLAUDE_MODELS.OPUS]: {
+export const MODEL_CAPABILITIES: Record<GrokModelId, ModelCapabilities> = {
+  [GROK_MODELS.REASONING]: {
     complexReasoning: true,
     codeGeneration: true,
     fastResponse: false,
     costEfficient: false,
   },
-  [CLAUDE_MODELS.SONNET]: {
+  [GROK_MODELS.FAST]: {
     complexReasoning: true,
     codeGeneration: true,
-    fastResponse: true,
-    costEfficient: true,
-  },
-  [CLAUDE_MODELS.HAIKU]: {
-    complexReasoning: false,
-    codeGeneration: false,
     fastResponse: true,
     costEfficient: true,
   },
 };
 
 // Default model settings
-export const DEFAULT_MODEL = CLAUDE_MODELS.SONNET;
+export const DEFAULT_MODEL = GROK_MODELS.FAST;
 export const DEFAULT_MAX_TOKENS = 4096;
 export const DEFAULT_TEMPERATURE = 0.7;
 

@@ -139,7 +139,7 @@ export async function generateMessage(
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
@@ -338,7 +338,7 @@ Make it more professional, engaging, and effective. Ensure it follows all sensit
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
@@ -395,7 +395,7 @@ Respond with a JSON array of subject lines: ["subject1", "subject2", "subject3"]
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 256,
       messages: [{ role: 'user', content: prompt }],
     });

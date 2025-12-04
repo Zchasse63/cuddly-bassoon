@@ -1,18 +1,22 @@
 'use client';
 
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { VerticalSelector } from '@/components/verticals/VerticalSelector';
+import { DataSourceBadge } from '@/components/ui/DataSourceBadge';
 import {
   STANDARD_FILTERS,
   ENHANCED_FILTERS,
   CONTRARIAN_FILTERS,
+  SHOVELS_FILTERS,
+  COMBINED_FILTERS,
+  HOME_SERVICES_FILTERS,
 } from '@/lib/filters/registry';
-import type { ActiveFilter, FilterId, FilterCombinationMode, FilterConfig } from '@/lib/filters/types';
+import type { ActiveFilter, FilterId, FilterCombinationMode, FilterConfig, FilterDataSource } from '@/lib/filters/types';
 
 interface FilterSidebarProps {
   activeFilters: ActiveFilter[];
@@ -110,16 +114,23 @@ function FilterSection({
   activeFilters,
   onToggle,
   onParamChange,
+  dataSource,
 }: {
   title: string;
   filters: FilterConfig[];
   activeFilters: ActiveFilter[];
   onToggle: (filterId: FilterId) => void;
   onParamChange: (filterId: FilterId, key: string, value: unknown) => void;
+  dataSource?: FilterDataSource;
 }) {
+  if (filters.length === 0) return null;
+
   return (
     <div className="space-y-3">
-      <h3 className="font-semibold text-sm">{title}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-sm">{title}</h3>
+        {dataSource && <DataSourceBadge source={dataSource} showLabel={false} />}
+      </div>
       <div className="space-y-4">
         {filters.map((filter) => {
           const active = activeFilters.find((f) => f.filterId === filter.id);
@@ -169,7 +180,10 @@ export function FilterSidebar({
   return (
     <Card className="h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Property Filters</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg">Property Filters</CardTitle>
+          <VerticalSelector />
+        </div>
         <div className="flex gap-1 mt-2">
           {(['AND', 'OR', 'WEIGHTED'] as FilterCombinationMode[]).map((mode) => (
             <Button
@@ -187,12 +201,14 @@ export function FilterSidebar({
       <CardContent className="p-0">
         <ScrollArea className="h-[calc(100vh-280px)]">
           <div className="px-6 pb-6 space-y-6">
+            {/* RentCast-based filters */}
             <FilterSection
               title="Standard Filters"
               filters={STANDARD_FILTERS}
               activeFilters={activeFilters}
               onToggle={handleToggle}
               onParamChange={handleParamChange}
+              dataSource="rentcast"
             />
             <Separator />
             <FilterSection
@@ -201,6 +217,7 @@ export function FilterSidebar({
               activeFilters={activeFilters}
               onToggle={handleToggle}
               onParamChange={handleParamChange}
+              dataSource="rentcast"
             />
             <Separator />
             <FilterSection
@@ -209,6 +226,37 @@ export function FilterSidebar({
               activeFilters={activeFilters}
               onToggle={handleToggle}
               onParamChange={handleParamChange}
+              dataSource="rentcast"
+            />
+            <Separator />
+            {/* Shovels-based filters */}
+            <FilterSection
+              title="Permit Filters"
+              filters={SHOVELS_FILTERS}
+              activeFilters={activeFilters}
+              onToggle={handleToggle}
+              onParamChange={handleParamChange}
+              dataSource="shovels"
+            />
+            <Separator />
+            {/* Combined data filters */}
+            <FilterSection
+              title="Combined Analysis"
+              filters={COMBINED_FILTERS}
+              activeFilters={activeFilters}
+              onToggle={handleToggle}
+              onParamChange={handleParamChange}
+              dataSource="combined"
+            />
+            <Separator />
+            {/* Home Services filters */}
+            <FilterSection
+              title="Home Services"
+              filters={HOME_SERVICES_FILTERS}
+              activeFilters={activeFilters}
+              onToggle={handleToggle}
+              onParamChange={handleParamChange}
+              dataSource="shovels"
             />
           </div>
         </ScrollArea>

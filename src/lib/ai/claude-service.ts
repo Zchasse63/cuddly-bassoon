@@ -1,11 +1,12 @@
 /**
- * Claude Service
- * High-level service for interacting with Claude AI models
+ * AI Service (formerly Claude Service)
+ * High-level service for interacting with AI models
+ * Updated December 2025 - Migrated from Anthropic to xAI Grok
  */
 
-import type { MessageParam, ContentBlock } from '@anthropic-ai/sdk/resources/messages';
+import { generateText, streamText, CoreMessage } from 'ai';
+import { createXai } from '@ai-sdk/xai';
 
-import { getAnthropicClient } from './anthropic';
 import {
   CLAUDE_MODELS,
   ClaudeModelId,
@@ -13,6 +14,11 @@ import {
   DEFAULT_TEMPERATURE,
   MODEL_CONTEXT_LIMITS,
 } from './models';
+
+// Initialize xAI provider
+const xai = createXai({
+  apiKey: process.env.XAI_API_KEY || '',
+});
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -38,14 +44,12 @@ export interface ClaudeResponse {
 }
 
 /**
- * Create a chat completion with Claude
+ * Create a chat completion with xAI Grok
  */
 export async function createChatCompletion(
   messages: ChatMessage[],
   options: ClaudeRequestOptions = {}
 ): Promise<ClaudeResponse> {
-  const client = getAnthropicClient();
-
   const {
     model = CLAUDE_MODELS.SONNET,
     maxTokens = DEFAULT_MAX_TOKENS,
@@ -54,44 +58,38 @@ export async function createChatCompletion(
     stopSequences,
   } = options;
 
-  const anthropicMessages: MessageParam[] = messages.map((msg) => ({
+  const coreMessages: CoreMessage[] = messages.map((msg) => ({
     role: msg.role,
     content: msg.content,
   }));
 
-  const response = await client.messages.create({
-    model,
-    max_tokens: maxTokens,
-    temperature,
+  const result = await generateText({
+    model: xai(model),
+    messages: coreMessages,
     system: systemPrompt,
-    messages: anthropicMessages,
-    stop_sequences: stopSequences,
+    maxOutputTokens: maxTokens,
+    temperature,
+    stopSequences,
   });
 
-  const textContent = response.content.find(
-    (block): block is ContentBlock & { type: 'text' } => block.type === 'text'
-  );
-
   return {
-    content: textContent?.text ?? '',
-    model: response.model,
+    content: result.text,
+    model: model,
     usage: {
-      inputTokens: response.usage.input_tokens,
-      outputTokens: response.usage.output_tokens,
+      inputTokens: result.usage?.totalTokens ?? 0,
+      outputTokens: result.usage?.totalTokens ?? 0,
     },
-    stopReason: response.stop_reason,
+    stopReason: result.finishReason ?? null,
   };
 }
 
 /**
- * Create a streaming chat completion with Claude
+ * Create a streaming chat completion with xAI Grok
  */
 export async function* createStreamingChatCompletion(
   messages: ChatMessage[],
   options: ClaudeRequestOptions = {}
 ): AsyncGenerator<string, ClaudeResponse, undefined> {
-  const client = getAnthropicClient();
-
   const {
     model = CLAUDE_MODELS.SONNET,
     maxTokens = DEFAULT_MAX_TOKENS,
@@ -100,7 +98,7 @@ export async function* createStreamingChatCompletion(
     stopSequences,
   } = options;
 
-  const anthropicMessages: MessageParam[] = messages.map((msg) => ({
+  const coreMessages: CoreMessage[] = messages.map((msg) => ({
     role: msg.role,
     content: msg.content,
   }));
@@ -108,38 +106,32 @@ export async function* createStreamingChatCompletion(
   let fullContent = '';
   let inputTokens = 0;
   let outputTokens = 0;
-  let responseModel: ClaudeModelId = model;
   let stopReason: string | null = null;
 
-  const stream = await client.messages.stream({
-    model,
-    max_tokens: maxTokens,
-    temperature,
+  const result = streamText({
+    model: xai(model),
+    messages: coreMessages,
     system: systemPrompt,
-    messages: anthropicMessages,
-    stop_sequences: stopSequences,
+    maxOutputTokens: maxTokens,
+    temperature,
+    stopSequences,
   });
 
-  for await (const event of stream) {
-    if (event.type === 'content_block_delta') {
-      const delta = event.delta;
-      if ('text' in delta) {
-        fullContent += delta.text;
-        yield delta.text;
-      }
-    } else if (event.type === 'message_start') {
-      // Cast to ClaudeModelId as we know we're using Claude models
-      responseModel = event.message.model as ClaudeModelId;
-      inputTokens = event.message.usage.input_tokens;
-    } else if (event.type === 'message_delta') {
-      outputTokens = event.usage.output_tokens;
-      stopReason = event.delta.stop_reason;
-    }
+  for await (const chunk of result.textStream) {
+    fullContent += chunk;
+    yield chunk;
   }
+
+  // Get final usage after stream completes
+  const usage = await result.usage;
+  const finishReason = await result.finishReason;
+  inputTokens = usage?.totalTokens ?? 0;
+  outputTokens = usage?.totalTokens ?? 0;
+  stopReason = finishReason ?? null;
 
   return {
     content: fullContent,
-    model: responseModel,
+    model: model,
     usage: { inputTokens, outputTokens },
     stopReason,
   };

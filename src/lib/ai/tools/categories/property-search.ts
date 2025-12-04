@@ -1,12 +1,18 @@
 /**
  * Property Search Tools
  * Tools for searching and filtering properties
+ *
+ * Uses REAL APIs:
+ * - RentCast for property data (140M+ records)
+ * - Supabase for cached/local property data
  */
 
 import { z } from 'zod';
 
 import { toolRegistry } from '../registry';
 import { ToolDefinition, ToolHandler } from '../types';
+import { getRentCastClient } from '@/lib/rentcast';
+import { createClient } from '@/lib/supabase/server';
 
 // Search Properties Tool
 const searchPropertiesInput = z.object({
@@ -70,14 +76,88 @@ const searchPropertiesDefinition: ToolDefinition<SearchPropertiesInput, SearchPr
 };
 
 const searchPropertiesHandler: ToolHandler<SearchPropertiesInput, SearchPropertiesOutput> = async (input, _context) => {
-  // TODO: Implement actual property search
   console.log('[Property Search] Searching with filters:', input);
-  
-  return {
-    properties: [],
-    total: 0,
-    hasMore: false,
-  };
+
+  try {
+    // Parse location into city/state/zip
+    const locationParts = input.location?.split(',').map(s => s.trim()) || [];
+    let city: string | undefined;
+    let state: string | undefined;
+    let zipCode: string | undefined;
+
+    if (locationParts.length >= 2) {
+      city = locationParts[0];
+      state = locationParts[1]?.replace(/\s+\d+$/, ''); // Remove zip if present
+    }
+    if (input.location?.match(/^\d{5}$/)) {
+      zipCode = input.location;
+    }
+
+    // Use RentCast API for property search
+    const client = getRentCastClient();
+    const properties = await client.searchProperties({
+      city,
+      state,
+      zipCode,
+      bedroomsMin: input.bedrooms?.min,
+      bedroomsMax: input.bedrooms?.max,
+      squareFootageMin: input.squareFootage?.min,
+      squareFootageMax: input.squareFootage?.max,
+      limit: input.limit,
+      offset: input.offset,
+    });
+
+    console.log(`[Property Search] RentCast returned ${properties.length} properties`);
+
+    return {
+      properties: properties.map(p => ({
+        id: p.id,
+        address: p.formattedAddress || `${p.addressLine1 || ''}, ${p.city || ''}, ${p.state || ''} ${p.zipCode || ''}`,
+        city: p.city || '',
+        state: p.state || '',
+        zip: p.zipCode || '',
+        propertyType: p.propertyType || 'unknown',
+        estimatedValue: p.lastSalePrice || p.taxAssessment?.marketValue || 0,
+        motivationScore: undefined, // Not available from RentCast
+      })),
+      total: properties.length,
+      hasMore: properties.length === input.limit,
+    };
+  } catch (error) {
+    console.error('[Property Search] RentCast error:', error);
+
+    // Fallback to Supabase if RentCast fails
+    try {
+      const supabase = await createClient();
+      const query = supabase.from('properties').select('*', { count: 'exact' });
+
+      if (input.location) {
+        query.or(`city.ilike.%${input.location}%,state.ilike.%${input.location}%,zip.eq.${input.location}`);
+      }
+
+      const { data, count, error: dbError } = await query.limit(input.limit).range(input.offset, input.offset + input.limit - 1);
+
+      if (dbError) throw dbError;
+
+      return {
+        properties: (data || []).map(p => ({
+          id: p.id,
+          address: p.address,
+          city: p.city || '',
+          state: p.state || '',
+          zip: p.zip || '',
+          propertyType: p.property_type || 'unknown',
+          estimatedValue: p.estimated_value || 0,
+          motivationScore: undefined,
+        })),
+        total: count || 0,
+        hasMore: (count || 0) > input.offset + input.limit,
+      };
+    } catch (fallbackError) {
+      console.error('[Property Search] Fallback error:', fallbackError);
+      throw new Error(`Property search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 };
 
 // Get Property Details Tool
@@ -132,19 +212,95 @@ const getPropertyDetailsDefinition: ToolDefinition<GetPropertyDetailsInput, GetP
 };
 
 const getPropertyDetailsHandler: ToolHandler<GetPropertyDetailsInput, GetPropertyDetailsOutput> = async (input, _context) => {
-  // TODO: Implement actual property details fetch
   console.log('[Property Search] Getting details for:', input.propertyId);
-  
-  return {
-    property: {
-      id: input.propertyId,
-      address: '',
-      city: '',
-      state: '',
-      zip: '',
-      propertyType: '',
-    },
-  };
+
+  try {
+    // Try RentCast first
+    const client = getRentCastClient();
+    const property = await client.getProperty(input.propertyId);
+
+    const result: GetPropertyDetailsOutput = {
+      property: {
+        id: property.id,
+        address: property.formattedAddress || '',
+        city: property.city || '',
+        state: property.state || '',
+        zip: property.zipCode || '',
+        propertyType: property.propertyType || 'unknown',
+        bedrooms: property.bedrooms ?? undefined,
+        bathrooms: property.bathrooms ?? undefined,
+        squareFootage: property.squareFootage ?? undefined,
+        yearBuilt: property.yearBuilt ?? undefined,
+        estimatedValue: property.lastSalePrice ?? property.taxAssessment?.marketValue ?? undefined,
+      },
+    };
+
+    // Add owner info if requested
+    if (input.includeOwnerInfo && property.owner) {
+      result.owner = {
+        name: property.owner.names?.join(', ') ?? undefined,
+        ownerType: property.owner.ownerType ?? undefined,
+        ownershipLength: undefined, // Calculate from lastSaleDate if available
+        equityPercent: undefined,
+      };
+    }
+
+    // Add comps if requested - use getValuation which includes comparables
+    if (input.includeComps) {
+      try {
+        const valuation = await client.getValuation(property.formattedAddress);
+        result.comparables = valuation.comparables?.slice(0, 5).map(c => ({
+          address: c.formattedAddress || '',
+          salePrice: c.price || 0,
+          saleDate: c.saleDate || '',
+        }));
+      } catch (compsError) {
+        console.warn('[Property Search] Comps fetch failed:', compsError);
+      }
+    }
+
+    return result;
+  } catch (error) {
+    console.error('[Property Search] RentCast detail error:', error);
+
+    // Fallback to Supabase
+    try {
+      const supabase = await createClient();
+      const { data: property, error: dbError } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('id', input.propertyId)
+        .single();
+
+      if (dbError || !property) {
+        throw new Error('Property not found');
+      }
+
+      return {
+        property: {
+          id: property.id,
+          address: property.address,
+          city: property.city || '',
+          state: property.state || '',
+          zip: property.zip || '',
+          propertyType: property.property_type || 'unknown',
+          bedrooms: property.bedrooms || undefined,
+          bathrooms: property.bathrooms || undefined,
+          squareFootage: property.square_footage || undefined,
+          yearBuilt: property.year_built || undefined,
+          estimatedValue: property.estimated_value || undefined,
+        },
+        owner: input.includeOwnerInfo ? {
+          name: property.owner_name || undefined,
+          ownerType: property.owner_type || undefined,
+          ownershipLength: property.ownership_length_months || undefined,
+        } : undefined,
+      };
+    } catch (fallbackError) {
+      console.error('[Property Search] Fallback error:', fallbackError);
+      throw new Error(`Property details failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
 };
 
 /**

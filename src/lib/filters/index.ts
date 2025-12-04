@@ -18,6 +18,15 @@ export * from './enhanced';
 // Contrarian filters (10)
 export * from './contrarian';
 
+// Shovels filters (3) - Permit-based
+export * from './shovels';
+
+// Combined filters (5) - RentCast + Shovels
+export * from './combined';
+
+// Home services filters (15) - Vertical-specific
+export * from './home-services';
+
 // Query builder and search
 export * from './query-builder';
 
