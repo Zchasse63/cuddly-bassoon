@@ -3,7 +3,14 @@
  * Central export for all map-related components
  */
 
-export { MapProvider, useMap, type MapProperty, type DrawnArea, type IsochroneArea, type MapStyle } from './MapProvider';
+export {
+  MapProvider,
+  useMap,
+  type MapProperty,
+  type DrawnArea,
+  type IsochroneArea,
+  type MapStyle,
+} from './MapProvider';
 export { MapContainer } from './MapContainer';
 export { PropertyMarkers } from './PropertyMarkers';
 export { PropertyPopup } from './PropertyPopup';
@@ -14,4 +21,5 @@ export { MapStyleToggle, getMapStyleUrl } from './MapStyleToggle';
 export { IsochroneLayer } from './IsochroneLayer';
 export { CompareMapView } from './CompareMapView';
 export { RouteLayer, MultiRouteLayer } from './RouteLayer';
-
+// Comp visualization component
+export { CompVisualizationMap } from './CompVisualizationMap';

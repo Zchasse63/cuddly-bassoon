@@ -72,32 +72,44 @@ export const RentCastPropertySchema = z.object({
   lastSaleDate: z.string().nullable().optional(),
   lastSalePrice: z.number().nullable().optional(),
   ownerOccupied: z.boolean().nullable().optional(),
-  owner: z.object({
-    names: z.array(z.string()).nullable().optional(),
-    mailingAddress: z.object({
-      addressLine1: z.string().nullable().optional(),
-      addressLine2: z.string().nullable().optional(),
-      city: z.string().nullable().optional(),
-      state: z.string().nullable().optional(),
-      zipCode: z.string().nullable().optional(),
-    }).nullable().optional(),
-    ownerType: z.string().nullable().optional(),
-  }).nullable().optional(),
-  taxAssessment: z.object({
-    assessedValue: z.number().nullable().optional(),
-    marketValue: z.number().nullable().optional(),
-    taxYear: z.number().nullable().optional(),
-    taxAmount: z.number().nullable().optional(),
-  }).nullable().optional(),
-  features: z.object({
-    cooling: z.boolean().nullable().optional(),
-    heating: z.boolean().nullable().optional(),
-    fireplace: z.boolean().nullable().optional(),
-    pool: z.boolean().nullable().optional(),
-    garage: z.boolean().nullable().optional(),
-    garageSpaces: z.number().nullable().optional(),
-    stories: z.number().nullable().optional(),
-  }).nullable().optional(),
+  owner: z
+    .object({
+      names: z.array(z.string()).nullable().optional(),
+      mailingAddress: z
+        .object({
+          addressLine1: z.string().nullable().optional(),
+          addressLine2: z.string().nullable().optional(),
+          city: z.string().nullable().optional(),
+          state: z.string().nullable().optional(),
+          zipCode: z.string().nullable().optional(),
+        })
+        .nullable()
+        .optional(),
+      ownerType: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  taxAssessment: z
+    .object({
+      assessedValue: z.number().nullable().optional(),
+      marketValue: z.number().nullable().optional(),
+      taxYear: z.number().nullable().optional(),
+      taxAmount: z.number().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  features: z
+    .object({
+      cooling: z.boolean().nullable().optional(),
+      heating: z.boolean().nullable().optional(),
+      fireplace: z.boolean().nullable().optional(),
+      pool: z.boolean().nullable().optional(),
+      garage: z.boolean().nullable().optional(),
+      garageSpaces: z.number().nullable().optional(),
+      stories: z.number().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export type RentCastProperty = z.infer<typeof RentCastPropertySchema>;
@@ -112,16 +124,28 @@ export const RentCastValuationSchema = z.object({
   priceRangeHigh: z.number(),
   pricePerSquareFoot: z.number().nullable().optional(),
   confidence: z.number().nullable().optional(),
-  comparables: z.array(z.object({
-    id: z.string(),
-    formattedAddress: z.string(),
-    price: z.number().nullable().optional(),
-    squareFootage: z.number().nullable().optional(),
-    bedrooms: z.number().nullable().optional(),
-    bathrooms: z.number().nullable().optional(),
-    distance: z.number().nullable().optional(),
-    saleDate: z.string().nullable().optional(),
-  })).nullable().optional(),
+  comparables: z
+    .array(
+      z.object({
+        id: z.string(),
+        formattedAddress: z.string(),
+        price: z.number().nullable().optional(),
+        squareFootage: z.number().nullable().optional(),
+        bedrooms: z.number().nullable().optional(),
+        bathrooms: z.number().nullable().optional(),
+        distance: z.number().nullable().optional(),
+        saleDate: z.string().nullable().optional(),
+        // Additional fields for comp analysis
+        latitude: z.number().nullable().optional(),
+        longitude: z.number().nullable().optional(),
+        correlation: z.number().nullable().optional(),
+        yearBuilt: z.number().nullable().optional(),
+        propertyType: z.string().nullable().optional(),
+        subdivision: z.string().nullable().optional(),
+      })
+    )
+    .nullable()
+    .optional(),
 });
 
 export type RentCastValuation = z.infer<typeof RentCastValuationSchema>;
@@ -135,16 +159,21 @@ export const RentCastRentEstimateSchema = z.object({
   rentRangeLow: z.number(),
   rentRangeHigh: z.number(),
   rentPerSquareFoot: z.number().nullable().optional(),
-  comparables: z.array(z.object({
-    id: z.string(),
-    formattedAddress: z.string(),
-    rent: z.number().nullable().optional(),
-    squareFootage: z.number().nullable().optional(),
-    bedrooms: z.number().nullable().optional(),
-    bathrooms: z.number().nullable().optional(),
-    distance: z.number().nullable().optional(),
-    listedDate: z.string().nullable().optional(),
-  })).nullable().optional(),
+  comparables: z
+    .array(
+      z.object({
+        id: z.string(),
+        formattedAddress: z.string(),
+        rent: z.number().nullable().optional(),
+        squareFootage: z.number().nullable().optional(),
+        bedrooms: z.number().nullable().optional(),
+        bathrooms: z.number().nullable().optional(),
+        distance: z.number().nullable().optional(),
+        listedDate: z.string().nullable().optional(),
+      })
+    )
+    .nullable()
+    .optional(),
 });
 
 export type RentCastRentEstimate = z.infer<typeof RentCastRentEstimateSchema>;
@@ -167,12 +196,17 @@ export const RentCastMarketDataSchema = z.object({
   inventory: z.number().nullable().optional(),
   yearOverYearChange: z.number().nullable().optional(),
   saleToListRatio: z.number().nullable().optional(),
-  monthlyData: z.array(z.object({
-    month: z.string(),
-    medianSalePrice: z.number().nullable().optional(),
-    medianRent: z.number().nullable().optional(),
-    inventory: z.number().nullable().optional(),
-  })).nullable().optional(),
+  monthlyData: z
+    .array(
+      z.object({
+        month: z.string(),
+        medianSalePrice: z.number().nullable().optional(),
+        medianRent: z.number().nullable().optional(),
+        inventory: z.number().nullable().optional(),
+      })
+    )
+    .nullable()
+    .optional(),
 });
 
 export type RentCastMarketData = z.infer<typeof RentCastMarketDataSchema>;
@@ -198,18 +232,26 @@ export const RentCastListingSchema = z.object({
   propertyType: z.string().nullable().optional(),
   photos: z.array(z.string()).nullable().optional(),
   description: z.string().nullable().optional(),
-  listingAgent: z.object({
-    name: z.string().nullable().optional(),
-    phone: z.string().nullable().optional(),
-    email: z.string().nullable().optional(),
-    office: z.string().nullable().optional(),
-  }).nullable().optional(),
+  listingAgent: z
+    .object({
+      name: z.string().nullable().optional(),
+      phone: z.string().nullable().optional(),
+      email: z.string().nullable().optional(),
+      office: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
   mlsNumber: z.string().nullable().optional(),
-  priceHistory: z.array(z.object({
-    date: z.string(),
-    price: z.number(),
-    event: z.string().nullable().optional(),
-  })).nullable().optional(),
+  priceHistory: z
+    .array(
+      z.object({
+        date: z.string(),
+        price: z.number(),
+        event: z.string().nullable().optional(),
+      })
+    )
+    .nullable()
+    .optional(),
 });
 
 export type RentCastListing = z.infer<typeof RentCastListingSchema>;
@@ -361,4 +403,3 @@ export interface NormalizedMarketData {
   dataSource: 'rentcast';
   dataDate: Date;
 }
-
