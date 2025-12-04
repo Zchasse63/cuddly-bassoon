@@ -32,7 +32,7 @@ type SendSMSInput = z.infer<typeof sendSMSInput>;
 type SendSMSOutput = z.infer<typeof sendSMSOutput>;
 
 const sendSMSDef: ToolDefinition<SendSMSInput, SendSMSOutput> = {
-  id: 'notification.sendSMS',
+  id: 'notification.send_sms',
   name: 'sendSMS',
   description: 'Send an SMS message to a phone number',
   category: 'communication',
@@ -88,7 +88,7 @@ type SendEmailInput = z.infer<typeof sendEmailInput>;
 type SendEmailOutput = z.infer<typeof sendEmailOutput>;
 
 const sendEmailDef: ToolDefinition<SendEmailInput, SendEmailOutput> = {
-  id: 'notification.sendEmail',
+  id: 'notification.send_email',
   name: 'sendEmail',
   description: 'Send an email to a recipient',
   category: 'communication',
@@ -144,7 +144,7 @@ type SendFromTemplateInput = z.infer<typeof sendFromTemplateInput>;
 type SendFromTemplateOutput = z.infer<typeof sendFromTemplateOutput>;
 
 const sendFromTemplateDef: ToolDefinition<SendFromTemplateInput, SendFromTemplateOutput> = {
-  id: 'notification.sendFromTemplate',
+  id: 'notification.send_from_template',
   name: 'sendFromTemplate',
   description: 'Send a message using a pre-defined template',
   category: 'communication',
@@ -204,7 +204,7 @@ type GenerateAIMessageInput = z.infer<typeof generateAIMessageInput>;
 type GenerateAIMessageOutput = z.infer<typeof generateAIMessageOutput>;
 
 const generateAIMessageDef: ToolDefinition<GenerateAIMessageInput, GenerateAIMessageOutput> = {
-  id: 'notification.generateAIMessage',
+  id: 'notification.generate_ai_message',
   name: 'generateAIMessage',
   description: 'Generate a personalized message using AI',
   category: 'communication',
@@ -293,7 +293,7 @@ type GetInboxInput = z.infer<typeof getInboxInput>;
 type GetInboxOutput = z.infer<typeof getInboxOutput>;
 
 const getInboxDef: ToolDefinition<GetInboxInput, GetInboxOutput> = {
-  id: 'notification.getInbox',
+  id: 'notification.get_inbox',
   name: 'getInboxMessages',
   description: 'Get messages from the unified inbox',
   category: 'communication',
@@ -345,7 +345,7 @@ type MarkAsReadInput = z.infer<typeof markAsReadInput>;
 type MarkAsReadOutput = z.infer<typeof markAsReadOutput>;
 
 const markAsReadDef: ToolDefinition<MarkAsReadInput, MarkAsReadOutput> = {
-  id: 'notification.markAsRead',
+  id: 'notification.mark_as_read',
   name: 'markAsRead',
   description: 'Mark messages as read',
   category: 'communication',
@@ -392,7 +392,7 @@ type ListTemplatesInput = z.infer<typeof listTemplatesInput>;
 type ListTemplatesOutput = z.infer<typeof listTemplatesOutput>;
 
 const listTemplatesDef: ToolDefinition<ListTemplatesInput, ListTemplatesOutput> = {
-  id: 'notification.listTemplates',
+  id: 'notification.list_templates',
   name: 'listTemplates',
   description: 'List available message templates',
   category: 'communication',
@@ -439,7 +439,7 @@ type GetStatusInput = z.infer<typeof getStatusInput>;
 type GetStatusOutput = z.infer<typeof getStatusOutput>;
 
 const getStatusDef: ToolDefinition<GetStatusInput, GetStatusOutput> = {
-  id: 'notification.getStatus',
+  id: 'notification.get_status',
   name: 'getCommunicationStatus',
   description: 'Check if SMS and email services are configured',
   category: 'communication',
@@ -477,7 +477,7 @@ type CheckOptOutInput = z.infer<typeof checkOptOutInput>;
 type CheckOptOutOutput = z.infer<typeof checkOptOutOutput>;
 
 const checkOptOutDef: ToolDefinition<CheckOptOutInput, CheckOptOutOutput> = {
-  id: 'notification.checkOptOut',
+  id: 'notification.check_opt_out',
   name: 'checkOptOut',
   description: 'Check if a contact has opted out of communications',
   category: 'communication',
@@ -524,7 +524,7 @@ type GetHistoryInput = z.infer<typeof getHistoryInput>;
 type GetHistoryOutput = z.infer<typeof getHistoryOutput>;
 
 const getHistoryDef: ToolDefinition<GetHistoryInput, GetHistoryOutput> = {
-  id: 'notification.getHistory',
+  id: 'notification.get_history',
   name: 'getMessageHistory',
   description: 'Get message history for a specific contact',
   category: 'communication',

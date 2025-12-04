@@ -7,13 +7,15 @@ import { z } from 'zod';
 
 /**
  * Tool categories matching the expanded categories from the spec
+ * Note: Consolidated duplicate categories (communication = communications, documents = document_generation)
  */
 export type ToolCategory =
+  // Core categories
   | 'property_search'
   | 'deal_analysis'
   | 'buyer_management'
-  | 'communication'
-  | 'document_generation'
+  | 'communication' // Consolidated: includes SMS, email, notifications
+  | 'document_generation' // Consolidated: includes document tools
   | 'market_analysis'
   | 'campaign_management'
   | 'data_enrichment'
@@ -26,13 +28,11 @@ export type ToolCategory =
   | 'contractors'
   | 'verticals'
   | 'utility'
-  // New categories from AI Tools Expansion Plan
+  // Expanded categories
   | 'batch_operations'
-  | 'documents'
   | 'automation'
   | 'predictive'
   | 'intelligence'
-  | 'communications'
   | 'portfolio'
   | 'advanced_search'
   | 'integrations'

@@ -1,22 +1,24 @@
 /**
  * AI Message Generation Service
- * Uses Claude AI to generate personalized, context-aware messages
+ * Uses xAI Grok to generate personalized, context-aware messages
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import { createXai } from '@ai-sdk/xai';
+import { generateText } from 'ai';
 import { MessageChannel, SensitivityLevel } from './types';
+import { GROK_MODELS } from '@/lib/ai/models';
 
 // ============================================================================
 // Configuration
 // ============================================================================
 
-function getAnthropicClient(): Anthropic | null {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+function getXaiClient() {
+  const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) {
-    console.warn('[AIGenerator] ANTHROPIC_API_KEY not configured');
+    console.warn('[AIGenerator] XAI_API_KEY not configured');
     return null;
   }
-  return new Anthropic({ apiKey });
+  return createXai({ apiKey });
 }
 
 // ============================================================================
@@ -123,12 +125,12 @@ export async function generateMessage(
   purpose: string,
   context: MessageGenerationContext
 ): Promise<MessageGenerationResult> {
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
-  if (!client) {
+  if (!xai) {
     return {
       success: false,
-      error: 'AI service not configured. Please set ANTHROPIC_API_KEY.',
+      error: 'AI service not configured. Please set XAI_API_KEY.',
     };
   }
 
@@ -138,19 +140,14 @@ export async function generateMessage(
   const prompt = buildPrompt(purpose, context, maxLength);
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 1024,
+    const result = await generateText({
+      model: xai(GROK_MODELS.FAST),
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
+      maxOutputTokens: 1024,
     });
 
-    const content = response.content[0];
-    if (!content || content.type !== 'text') {
-      return { success: false, error: 'Unexpected response format' };
-    }
-
-    const parsed = parseAIResponse(content.text);
+    const parsed = parseAIResponse(result.text);
     if (!parsed) {
       return { success: false, error: 'Failed to parse AI response' };
     }
@@ -318,9 +315,9 @@ export async function improveMessage(
   channel: MessageChannel,
   instructions?: string
 ): Promise<MessageGenerationResult> {
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
-  if (!client) {
+  if (!xai) {
     return {
       success: false,
       error: 'AI service not configured.',
@@ -337,19 +334,14 @@ ${instructions ? `SPECIFIC INSTRUCTIONS: ${instructions}` : ''}
 Make it more professional, engaging, and effective. Ensure it follows all sensitivity guidelines.`;
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 1024,
+    const result = await generateText({
+      model: xai(GROK_MODELS.FAST),
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
+      maxOutputTokens: 1024,
     });
 
-    const content = response.content[0];
-    if (!content || content.type !== 'text') {
-      return { success: false, error: 'Unexpected response format' };
-    }
-
-    const parsed = parseAIResponse(content.text);
+    const parsed = parseAIResponse(result.text);
     if (!parsed) {
       return { success: false, error: 'Failed to parse AI response' };
     }
@@ -372,9 +364,9 @@ export async function generateSubjectLines(
   context: MessageGenerationContext,
   count: number = 3
 ): Promise<{ success: boolean; subjects?: string[]; error?: string }> {
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
-  if (!client) {
+  if (!xai) {
     return { success: false, error: 'AI service not configured.' };
   }
 
@@ -394,18 +386,13 @@ Requirements:
 Respond with a JSON array of subject lines: ["subject1", "subject2", "subject3"]`;
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 256,
+    const result = await generateText({
+      model: xai(GROK_MODELS.FAST),
       messages: [{ role: 'user', content: prompt }],
+      maxOutputTokens: 256,
     });
 
-    const content = response.content[0];
-    if (!content || content.type !== 'text') {
-      return { success: false, error: 'Unexpected response format' };
-    }
-
-    const match = content.text.match(/\[[\s\S]*\]/);
+    const match = result.text.match(/\[[\s\S]*\]/);
     if (!match) {
       return { success: false, error: 'Failed to parse subjects' };
     }

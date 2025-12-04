@@ -30,7 +30,7 @@ type CreateListInput = z.infer<typeof createListInput>;
 type CreateListOutput = z.infer<typeof createListOutput>;
 
 const createListDef: ToolDefinition<CreateListInput, CreateListOutput> = {
-  id: 'crm.createLeadList',
+  id: 'crm.create_lead_list',
   name: 'createLeadList',
   description: 'Create a new lead list for organizing leads',
   category: 'crm',
@@ -90,7 +90,7 @@ type RankByMotivationInput = z.infer<typeof rankByMotivationInput>;
 type RankByMotivationOutput = z.infer<typeof rankByMotivationOutput>;
 
 const rankByMotivationDef: ToolDefinition<RankByMotivationInput, RankByMotivationOutput> = {
-  id: 'crm.rankByMotivation',
+  id: 'crm.rank_by_motivation',
   name: 'rankListByMotivation',
   description: 'Rank leads by motivation score, highest first',
   category: 'crm',
@@ -146,7 +146,7 @@ type SuggestOutreachInput = z.infer<typeof suggestOutreachInput>;
 type SuggestOutreachOutput = z.infer<typeof suggestOutreachOutput>;
 
 const suggestOutreachDef: ToolDefinition<SuggestOutreachInput, SuggestOutreachOutput> = {
-  id: 'crm.suggestOutreach',
+  id: 'crm.suggest_outreach',
   name: 'suggestLeadOutreach',
   description: 'Suggest leads to contact based on motivation and status',
   category: 'crm',
@@ -208,7 +208,7 @@ type AnalyzeSourceInput = z.infer<typeof analyzeSourceInput>;
 type AnalyzeSourceOutput = z.infer<typeof analyzeSourceOutput>;
 
 const analyzeSourceDef: ToolDefinition<AnalyzeSourceInput, AnalyzeSourceOutput> = {
-  id: 'crm.analyzeSource',
+  id: 'crm.analyze_source',
   name: 'analyzeLeadSource',
   description: 'Analyze performance of different lead sources',
   category: 'crm',
@@ -283,7 +283,7 @@ type SegmentLeadsInput = z.infer<typeof segmentLeadsInput>;
 type SegmentLeadsOutput = z.infer<typeof segmentLeadsOutput>;
 
 const segmentLeadsDef: ToolDefinition<SegmentLeadsInput, SegmentLeadsOutput> = {
-  id: 'crm.segmentLeads',
+  id: 'crm.segment_leads',
   name: 'segmentLeads',
   description: 'Segment leads by motivation, status, source, or recency',
   category: 'crm',
@@ -351,7 +351,7 @@ type PredictConversionInput = z.infer<typeof predictConversionInput>;
 type PredictConversionOutput = z.infer<typeof predictConversionOutput>;
 
 const predictConversionDef: ToolDefinition<PredictConversionInput, PredictConversionOutput> = {
-  id: 'crm.predictConversion',
+  id: 'crm.predict_conversion',
   name: 'predictLeadConversion',
   description: 'Predict likelihood of lead converting to deal',
   category: 'crm',
@@ -426,7 +426,7 @@ type GenLeadReportInput = z.infer<typeof genLeadReportInput>;
 type GenLeadReportOutput = z.infer<typeof genLeadReportOutput>;
 
 const genLeadReportDef: ToolDefinition<GenLeadReportInput, GenLeadReportOutput> = {
-  id: 'crm.generateReport',
+  id: 'crm.generate_report',
   name: 'generateLeadReport',
   description: 'Generate a summary report for leads',
   category: 'crm',
@@ -504,7 +504,7 @@ type IdentifyHotInput = z.infer<typeof identifyHotInput>;
 type IdentifyHotOutput = z.infer<typeof identifyHotOutput>;
 
 const identifyHotDef: ToolDefinition<IdentifyHotInput, IdentifyHotOutput> = {
-  id: 'crm.identifyHot',
+  id: 'crm.identify_hot',
   name: 'identifyHotLeads',
   description: 'Find leads with high motivation scores',
   category: 'crm',
@@ -553,7 +553,7 @@ type TrackEngagementInput = z.infer<typeof trackEngagementInput>;
 type TrackEngagementOutput = z.infer<typeof trackEngagementOutput>;
 
 const trackEngagementDef: ToolDefinition<TrackEngagementInput, TrackEngagementOutput> = {
-  id: 'crm.trackEngagement',
+  id: 'crm.track_engagement',
   name: 'trackLeadEngagement',
   description: 'Track engagement history for a lead',
   category: 'crm',
@@ -604,7 +604,7 @@ type SuggestNurturingInput = z.infer<typeof suggestNurturingInput>;
 type SuggestNurturingOutput = z.infer<typeof suggestNurturingOutput>;
 
 const suggestNurturingDef: ToolDefinition<SuggestNurturingInput, SuggestNurturingOutput> = {
-  id: 'crm.suggestNurturing',
+  id: 'crm.suggest_nurturing',
   name: 'suggestLeadNurturing',
   description: 'Suggest nurturing plan for a lead',
   category: 'crm',
@@ -652,7 +652,7 @@ type MergeLeadsInput = z.infer<typeof mergeLeadsInput>;
 type MergeLeadsOutput = z.infer<typeof mergeLeadsOutput>;
 
 const mergeLeadsDef: ToolDefinition<MergeLeadsInput, MergeLeadsOutput> = {
-  id: 'crm.mergeLeads',
+  id: 'crm.merge_leads',
   name: 'mergeLeadRecords',
   description: 'Merge duplicate lead records',
   category: 'crm',
@@ -697,7 +697,7 @@ type ExportLeadsInput = z.infer<typeof exportLeadsInput>;
 type ExportLeadsOutput = z.infer<typeof exportLeadsOutput>;
 
 const exportLeadsDef: ToolDefinition<ExportLeadsInput, ExportLeadsOutput> = {
-  id: 'crm.exportLeads',
+  id: 'crm.export_leads',
   name: 'exportLeadData',
   description: 'Export lead data in JSON or CSV format',
   category: 'crm',

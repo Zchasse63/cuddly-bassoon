@@ -1,10 +1,10 @@
 /**
  * AI Model Router
- * Routes tasks to appropriate Claude models based on complexity and requirements
+ * Routes tasks to appropriate Grok models based on complexity and requirements
  */
 
-import { CLAUDE_MODELS, ClaudeModelId, getModelByTier, ModelTier } from './models';
-import { createChatCompletion } from './claude-service';
+import { GROK_MODELS, GrokModelId, getModelByTier, ModelTier } from './models';
+import { createChatCompletion } from './grok-service';
 
 // Task categories for routing
 export type TaskCategory =
@@ -36,14 +36,14 @@ const TASK_ROUTING_RULES: Record<TaskCategory, ModelTier> = {
 };
 
 export interface RoutingDecision {
-  model: ClaudeModelId;
+  model: GrokModelId;
   category: TaskCategory;
   confidence: number;
   reason: string;
 }
 
 export interface RouterOptions {
-  forceModel?: ClaudeModelId;
+  forceModel?: GrokModelId;
   preferSpeed?: boolean;
   preferQuality?: boolean;
 }
@@ -83,7 +83,7 @@ export function routeByCategory(
 }
 
 /**
- * Classify a task using Haiku and route to appropriate model
+ * Classify a task using fast model and route to appropriate model
  */
 export async function classifyAndRoute(
   userMessage: string,
@@ -121,7 +121,7 @@ Respond with only the category name, nothing else.`;
   try {
     const response = await createChatCompletion(
       [{ role: 'user', content: classificationPrompt }],
-      { model: CLAUDE_MODELS.HAIKU, maxTokens: 50, temperature: 0 }
+      { model: GROK_MODELS.FAST, maxTokens: 50, temperature: 0 }
     );
 
     const category = response.content.trim().toLowerCase() as TaskCategory;
@@ -134,9 +134,9 @@ Respond with only the category name, nothing else.`;
     // Fallback to simple_qa if classification fails
     return routeByCategory('simple_qa', options);
   } catch {
-    // On error, default to Sonnet for safety
+    // On error, default to fast model for safety
     return {
-      model: CLAUDE_MODELS.SONNET,
+      model: GROK_MODELS.FAST,
       category: 'simple_qa',
       confidence: 0.5,
       reason: 'Classification failed, using default model',
@@ -164,4 +164,3 @@ export function logRoutingDecision(decision: RoutingDecision, userId?: string): 
     timestamp: new Date().toISOString(),
   });
 }
-

@@ -3,15 +3,15 @@
  * Central export point for all AI-related functionality
  */
 
-// Anthropic client and configuration
-export { getAnthropicClient, testAnthropicConnection, defaultClaudeConfig } from './anthropic';
+// xAI provider and configuration
+export { getXaiProvider, testXaiConnection, defaultGrokConfig } from './xai';
 
 // OpenAI client
 export { getOpenAIClient, testOpenAIConnection } from './openai';
 
 // Model constants and utilities
 export {
-  CLAUDE_MODELS,
+  GROK_MODELS,
   MODEL_DISPLAY_NAMES,
   MODEL_CONTEXT_LIMITS,
   MODEL_OUTPUT_LIMITS,
@@ -24,20 +24,20 @@ export {
   EMBEDDING_MODEL,
   EMBEDDING_DIMENSIONS,
   getModelByTier,
-  type ClaudeModelId,
+  type GrokModelId,
   type ModelTier,
   type ModelCapabilities,
 } from './models';
 
-// Claude service
+// Grok AI service
 export {
   createChatCompletion,
   createStreamingChatCompletion,
   getContextLimit,
   type ChatMessage,
-  type ClaudeRequestOptions,
-  type ClaudeResponse,
-} from './claude-service';
+  type GrokRequestOptions,
+  type GrokResponse,
+} from './grok-service';
 
 // Embeddings service
 export {
@@ -63,7 +63,7 @@ export {
 
 // Streaming utilities
 export {
-  getAnthropicModel,
+  getGrokModel,
   createStreamingResponse,
   streamToResponse,
   textStreamGenerator,
@@ -114,7 +114,7 @@ export {
   AIConnectionError,
   AIAuthError,
   AIInvalidRequestError,
-  parseAnthropicError,
+  parseAIError,
   isRetryableError,
   getErrorMessage,
 } from './errors';
@@ -182,4 +182,3 @@ export {
   type ToolOrchestrationStep,
   type OrchestrationResult,
 } from './tools';
-
