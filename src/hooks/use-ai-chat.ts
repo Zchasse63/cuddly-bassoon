@@ -10,10 +10,10 @@ import { useState, useCallback, useRef, useMemo } from 'react';
 import { useChat as useVercelChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 
-import { ClaudeModelId, CLAUDE_MODELS } from '@/lib/ai/models';
+import { GrokModelId, GROK_MODELS } from '@/lib/ai/models';
 
 export interface AIChatOptions {
-  model?: ClaudeModelId;
+  model?: GrokModelId;
   systemPrompt?: string;
   autoRoute?: boolean;
   maxTokens?: number;
@@ -31,7 +31,7 @@ export interface AIChatState {
 
 export function useAIChat(options: AIChatOptions = {}) {
   const {
-    model = CLAUDE_MODELS.SONNET,
+    model = GROK_MODELS.FAST,
     systemPrompt,
     autoRoute = true,
     maxTokens = 4096,
@@ -154,7 +154,7 @@ export function useAICompletion() {
   const complete = useCallback(
     async (
       prompt: string,
-      options: { model?: ClaudeModelId; systemPrompt?: string } = {}
+      options: { model?: GrokModelId; systemPrompt?: string } = {}
     ): Promise<string | null> => {
       setIsLoading(true);
       setError(null);

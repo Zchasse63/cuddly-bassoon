@@ -104,9 +104,9 @@ export class AIInvalidRequestError extends AIError {
 }
 
 /**
- * Parse an error from the Anthropic API
+ * Parse an error from the AI API (xAI Grok)
  */
-export function parseAnthropicError(error: unknown): AIError {
+export function parseAIError(error: unknown): AIError {
   if (error instanceof AIError) return error;
 
   if (error && typeof error === 'object') {

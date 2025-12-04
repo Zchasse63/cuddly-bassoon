@@ -3,12 +3,12 @@
  * Tracks token usage and costs for AI requests
  */
 
-import { ClaudeModelId, MODEL_COSTS, CLAUDE_MODELS } from './models';
+import { GrokModelId, MODEL_COSTS, GROK_MODELS } from './models';
 import { redis } from '@/lib/cache';
 
 export interface UsageRecord {
   userId: string;
-  model: ClaudeModelId;
+  model: GrokModelId;
   inputTokens: number;
   outputTokens: number;
   cost: number;
@@ -29,7 +29,7 @@ export interface UsageSummary {
  * Calculate cost for a request
  */
 export function calculateCost(
-  model: ClaudeModelId,
+  model: GrokModelId,
   inputTokens: number,
   outputTokens: number
 ): number {
@@ -178,14 +178,14 @@ function mergeRecords(
 /**
  * Get cost estimate for a request
  */
-export function estimateCost(model: ClaudeModelId, inputTokens: number, expectedOutput: number = 500): number {
+export function estimateCost(model: GrokModelId, inputTokens: number, expectedOutput: number = 500): number {
   return calculateCost(model, inputTokens, expectedOutput);
 }
 
 /**
  * Get the cheapest model that can handle a task
  */
-export function getCheapestModel(requiresComplexReasoning: boolean = false): ClaudeModelId {
-  return requiresComplexReasoning ? CLAUDE_MODELS.SONNET : CLAUDE_MODELS.HAIKU;
+export function getCheapestModel(requiresComplexReasoning: boolean = false): GrokModelId {
+  return requiresComplexReasoning ? GROK_MODELS.REASONING : GROK_MODELS.FAST;
 }
 

@@ -1,21 +1,20 @@
 /**
  * Response Generator for RAG
- * Generates responses using Claude models with streaming support
+ * Generates responses using xAI Grok models with streaming support
  *
  * Features:
- * - Query preprocessing with intent classification (Claude Haiku)
+ * - Query preprocessing with intent classification (Grok Fast)
  * - Category-based search filtering for improved accuracy
  * - Word-buffered + time-based streaming for smoother output
  * - Performance logging for monitoring
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import { createXai } from '@ai-sdk/xai';
+import { generateText, streamText } from 'ai';
 import { searchDocuments, type SearchResult } from './search';
 import { buildContext, formatPrompt, type RAGContext } from './context-builder';
 import { ragCache, type CachedRAGResponse } from './cache';
-
-const CLAUDE_SONNET = 'claude-sonnet-4-5-20250929';
-const CLAUDE_HAIKU = 'claude-haiku-4-5-20251001';
+import { GROK_MODELS } from '@/lib/ai/models';
 
 // Buffering configuration
 const BUFFER_FLUSH_INTERVAL_MS = 100; // Time-based flush interval
@@ -48,17 +47,17 @@ function logMetrics(metrics: RAGMetrics): void {
   console.log(`${LOG_PREFIX} ${parts.join(' ')}`);
 }
 
-let anthropicClient: Anthropic | null = null;
+let xaiClient: ReturnType<typeof createXai> | null = null;
 
-function getAnthropicClient(): Anthropic {
-  if (!anthropicClient) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+function getXaiClient() {
+  if (!xaiClient) {
+    const apiKey = process.env.XAI_API_KEY;
     if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required');
+      throw new Error('XAI_API_KEY environment variable is required');
     }
-    anthropicClient = new Anthropic({ apiKey });
+    xaiClient = createXai({ apiKey });
   }
-  return anthropicClient;
+  return xaiClient;
 }
 
 // All 10 knowledge base categories (exact database values)
@@ -331,7 +330,7 @@ export async function generateResponse(
     }
   }
 
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
   // Step 1: Classify query for better search targeting (unless skipped)
   let classification: QueryClassification | null = null;
@@ -366,19 +365,16 @@ export async function generateResponse(
   const context = buildContext(query, searchResults);
   const userPrompt = formatPrompt(context, query);
 
-  // Generate response using Claude
-  const message = await client.messages.create({
-    model: CLAUDE_SONNET,
-    max_tokens: maxTokens,
+  // Generate response using Grok
+  const result = await generateText({
+    model: xai(GROK_MODELS.REASONING),
     system: context.systemPrompt,
     messages: [{ role: 'user', content: userPrompt }],
+    maxOutputTokens: maxTokens,
     temperature,
   });
 
-  const responseText = message.content
-    .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-    .map(block => block.text)
-    .join('\n');
+  const responseText = result.text;
 
   // Log metrics
   logMetrics({
@@ -409,8 +405,8 @@ export async function generateResponse(
     sources: context.sources,
     searchResults,
     usage: {
-      inputTokens: message.usage.input_tokens,
-      outputTokens: message.usage.output_tokens,
+      inputTokens: result.usage?.totalTokens ?? 0,
+      outputTokens: result.usage?.totalTokens ?? 0,
     },
   };
 }
@@ -535,7 +531,7 @@ export async function* generateStreamingResponse(
     }
   }
 
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
   // Step 1: Classify query for better search targeting
   let classification: QueryClassification | null = null;
@@ -575,12 +571,12 @@ export async function* generateStreamingResponse(
 
   const userPrompt = formatPrompt(context, query);
 
-  // Stream response using Claude with buffering
-  const stream = await client.messages.stream({
-    model: CLAUDE_SONNET,
-    max_tokens: maxTokens,
+  // Stream response using Grok with buffering
+  const stream = streamText({
+    model: xai(GROK_MODELS.REASONING),
     system: context.systemPrompt,
     messages: [{ role: 'user', content: userPrompt }],
+    maxOutputTokens: maxTokens,
     temperature,
   });
 
@@ -591,13 +587,11 @@ export async function* generateStreamingResponse(
     // Buffered streaming: word-based + time-based
     const buffer = new StreamBuffer();
 
-    for await (const event of stream) {
-      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-        fullResponse += event.delta.text;
-        const toFlush = buffer.add(event.delta.text);
-        if (toFlush) {
-          yield { type: 'text', content: toFlush };
-        }
+    for await (const chunk of stream.textStream) {
+      fullResponse += chunk;
+      const toFlush = buffer.add(chunk);
+      if (toFlush) {
+        yield { type: 'text', content: toFlush };
       }
     }
 
@@ -607,11 +601,9 @@ export async function* generateStreamingResponse(
     }
   } else {
     // Unbuffered streaming: token-by-token
-    for await (const event of stream) {
-      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-        fullResponse += event.delta.text;
-        yield { type: 'text', content: event.delta.text };
-      }
+    for await (const chunk of stream.textStream) {
+      fullResponse += chunk;
+      yield { type: 'text', content: chunk };
     }
   }
 
@@ -643,15 +635,14 @@ export async function* generateStreamingResponse(
 }
 
 /**
- * Classify a query using Claude Haiku (fast, cheap)
+ * Classify a query using Grok Fast (fast, cost-effective)
  * Returns intent, topics, complexity, and mapped categories for search filtering
  */
 export async function classifyQuery(query: string): Promise<QueryClassification> {
-  const client = getAnthropicClient();
+  const xai = getXaiClient();
 
-  const message = await client.messages.create({
-    model: CLAUDE_HAIKU,
-    max_tokens: 256,
+  const result = await generateText({
+    model: xai(GROK_MODELS.FAST),
     messages: [{
       role: 'user',
       content: `Classify this real estate wholesaling query. Respond with JSON only, no markdown.
@@ -676,16 +667,12 @@ Topics - extract 2-4 specific terms from this list that match the query:
 
 Complexity: simple (1 topic), moderate (2-3 topics), complex (4+ topics or cross-category)`,
     }],
+    maxOutputTokens: 256,
     temperature: 0,
   });
 
-  const text = message.content
-    .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-    .map(block => block.text)
-    .join('');
-
   try {
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(result.text);
     const categories = mapTopicsToCategories(parsed.topics || [], query);
 
     return {
@@ -705,4 +692,3 @@ Complexity: simple (1 topic), moderate (2-3 topics), complex (4+ topics or cross
     };
   }
 }
-

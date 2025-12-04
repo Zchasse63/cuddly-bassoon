@@ -70,7 +70,7 @@ export function registerAllTools(): void {
   registerIntegrationTools();
   registerMapTools();
 
-  console.log('[Tool Categories] All tools registered (47 categories)');
+  console.log('[Tool Categories] All tools registered (27 categories)');
 }
 
 // Core tool exports
