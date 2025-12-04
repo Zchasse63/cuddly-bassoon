@@ -5,11 +5,11 @@
 
 import { encode } from 'gpt-tokenizer';
 
-import { ClaudeModelId, MODEL_CONTEXT_LIMITS, MODEL_OUTPUT_LIMITS } from './models';
+import { GrokModelId, MODEL_CONTEXT_LIMITS, MODEL_OUTPUT_LIMITS } from './models';
 
-// Claude uses a similar tokenization to GPT models
+// Grok uses a similar tokenization to GPT models
 // This provides a reasonable estimate (typically within 10%)
-const CLAUDE_TOKEN_MULTIPLIER = 1.1; // Claude tends to use slightly more tokens
+const GROK_TOKEN_MULTIPLIER = 1.1; // Grok tends to use slightly more tokens
 
 export interface TokenCount {
   estimated: number;
@@ -25,15 +25,15 @@ export interface ConversationTokens {
 }
 
 /**
- * Estimate token count for text (Claude approximation)
- * Uses GPT tokenizer with a multiplier for Claude compatibility
+ * Estimate token count for text (Grok approximation)
+ * Uses GPT tokenizer with a multiplier for Grok compatibility
  */
 export function estimateTokens(text: string): number {
   if (!text || text.length === 0) return 0;
 
   try {
     const gptTokens = encode(text).length;
-    return Math.ceil(gptTokens * CLAUDE_TOKEN_MULTIPLIER);
+    return Math.ceil(gptTokens * GROK_TOKEN_MULTIPLIER);
   } catch {
     // Fallback: rough estimate of 4 characters per token
     return Math.ceil(text.length / 4);
@@ -63,7 +63,7 @@ export function countMessageTokens(
 export function analyzeConversationTokens(
   messages: Array<{ role: string; content: string }>,
   systemPrompt: string | undefined,
-  model: ClaudeModelId
+  model: GrokModelId
 ): ConversationTokens {
   const contextLimit = MODEL_CONTEXT_LIMITS[model];
   const outputLimit = MODEL_OUTPUT_LIMITS[model];
@@ -92,7 +92,7 @@ export function analyzeConversationTokens(
 export function wouldExceedLimit(
   currentTokens: number,
   additionalContent: string,
-  model: ClaudeModelId,
+  model: GrokModelId,
   reserveForOutput: number = 0
 ): boolean {
   const additionalTokens = estimateTokens(additionalContent);
@@ -109,7 +109,7 @@ export function wouldExceedLimit(
 export function truncateMessages(
   messages: Array<{ role: string; content: string }>,
   systemPrompt: string | undefined,
-  model: ClaudeModelId,
+  model: GrokModelId,
   preserveRecent: number = 4
 ): Array<{ role: string; content: string }> {
   const contextLimit = MODEL_CONTEXT_LIMITS[model];

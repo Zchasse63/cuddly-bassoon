@@ -33,12 +33,9 @@ type StreamingResult = Awaited<ReturnType<typeof streamText>>;
 /**
  * Get the xAI Grok model for Vercel AI SDK
  */
-export function getXaiModel(modelId: GrokModelId = GROK_MODELS.FAST): LanguageModel {
+export function getGrokModel(modelId: GrokModelId = GROK_MODELS.FAST): LanguageModel {
   return xai(modelId);
 }
-
-// Backwards compatibility alias
-export const getAnthropicModel = getXaiModel;
 
 /**
  * Create a streaming text response

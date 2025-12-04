@@ -96,7 +96,7 @@ type UpdateStageInput = z.infer<typeof updateStageInput>;
 type UpdateStageOutput = z.infer<typeof updateStageOutput>;
 
 const updateStageDef: ToolDefinition<UpdateStageInput, UpdateStageOutput> = {
-  id: 'deal.updateStage',
+  id: 'deal.update_stage',
   name: 'updateDealStage',
   description: 'Move a deal to a different pipeline stage',
   category: 'deal_pipeline',
@@ -146,7 +146,7 @@ type AnalyzeProgressInput = z.infer<typeof analyzeProgressInput>;
 type AnalyzeProgressOutput = z.infer<typeof analyzeProgressOutput>;
 
 const analyzeProgressDef: ToolDefinition<AnalyzeProgressInput, AnalyzeProgressOutput> = {
-  id: 'deal.analyzeProgress',
+  id: 'deal.analyze_progress',
   name: 'analyzeDealProgress',
   description: 'Analyze deal progress and identify bottlenecks',
   category: 'deal_pipeline',
@@ -214,7 +214,7 @@ type GenStrategyInput = z.infer<typeof genStrategyInput>;
 type GenStrategyOutput = z.infer<typeof genStrategyOutput>;
 
 const genStrategyDef: ToolDefinition<GenStrategyInput, GenStrategyOutput> = {
-  id: 'deal.generateOfferStrategy',
+  id: 'deal.generate_offer_strategy',
   name: 'generateOfferStrategy',
   description: 'Calculate tiered offer prices (optimal, target, max, walk-away)',
   category: 'deal_pipeline',
@@ -264,7 +264,7 @@ type AssignBuyerInput = z.infer<typeof assignBuyerInput>;
 type AssignBuyerOutput = z.infer<typeof assignBuyerOutput>;
 
 const assignBuyerDef: ToolDefinition<AssignBuyerInput, AssignBuyerOutput> = {
-  id: 'deal.assignBuyer',
+  id: 'deal.assign_buyer',
   name: 'assignBuyerToDeal',
   description: 'Assign a buyer to a deal and move to assigned stage',
   category: 'deal_pipeline',
@@ -318,7 +318,7 @@ type GetTimelineInput = z.infer<typeof getTimelineInput>;
 type GetTimelineOutput = z.infer<typeof getTimelineOutput>;
 
 const getTimelineDef: ToolDefinition<GetTimelineInput, GetTimelineOutput> = {
-  id: 'deal.getTimeline',
+  id: 'deal.get_timeline',
   name: 'getDealTimeline',
   description: 'Get activity timeline for a deal',
   category: 'deal_pipeline',
@@ -362,7 +362,7 @@ type PredictOutcomeInput = z.infer<typeof predictOutcomeInput>;
 type PredictOutcomeOutput = z.infer<typeof predictOutcomeOutput>;
 
 const predictOutcomeDef: ToolDefinition<PredictOutcomeInput, PredictOutcomeOutput> = {
-  id: 'deal.predictOutcome',
+  id: 'deal.predict_outcome',
   name: 'predictDealOutcome',
   description: 'Predict likelihood of deal closing successfully',
   category: 'deal_pipeline',
@@ -437,7 +437,7 @@ type GenSummaryInput = z.infer<typeof genSummaryInput>;
 type GenSummaryOutput = z.infer<typeof genSummaryOutput>;
 
 const genSummaryDef: ToolDefinition<GenSummaryInput, GenSummaryOutput> = {
-  id: 'deal.generateSummary',
+  id: 'deal.generate_summary',
   name: 'generateDealSummary',
   description: 'Generate a comprehensive summary of a deal',
   category: 'deal_pipeline',
@@ -494,7 +494,7 @@ type CompareDealInput = z.infer<typeof compareDealInput>;
 type CompareDealOutput = z.infer<typeof compareDealOutput>;
 
 const compareDealDef: ToolDefinition<CompareDealInput, CompareDealOutput> = {
-  id: 'deal.compareToPortfolio',
+  id: 'deal.compare_to_portfolio',
   name: 'compareDealToPortfolio',
   description: 'Compare deal metrics to portfolio averages',
   category: 'deal_pipeline',
@@ -542,7 +542,7 @@ type SuggestActionsInput = z.infer<typeof suggestActionsInput>;
 type SuggestActionsOutput = z.infer<typeof suggestActionsOutput>;
 
 const suggestActionsDef: ToolDefinition<SuggestActionsInput, SuggestActionsOutput> = {
-  id: 'deal.suggestActions',
+  id: 'deal.suggest_actions',
   name: 'suggestDealActions',
   description: 'Suggest next actions for a deal',
   category: 'deal_pipeline',
@@ -606,7 +606,7 @@ type CalcMetricsInput = z.infer<typeof calcMetricsInput>;
 type CalcMetricsOutput = z.infer<typeof calcMetricsOutput>;
 
 const calcMetricsDef: ToolDefinition<CalcMetricsInput, CalcMetricsOutput> = {
-  id: 'deal.calculateMetrics',
+  id: 'deal.calculate_metrics',
   name: 'calculateDealMetrics',
   description: 'Calculate financial metrics for a deal',
   category: 'deal_pipeline',
@@ -659,7 +659,7 @@ type FlagIssuesInput = z.infer<typeof flagIssuesInput>;
 type FlagIssuesOutput = z.infer<typeof flagIssuesOutput>;
 
 const flagIssuesDef: ToolDefinition<FlagIssuesInput, FlagIssuesOutput> = {
-  id: 'deal.flagIssues',
+  id: 'deal.flag_issues',
   name: 'flagDealIssues',
   description: 'Identify deals with issues that need attention',
   category: 'deal_pipeline',

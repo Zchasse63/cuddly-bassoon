@@ -13,16 +13,7 @@ export const GROK_MODELS = {
   FAST: 'grok-4-1-fast-non-reasoning',
 } as const;
 
-// Backwards compatibility aliases for Claude model names
-export const CLAUDE_MODELS = {
-  OPUS: GROK_MODELS.REASONING,
-  SONNET: GROK_MODELS.FAST,
-  HAIKU: GROK_MODELS.FAST, // Same as SONNET - full capabilities, no dumbing down
-} as const;
-
 export type GrokModelId = (typeof GROK_MODELS)[keyof typeof GROK_MODELS];
-// Backwards compatibility
-export type ClaudeModelId = GrokModelId;
 
 // Model Display Names
 export const MODEL_DISPLAY_NAMES: Record<GrokModelId, string> = {

@@ -3,6 +3,7 @@
  * Central registration for all tool categories
  */
 
+import { toolLogger } from '../logger';
 import { registerPropertySearchTools } from './property-search';
 import { registerDealAnalysisTools } from './deal-analysis';
 import { registerBuyerManagementTools } from './buyer-management';
@@ -40,7 +41,7 @@ import { registerMarketVelocityTools } from './market-velocity-tools';
  * Register all tool categories
  */
 export function registerAllTools(): void {
-  console.log('[Tool Categories] Registering all tools...');
+  toolLogger.debug('Tool Categories', 'Registering all tools...');
 
   // Core tools
   registerPropertySearchTools();
@@ -77,6 +78,7 @@ export function registerAllTools(): void {
   registerMarketVelocityTools();
 
   console.log('[Tool Categories] All tools registered (48 categories)');
+  toolLogger.info('Tool Categories', 'All tools registered (27 categories)');
 }
 
 // Core tool exports

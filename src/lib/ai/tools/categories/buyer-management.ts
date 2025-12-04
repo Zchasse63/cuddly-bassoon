@@ -389,7 +389,7 @@ type SuggestOutreachInput = z.infer<typeof suggestOutreachInput>;
 type SuggestOutreachOutput = z.infer<typeof suggestOutreachOutput>;
 
 const suggestOutreachDef: ToolDefinition<SuggestOutreachInput, SuggestOutreachOutput> = {
-  id: 'buyer.suggestOutreach', name: 'suggestBuyerOutreach',
+  id: 'buyer.suggest_outreach', name: 'suggestBuyerOutreach',
   description: 'Identify buyers to contact and prioritize by opportunity',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: suggestOutreachInput, outputSchema: suggestOutreachOutput,
@@ -467,7 +467,7 @@ type PredictBehaviorInput = z.infer<typeof predictBehaviorInput>;
 type PredictBehaviorOutput = z.infer<typeof predictBehaviorOutput>;
 
 const predictBehaviorDef: ToolDefinition<PredictBehaviorInput, PredictBehaviorOutput> = {
-  id: 'buyer.predictBehavior', name: 'predictBuyerBehavior',
+  id: 'buyer.predict_behavior', name: 'predictBuyerBehavior',
   description: 'Predict buyer response and close probability',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: predictBehaviorInput, outputSchema: predictBehaviorOutput,
@@ -550,7 +550,7 @@ type IdentifyGapsInput = z.infer<typeof identifyGapsInput>;
 type IdentifyGapsOutput = z.infer<typeof identifyGapsOutput>;
 
 const identifyGapsDef: ToolDefinition<IdentifyGapsInput, IdentifyGapsOutput> = {
-  id: 'buyer.identifyGaps', name: 'identifyBuyerGaps',
+  id: 'buyer.identify_gaps', name: 'identifyBuyerGaps',
   description: 'Analyze buyer network coverage and identify missing types',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: identifyGapsInput, outputSchema: identifyGapsOutput,
@@ -583,7 +583,7 @@ type GenReportInput = z.infer<typeof genReportInput>;
 type GenReportOutput = z.infer<typeof genReportOutput>;
 
 const genReportDef: ToolDefinition<GenReportInput, GenReportOutput> = {
-  id: 'buyer.generateReport', name: 'generateBuyerReport',
+  id: 'buyer.generate_report', name: 'generateBuyerReport',
   description: 'Create buyer summary report with activity metrics',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: genReportInput, outputSchema: genReportOutput,
@@ -633,7 +633,7 @@ type ScoreFitInput = z.infer<typeof scoreFitInput>;
 type ScoreFitOutput = z.infer<typeof scoreFitOutput>;
 
 const scoreFitDef: ToolDefinition<ScoreFitInput, ScoreFitOutput> = {
-  id: 'buyer.scoreFit', name: 'scoreBuyerFit',
+  id: 'buyer.score_fit', name: 'scoreBuyerFit',
   description: 'Calculate buyer-property fit score with match factors',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: scoreFitInput, outputSchema: scoreFitOutput,
@@ -679,7 +679,7 @@ type TrackPrefInput = z.infer<typeof trackPrefInput>;
 type TrackPrefOutput = z.infer<typeof trackPrefOutput>;
 
 const trackPrefDef: ToolDefinition<TrackPrefInput, TrackPrefOutput> = {
-  id: 'buyer.trackPreferenceChanges', name: 'trackBuyerPreferenceChanges',
+  id: 'buyer.track_preference_changes', name: 'trackBuyerPreferenceChanges',
   description: 'Monitor preference updates and alert on significant changes',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: trackPrefInput, outputSchema: trackPrefOutput,
@@ -722,7 +722,7 @@ type RecommendActionsInput = z.infer<typeof recommendActionsInput>;
 type RecommendActionsOutput = z.infer<typeof recommendActionsOutput>;
 
 const recommendActionsDef: ToolDefinition<RecommendActionsInput, RecommendActionsOutput> = {
-  id: 'buyer.recommendActions', name: 'recommendBuyerActions',
+  id: 'buyer.recommend_actions', name: 'recommendBuyerActions',
   description: 'Suggest next actions for buyers prioritized by impact',
   category: 'buyer_management', requiredPermission: 'read',
   inputSchema: recommendActionsInput, outputSchema: recommendActionsOutput,
