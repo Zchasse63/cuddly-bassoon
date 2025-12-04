@@ -9,6 +9,7 @@ import { toolRegistry } from '../registry';
 import type { ToolDefinition, ToolHandler } from '../types';
 import {
   getVelocityForZipCode,
+  getVelocityForLocation,
   findHotMarkets,
   findColdMarkets,
   compareMarketVelocity,
@@ -81,7 +82,13 @@ const getMarketVelocityHandler: ToolHandler<GetMarketVelocityInput, GetMarketVel
       throw new Error('Either zipCode or city is required');
     }
 
-    const velocity = await getVelocityForZipCode(input.zipCode || '');
+    // Route through getVelocityForLocation to handle both zip codes and city/state
+    const velocity = await getVelocityForLocation({
+      zipCode: input.zipCode,
+      city: input.city,
+      state: input.state,
+      county: input.county,
+    });
 
     const interpretation = generateWholesaleImplications(velocity);
 
@@ -400,7 +407,16 @@ const explainVelocityScoreHandler: ToolHandler<ExplainVelocityScoreInput, Explai
   console.log('[Market Velocity] Explaining score for:', input);
 
   try {
-    const velocity = await getVelocityForZipCode(input.zipCode || '');
+    if (!input.zipCode && !input.city) {
+      throw new Error('Either zipCode or city is required');
+    }
+
+    // Route through getVelocityForLocation to handle both zip codes and city/state
+    const velocity = await getVelocityForLocation({
+      zipCode: input.zipCode,
+      city: input.city,
+      state: input.state,
+    });
 
     return {
       success: true,

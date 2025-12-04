@@ -77,8 +77,7 @@ export function registerAllTools(): void {
   // Market Velocity Index Tools
   registerMarketVelocityTools();
 
-  console.log('[Tool Categories] All tools registered (48 categories)');
-  toolLogger.info('Tool Categories', 'All tools registered (27 categories)');
+  toolLogger.info('Tool Categories', 'All tools registered (28 categories)');
 }
 
 // Core tool exports

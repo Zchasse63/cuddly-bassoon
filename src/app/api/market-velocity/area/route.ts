@@ -8,8 +8,9 @@ import { z } from 'zod';
 import { getVelocityForLocation } from '@/lib/velocity';
 
 // Validate query parameters
+// Note: Only 'city' and 'county' are currently implemented
 const AreaParamsSchema = z.object({
-  type: z.enum(['city', 'county', 'metro', 'state']),
+  type: z.enum(['city', 'county']),
   name: z.string().min(1),
   state: z.string().length(2),
 });
@@ -66,16 +67,14 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[Market Velocity API] Area error:', error);
 
-    if (error instanceof Error) {
-      if (error.message.includes('Could not find')) {
-        return NextResponse.json(
-          {
-            error: 'Could not find velocity data for the specified area',
-            message: error.message,
-          },
-          { status: 404 }
-        );
-      }
+    if (error instanceof Error && error.message.includes('Could not find')) {
+      return NextResponse.json(
+        {
+          error: 'Could not find velocity data for the specified area',
+          message: error.message,
+        },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(

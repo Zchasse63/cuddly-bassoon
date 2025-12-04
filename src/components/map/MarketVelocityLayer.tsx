@@ -9,8 +9,18 @@ import { useEffect, useState, useCallback } from 'react';
 import { Source, Layer } from 'react-map-gl/mapbox';
 import { useQuery } from '@tanstack/react-query';
 import { useMap } from './MapProvider';
-import type { MarketVelocityIndex, VelocityHeatMapResponse } from '@/types/velocity';
+import type { VelocityHeatMapResponse, VelocityClassification } from '@/types/velocity';
 import { VELOCITY_COLOR_SCALE } from '@/types/velocity';
+
+/**
+ * Partial velocity data available from map click events
+ * (only includes properties stored in GeoJSON features)
+ */
+export interface VelocityClickData {
+  zipCode: string;
+  velocityIndex: number;
+  classification: VelocityClassification;
+}
 
 interface VelocityGeoJSON {
   type: 'FeatureCollection';
@@ -36,7 +46,8 @@ const emptyGeoJSON: VelocityGeoJSON = {
 interface MarketVelocityLayerProps {
   visible: boolean;
   opacity?: number;
-  onAreaClick?: (zipCode: string, data: MarketVelocityIndex) => void;
+  /** Callback when a velocity point is clicked. Only partial data is available from the map feature. */
+  onAreaClick?: (zipCode: string, data: VelocityClickData) => void;
 }
 
 async function fetchVelocityHeatMapData(
@@ -117,10 +128,10 @@ export function MarketVelocityLayer({
 
       if (props?.zipCode) {
         onAreaClick(props.zipCode, {
-          zipCode: props.zipCode,
-          velocityIndex: props.velocityIndex,
-          classification: props.classification,
-        } as MarketVelocityIndex);
+          zipCode: props.zipCode as string,
+          velocityIndex: props.velocityIndex as number,
+          classification: props.classification as VelocityClassification,
+        });
       }
     },
     [onAreaClick]

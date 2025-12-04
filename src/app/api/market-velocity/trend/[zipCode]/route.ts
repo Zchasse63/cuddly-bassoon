@@ -67,13 +67,11 @@ export async function GET(
   } catch (error) {
     console.error('[Market Velocity API] Trend error:', error);
 
-    if (error instanceof Error) {
-      if (error.message.includes('not found') || error.message.includes('404')) {
-        return NextResponse.json(
-          { error: 'Market data not found for this zip code' },
-          { status: 404 }
-        );
-      }
+    if (error instanceof Error && (error.message.includes('not found') || error.message.includes('404'))) {
+      return NextResponse.json(
+        { error: 'Market data not found for this zip code' },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(

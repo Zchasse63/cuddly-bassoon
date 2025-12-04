@@ -159,15 +159,13 @@ async function getVelocityForGeoId(
   }
 
   // Calculate velocity
-  const velocity = calculateMarketVelocityIndex(marketData, shovelsMetrics, {
+  return calculateMarketVelocityIndex(marketData, shovelsMetrics, {
     zipCode: properties[0]?.zipCode || '',
     city: params.city,
     state: params.state,
     county: params.county,
     geoId,
   });
-
-  return velocity;
 }
 
 // =============================================

@@ -13,7 +13,7 @@ import {
 } from '@/lib/jobs/calculate-velocity-indexes';
 
 // Vercel Cron secret for authorization
-const CRON_SECRET = process.env.CRON_SECRET;
+const { CRON_SECRET } = process.env;
 
 export async function POST(request: NextRequest) {
   try {
