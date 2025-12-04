@@ -37,6 +37,9 @@ import { registerMapTools } from './map-tools';
 // Market Velocity Index Tools
 import { registerMarketVelocityTools } from './market-velocity-tools';
 
+// Census Geography Tools (Micro-Territory Comp Selection)
+import { registerCensusGeographyTools } from './census-geography-tools';
+
 /**
  * Register all tool categories
  */
@@ -77,7 +80,10 @@ export function registerAllTools(): void {
   // Market Velocity Index Tools
   registerMarketVelocityTools();
 
-  toolLogger.info('Tool Categories', 'All tools registered (28 categories)');
+  // Census Geography Tools (Micro-Territory Comp Selection)
+  registerCensusGeographyTools();
+
+  toolLogger.info('Tool Categories', 'All tools registered (29 categories)');
 }
 
 // Core tool exports
@@ -113,3 +119,6 @@ export { registerMapTools, mapTools } from './map-tools';
 
 // Market Velocity Index Tools exports
 export { registerMarketVelocityTools, marketVelocityTools } from './market-velocity-tools';
+
+// Census Geography Tools exports
+export { registerCensusGeographyTools, censusGeographyTools } from './census-geography-tools';
