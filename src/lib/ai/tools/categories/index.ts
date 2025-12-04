@@ -34,6 +34,9 @@ import { registerAdvancedSearchTools } from './advanced-search-tools';
 import { registerIntegrationTools } from './integration-tools';
 import { registerMapTools } from './map-tools';
 
+// Market Velocity Index Tools
+import { registerMarketVelocityTools } from './market-velocity-tools';
+
 /**
  * Register all tool categories
  */
@@ -71,7 +74,10 @@ export function registerAllTools(): void {
   registerIntegrationTools();
   registerMapTools();
 
-  toolLogger.info('Tool Categories', 'All tools registered (27 categories)');
+  // Market Velocity Index Tools
+  registerMarketVelocityTools();
+
+  toolLogger.info('Tool Categories', 'All tools registered (28 categories)');
 }
 
 // Core tool exports
@@ -104,3 +110,6 @@ export { registerPortfolioTools, portfolioTools } from './portfolio-tools';
 export { registerAdvancedSearchTools, advancedSearchTools } from './advanced-search-tools';
 export { registerIntegrationTools, integrationTools } from './integration-tools';
 export { registerMapTools, mapTools } from './map-tools';
+
+// Market Velocity Index Tools exports
+export { registerMarketVelocityTools, marketVelocityTools } from './market-velocity-tools';
