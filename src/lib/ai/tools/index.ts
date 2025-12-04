@@ -27,3 +27,6 @@ export {
 // Category registration
 export { registerAllTools } from './categories';
 
+// Logger
+export { toolLogger, type LogLevel } from './logger';
+

@@ -6,6 +6,7 @@
 import { tool } from 'ai';
 import type { ToolSet } from 'ai';
 import { toolRegistry } from './registry';
+import { toolLogger } from './logger';
 import type { RegisteredTool, ToolExecutionContext, ToolCategory } from './types';
 
 // Track if tools have been initialized
@@ -21,8 +22,8 @@ export async function ensureToolsInitialized(): Promise<void> {
   const { registerAllTools } = await import('./categories');
   registerAllTools();
   toolsInitialized = true;
-  
-  console.log(`[AI SDK Adapter] Initialized ${toolRegistry.count} tools`);
+
+  toolLogger.adapter(`Initialized ${toolRegistry.count} tools`);
 }
 
 /**
@@ -55,10 +56,10 @@ function convertTool(
         // Execute the tool handler with our context
         const result = await registeredTool.handler(input, context);
 
-        console.log(`[Tool Executed] ${registeredTool.id} in ${Date.now() - startTime}ms`);
+        toolLogger.toolExec(registeredTool.id, Date.now() - startTime);
         return result;
       } catch (error) {
-        console.error(`[Tool Error] ${registeredTool.id}:`, error);
+        toolLogger.toolError(registeredTool.id, error);
         throw error;
       }
     },
