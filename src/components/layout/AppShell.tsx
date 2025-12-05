@@ -2,13 +2,16 @@
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileBottomNav, MobileActionFAB, MobileChatSheet } from './MobileNav';
 
 /**
- * AppShell - Three-column CSS Grid layout
+ * AppShell - Three-column CSS Grid layout (Desktop) / Single column (Mobile)
  *
  * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 3
  *
- * Layout: [Left Sidebar (240px)] [Main Content (1fr)] [Right Sidebar (360px)]
+ * Desktop Layout: [Left Sidebar (240px)] [Main Content (1fr)] [Right Sidebar (360px)]
+ * Mobile Layout: Full-width content with bottom navigation
  */
 
 interface AppShellContextValue {
@@ -18,6 +21,11 @@ interface AppShellContextValue {
   toggleRight: () => void;
   setLeftCollapsed: (collapsed: boolean) => void;
   setRightCollapsed: (collapsed: boolean) => void;
+  isMobile: boolean;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+  mobileChatOpen: boolean;
+  setMobileChatOpen: (open: boolean) => void;
 }
 
 const AppShellContext = createContext<AppShellContextValue | null>(null);
@@ -41,8 +49,11 @@ export function AppShellProvider({
   defaultLeftCollapsed = false,
   defaultRightCollapsed = false,
 }: AppShellProviderProps) {
+  const isMobile = useIsMobile();
   const [leftCollapsed, setLeftCollapsed] = useState(defaultLeftCollapsed);
   const [rightCollapsed, setRightCollapsed] = useState(defaultRightCollapsed);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
 
   const toggleLeft = useCallback(() => setLeftCollapsed((prev) => !prev), []);
   const toggleRight = useCallback(() => setRightCollapsed((prev) => !prev), []);
@@ -56,6 +67,11 @@ export function AppShellProvider({
         toggleRight,
         setLeftCollapsed,
         setRightCollapsed,
+        isMobile,
+        mobileMenuOpen,
+        setMobileMenuOpen,
+        mobileChatOpen,
+        setMobileChatOpen,
       }}
     >
       {children}
@@ -71,8 +87,39 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, leftSidebar, rightSidebar, className }: AppShellProps) {
-  const { leftCollapsed, rightCollapsed } = useAppShell();
+  const { leftCollapsed, rightCollapsed, isMobile, mobileChatOpen, setMobileChatOpen } =
+    useAppShell();
 
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <div className={cn('app-shell-mobile min-h-screen bg-background', className)}>
+        {/* Main Content with bottom padding for nav */}
+        <main className="main-content-mobile pb-20">{children}</main>
+
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav />
+
+        {/* Mobile FAB for quick actions */}
+        <MobileActionFAB
+          onOpenChat={() => setMobileChatOpen(true)}
+          onAddProperty={() => {
+            // Navigate to add property - can be customized per page
+            window.location.href = '/properties/new';
+          }}
+        />
+
+        {/* Mobile Chat Sheet */}
+        {rightSidebar && (
+          <MobileChatSheet open={mobileChatOpen} onOpenChange={setMobileChatOpen}>
+            {rightSidebar}
+          </MobileChatSheet>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout
   return (
     <div
       className={cn(

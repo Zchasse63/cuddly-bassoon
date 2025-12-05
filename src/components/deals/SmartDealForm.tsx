@@ -110,8 +110,8 @@ const STAGE_OPTIONS = Object.entries(DEAL_STAGES).map(([value, config]) => ({
   label: config.label,
 }));
 
-// MAO Rule percentages (for reference)
-const _MAO_PERCENTAGES = [0.65, 0.7, 0.75] as const;
+// MAO Rule percentages - 65% (conservative), 70% (standard), 75% (aggressive)
+// Used in slider from 60-80% range
 
 interface DealMetrics {
   mao: number;
@@ -287,7 +287,12 @@ export function SmartDealForm({
                   </div>
                   <Slider
                     value={[maoPercentage * 100]}
-                    onValueChange={([v]) => setMaoPercentage(v / 100)}
+                    onValueChange={(values) => {
+                      const v = values[0];
+                      if (v !== undefined) {
+                        setMaoPercentage(v / 100);
+                      }
+                    }}
                     min={60}
                     max={80}
                     step={5}
