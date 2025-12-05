@@ -116,42 +116,63 @@ const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivati
       console.warn('[Predictive] RentCast API error:', apiError);
     }
 
-    // Factor 1: Owner Type (weight: 25%)
-    // Bank-owned (REO), Trust, Corporate owners often more motivated
+    // Factor 1: Owner Type (weight: 20%)
+    // Nuanced scoring based on real-world seller behavior patterns
     if (propertyData?.owner?.ownerType) {
       dataPointsAvailable++;
       const ownerType = propertyData.owner.ownerType;
       let ownerScore = 50;
-      let description = 'Individual owner - typical motivation';
+      let description = 'Individual owner - motivation depends on circumstances';
       let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
 
-      if (ownerType === 'Bank') {
-        ownerScore = 90;
-        description = 'Bank-owned (REO) property - high motivation to sell';
-        impact = 'positive';
-      } else if (ownerType === 'Trust') {
+      if (ownerType === 'Trust') {
+        // Trusts often indicate estate/inheritance - beneficiaries frequently want quick liquidation
         ownerScore = 75;
-        description = 'Trust ownership - often indicates estate sale or inheritance';
+        description = 'Trust ownership - likely estate/inheritance situation, beneficiaries often motivated to liquidate';
         impact = 'positive';
+      } else if (ownerType === 'Bank') {
+        // REO properties: Banks want to sell BUT process is slow and bureaucratic
+        // Better to catch pre-foreclosure. REO = missed early opportunity but still viable
+        ownerScore = 55;
+        description = 'Bank-owned (REO) - motivated but slow bureaucratic process. Consider if pre-foreclosure opportunities exist nearby';
+        impact = 'neutral';
       } else if (ownerType === 'Company') {
-        ownerScore = 65;
-        description = 'Corporate owner - may be motivated to liquidate';
-        impact = 'positive';
+        // LLCs/Corps are typically investors who BUY properties, not distressed sellers
+        // Check for "tired landlord" signals: long ownership + property issues
+        const lastSale = propertyData.lastSaleDate ? new Date(propertyData.lastSaleDate) : null;
+        const yearsOwned = lastSale ? (Date.now() - lastSale.getTime()) / (365 * 24 * 60 * 60 * 1000) : 0;
+
+        if (yearsOwned > 10) {
+          // Long-term LLC owner could be tired landlord
+          ownerScore = 55;
+          description = `Long-term LLC owner (${Math.round(yearsOwned)} years) - possible tired landlord, worth investigating`;
+          impact = 'neutral';
+        } else {
+          ownerScore = 40;
+          description = 'Corporate/LLC owner - typically professional investors with holding power, less likely to be distressed';
+          impact = 'negative';
+        }
       } else if (ownerType === 'Government') {
-        ownerScore = 40;
-        description = 'Government-owned - slower process, less flexibility';
+        // Government sales have strict protocols, long timelines
+        ownerScore = 35;
+        description = 'Government-owned - strict protocols, long timelines, limited negotiation flexibility';
         impact = 'negative';
+      } else if (ownerType === 'Individual') {
+        // Individuals vary widely - other factors matter more
+        ownerScore = 50;
+        description = 'Individual owner - motivation determined by other factors (equity, duration, circumstances)';
+        impact = 'neutral';
       }
 
       factors.push({
         name: 'Owner Type',
         impact,
-        weight: 0.25,
+        weight: 0.20,
         description,
         score: ownerScore,
       });
-      totalWeight += 0.25;
-      weightedScore += ownerScore * 0.25;
+      totalWeight += 0.20;
+      weightedScore += ownerScore * 0.20;
     }
 
     // Factor 2: Ownership Duration (weight: 20%)
