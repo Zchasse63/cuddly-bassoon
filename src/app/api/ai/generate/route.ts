@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { createChatCompletion } from '@/lib/ai/claude-service';
-import { CLAUDE_MODELS } from '@/lib/ai/models';
+import { GROK_MODELS } from '@/lib/ai/models';
 import { PROPERTY_DESCRIPTION_PROMPT, OFFER_LETTER_PROMPT } from '@/lib/ai/prompts';
-import { parseAnthropicError, getErrorMessage } from '@/lib/ai/errors';
+import { parseAIError, getErrorMessage } from '@/lib/ai/errors';
 import { withRetry } from '@/lib/ai/retry';
 import { trackUsage } from '@/lib/ai/cost-tracker';
 
@@ -26,7 +26,8 @@ const generateRequestSchema = z.object({
 const PROMPTS: Record<string, string> = {
   property_description: PROPERTY_DESCRIPTION_PROMPT,
   offer_letter: OFFER_LETTER_PROMPT,
-  email: 'Generate a professional email for real estate communication. Be clear, concise, and action-oriented.',
+  email:
+    'Generate a professional email for real estate communication. Be clear, concise, and action-oriented.',
   sms: 'Generate a brief SMS message (under 160 characters) for real estate communication. Be direct and include a clear call to action.',
   custom: '',
 };
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     const response = await withRetry(
       async () =>
         createChatCompletion([{ role: 'user', content: userMessage }], {
-          model: CLAUDE_MODELS.SONNET,
+          model: GROK_MODELS.FAST,
           systemPrompt,
           maxTokens: LENGTH_TOKENS[length],
         }),
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
     if (userId) {
       await trackUsage({
         userId,
-        model: CLAUDE_MODELS.SONNET,
+        model: GROK_MODELS.FAST,
         inputTokens: response.usage.inputTokens,
         outputTokens: response.usage.outputTokens,
         feature: `generate_${type}`,
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[AI Generate] Error:', error);
-    const aiError = parseAnthropicError(error);
+    const aiError = parseAIError(error);
     return NextResponse.json(
       { error: getErrorMessage(aiError), code: aiError.code },
       { status: aiError.statusCode }
@@ -107,4 +108,3 @@ export async function POST(request: NextRequest) {
 function formatKey(key: string): string {
   return key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
 }
-

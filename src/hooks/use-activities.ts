@@ -44,6 +44,7 @@ interface PipelineStage {
   count: number;
   value: number;
   color: string;
+  staleDealCount?: number; // Deals stale for 7+ days in this stage
 }
 
 interface PipelineSummaryData {

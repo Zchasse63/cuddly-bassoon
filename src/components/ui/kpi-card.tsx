@@ -20,13 +20,38 @@ export interface KPICardProps {
   subtitle?: string;
   icon?: React.ComponentType<{ className?: string }>;
   className?: string;
+  onClick?: () => void;
 }
 
-export function KPICard({ title, value, change, subtitle, icon: Icon, className }: KPICardProps) {
+export function KPICard({
+  title,
+  value,
+  change,
+  subtitle,
+  icon: Icon,
+  className,
+  onClick,
+}: KPICardProps) {
   const isPositive = change ? change.value >= 0 : undefined;
+  const isClickable = Boolean(onClick);
 
   return (
-    <div className={cn('kpi-card', className)}>
+    <div
+      className={cn('kpi-card', isClickable && 'cursor-pointer', className)}
+      onClick={onClick}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={
+        isClickable
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick?.();
+              }
+            }
+          : undefined
+      }
+    >
       <div className="kpi-card__header">
         <span className="kpi-card__title">{title}</span>
         {Icon && (

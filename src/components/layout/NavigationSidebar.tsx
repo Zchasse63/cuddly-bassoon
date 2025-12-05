@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
@@ -11,6 +12,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  ChevronDown,
   Search,
   FileText,
   BarChart3,
@@ -18,8 +20,9 @@ import {
   HelpCircle,
   List,
   Filter,
-  TrendingUp,
   Map,
+  Wrench,
+  Command,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -33,11 +36,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAppShell } from './AppShell';
 
 /**
- * Navigation items per UI_UX_DESIGN_SYSTEM_v1.md Section 5
- * 11 items total in the navigation hierarchy
+ * Navigation items organized into groups per UI_UX_DESIGN_SYSTEM_v1.md Section 5
+ * Reduced cognitive load with grouped categories
  */
 interface NavItem {
   title: string;
@@ -47,20 +51,35 @@ interface NavItem {
   badgeVariant?: 'default' | 'secondary' | 'destructive' | 'outline';
 }
 
-const navItems: NavItem[] = [
+interface NavGroup {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items: NavItem[];
+  defaultOpen?: boolean;
+}
+
+// Main navigation - primary workflows
+const mainNavItems: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Properties', href: '/properties', icon: Building2 },
-  { title: 'Buyers', href: '/buyers', icon: Users },
   { title: 'Deals', href: '/deals', icon: Handshake, badge: 3, badgeVariant: 'default' },
-  { title: 'Team', href: '/team', icon: Users },
-  { title: 'Lists', href: '/lists', icon: List },
-  { title: 'Filters', href: '/filters', icon: Filter },
-  { title: 'Documents', href: '/documents', icon: FileText },
+  { title: 'Buyers', href: '/buyers', icon: Users },
   { title: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { title: 'Market', href: '/market', icon: TrendingUp },
   { title: 'Map', href: '/map', icon: Map },
-  { title: 'Search', href: '/search', icon: Search },
 ];
+
+// Tools group - secondary features
+const toolsGroup: NavGroup = {
+  title: 'Tools',
+  icon: Wrench,
+  items: [
+    { title: 'Saved Lists', href: '/lists', icon: List },
+    { title: 'Saved Filters', href: '/filters', icon: Filter },
+    { title: 'Documents', href: '/documents', icon: FileText },
+    { title: 'Team', href: '/team', icon: Users },
+  ],
+  defaultOpen: false,
+};
 
 const bottomNavItems: NavItem[] = [
   {
@@ -81,7 +100,13 @@ interface NavigationSidebarProps {
 export function NavigationSidebar({ user }: NavigationSidebarProps) {
   const pathname = usePathname();
   const { leftCollapsed, toggleLeft } = useAppShell();
+  const [toolsOpen, setToolsOpen] = useState(toolsGroup.defaultOpen);
   const userInitials = user.email?.slice(0, 2).toUpperCase() ?? 'U';
+
+  // Check if any tools item is active
+  const isToolsActive = toolsGroup.items.some(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+  );
 
   return (
     <div className="flex h-full flex-col">
@@ -100,10 +125,35 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
         </Button>
       </div>
 
+      {/* Quick Search Hint */}
+      {!leftCollapsed && (
+        <div className="px-3 py-2">
+          <button
+            className="flex w-full items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors"
+            onClick={() => {
+              // Trigger command palette
+              const event = new KeyboardEvent('keydown', {
+                key: 'k',
+                metaKey: true,
+                bubbles: true,
+              });
+              document.dispatchEvent(event);
+            }}
+          >
+            <Search className="h-4 w-4" />
+            <span className="flex-1 text-left">Quick search...</span>
+            <kbd className="flex items-center gap-0.5 rounded bg-background px-1.5 py-0.5 text-xs border">
+              <Command className="h-3 w-3" />K
+            </kbd>
+          </button>
+        </div>
+      )}
+
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto p-2">
+        {/* Primary Navigation Items */}
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {mainNavItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
               <li key={item.href}>
@@ -139,6 +189,88 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
             );
           })}
         </ul>
+
+        {/* Tools Group - Collapsible */}
+        {!leftCollapsed && (
+          <Collapsible
+            open={toolsOpen || isToolsActive}
+            onOpenChange={setToolsOpen}
+            className="mt-4"
+          >
+            <CollapsibleTrigger asChild>
+              <button
+                className={cn(
+                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isToolsActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <Wrench className="h-5 w-5 flex-shrink-0" />
+                <span className="flex-1 text-left">Tools</span>
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 transition-transform',
+                    (toolsOpen || isToolsActive) && 'rotate-180'
+                  )}
+                />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <ul className="mt-1 ml-4 space-y-1 border-l pl-4">
+                {toolsGroup.items.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        )}
+                      >
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* Collapsed Tools - Show as single icon */}
+        {leftCollapsed && (
+          <div className="mt-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    'flex w-full items-center justify-center rounded-lg p-2 transition-colors',
+                    isToolsActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                >
+                  <Wrench className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="start">
+                {toolsGroup.items.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href} className="flex items-center gap-2">
+                      <item.icon className="h-4 w-4" />
+                      {item.title}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </nav>
 
       {/* Bottom Navigation */}
