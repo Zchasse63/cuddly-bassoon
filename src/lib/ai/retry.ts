@@ -3,7 +3,7 @@
  * Implements exponential backoff and retry strategies for AI requests
  */
 
-import { AIError, AIRateLimitError, isRetryableError, parseAnthropicError } from './errors';
+import { AIError, AIRateLimitError, isRetryableError, parseAIError } from './errors';
 
 export interface RetryOptions {
   maxRetries?: number;
@@ -23,10 +23,7 @@ const DEFAULT_OPTIONS: Required<Omit<RetryOptions, 'onRetry'>> = {
 /**
  * Execute a function with retry logic
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const config = { ...DEFAULT_OPTIONS, ...options };
   let lastError: AIError | null = null;
 
@@ -34,7 +31,7 @@ export async function withRetry<T>(
     try {
       return await fn();
     } catch (error) {
-      lastError = parseAnthropicError(error);
+      lastError = parseAIError(error);
 
       // Don't retry non-retryable errors
       if (!isRetryableError(lastError)) {
@@ -67,7 +64,9 @@ export async function withRetry<T>(
         options.onRetry(attempt + 1, lastError, delayMs);
       }
 
-      console.log(`[AI Retry] Attempt ${attempt + 1}/${config.maxRetries + 1} failed, retrying in ${Math.round(delayMs)}ms`);
+      console.log(
+        `[AI Retry] Attempt ${attempt + 1}/${config.maxRetries + 1} failed, retrying in ${Math.round(delayMs)}ms`
+      );
       await sleep(delayMs);
     }
   }
@@ -101,7 +100,7 @@ export async function withRetryAndFallback<T>(
       return await fallbackFn();
     } catch (fallbackError) {
       // If fallback also fails, throw the original error
-      throw parseAnthropicError(error);
+      throw parseAIError(error);
     }
   }
 }
@@ -113,10 +112,7 @@ function sleep(ms: number): Promise<void> {
 /**
  * Create a circuit breaker for AI requests
  */
-export function createCircuitBreaker(
-  thresholdFailures: number = 5,
-  resetTimeMs: number = 60000
-) {
+export function createCircuitBreaker(thresholdFailures: number = 5, resetTimeMs: number = 60000) {
   let failureCount = 0;
   let lastFailureTime = 0;
   let isOpen = false;
@@ -159,4 +155,3 @@ export function createCircuitBreaker(
     },
   };
 }
-

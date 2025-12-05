@@ -6,6 +6,7 @@ interface PipelineStage {
   count: number;
   value: number;
   color: string;
+  staleDealCount: number; // Deals stale for 7+ days
 }
 
 const stageConfig: Record<string, { name: string; color: string; order: number }> = {
@@ -27,10 +28,10 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch deals grouped by stage
+    // Fetch deals grouped by stage with updated_at for stale detection
     const { data: deals, error } = await supabase
       .from('deals')
-      .select('stage, assignment_fee, contract_price')
+      .select('stage, assignment_fee, contract_price, updated_at')
       .eq('user_id', user.id)
       .neq('status', 'lost');
 
@@ -39,16 +40,29 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch pipeline data' }, { status: 500 });
     }
 
+    // Calculate stale threshold (7 days ago)
+    const now = new Date();
+    const staleThreshold = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
     // Aggregate by stage
-    const stageAggregates: Record<string, { count: number; value: number }> = {};
+    const stageAggregates: Record<string, { count: number; value: number; staleCount: number }> =
+      {};
 
     for (const deal of deals || []) {
       const stage = (deal.stage || 'lead').toLowerCase();
       if (!stageAggregates[stage]) {
-        stageAggregates[stage] = { count: 0, value: 0 };
+        stageAggregates[stage] = { count: 0, value: 0, staleCount: 0 };
       }
       stageAggregates[stage].count += 1;
       stageAggregates[stage].value += deal.assignment_fee || deal.contract_price || 0;
+
+      // Check if deal is stale (not updated in 7+ days) and not closed
+      if (deal.updated_at && stage !== 'closed') {
+        const updatedAt = new Date(deal.updated_at);
+        if (updatedAt < staleThreshold) {
+          stageAggregates[stage].staleCount += 1;
+        }
+      }
     }
 
     // Build stages array
@@ -59,6 +73,7 @@ export async function GET() {
         count: stageAggregates[key]?.count || 0,
         value: stageAggregates[key]?.value || 0,
         color: config.color,
+        staleDealCount: stageAggregates[key]?.staleCount || 0,
       }));
 
     const totalValue = stages.reduce((sum, stage) => sum + stage.value, 0);

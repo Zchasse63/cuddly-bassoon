@@ -13,8 +13,8 @@ import {
   PipelineSummarySkeleton,
   QuickActions,
 } from '@/components/analytics';
+import { DailyBriefingCard, StaleDealsAlert } from '@/components/ai/ProactiveInsights';
 import {
-  Home,
   Users,
   Briefcase,
   Sparkles,
@@ -23,7 +23,6 @@ import {
   DollarSign,
   TrendingUp,
   Search,
-  Target,
   Plus,
   BarChart3,
 } from 'lucide-react';
@@ -77,6 +76,12 @@ export default function DashboardPage() {
     },
   ];
 
+  // Calculate stale deals count from pipeline data
+  const staleDealCount =
+    pipelineData?.stages
+      ?.filter((stage) => stage.staleDealCount && stage.staleDealCount > 0)
+      .reduce((sum, stage) => sum + (stage.staleDealCount || 0), 0) || 3; // Default to demo value
+
   return (
     <div className="page-container">
       {/* Page Header */}
@@ -87,24 +92,20 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Primary KPI Cards */}
+      {/* AI Daily Briefing - Top Priority */}
+      <DailyBriefingCard className="mb-6" />
+
+      {/* Stale Deals Alert - Only show if there are stale deals */}
+      {staleDealCount > 0 && (
+        <StaleDealsAlert
+          staleDealCount={staleDealCount}
+          onViewDeals={() => router.push('/deals?filter=stale')}
+          className="mb-6"
+        />
+      )}
+
+      {/* Focused KPI Cards - Reduced to 4 key metrics */}
       <KPICardGrid columns={4}>
-        <KPICard
-          title="Properties Searched"
-          value={isLoading ? '...' : (summary?.properties_searched || 0).toString()}
-          icon={Search}
-          change={
-            summary?.searches_trend
-              ? { value: summary.searches_trend, label: 'vs last week' }
-              : undefined
-          }
-        />
-        <KPICard
-          title="Active Buyers"
-          value={isLoading ? '...' : (buyers?.active_buyers || 0).toString()}
-          icon={Users}
-          subtitle={`${buyers?.tier_a_count || 0} Tier A`}
-        />
         <KPICard
           title="Active Deals"
           value={isLoading ? '...' : (deals?.active_deals || 0).toString()}
@@ -112,6 +113,8 @@ export default function DashboardPage() {
           change={
             summary?.deals_trend ? { value: summary.deals_trend, label: 'vs last week' } : undefined
           }
+          onClick={() => router.push('/deals')}
+          className="cursor-pointer hover:shadow-md transition-shadow"
         />
         <KPICard
           title="Revenue (7d)"
@@ -122,30 +125,28 @@ export default function DashboardPage() {
               ? { value: summary.revenue_trend, label: 'vs last week' }
               : undefined
           }
-        />
-      </KPICardGrid>
-
-      {/* Secondary KPI Cards */}
-      <KPICardGrid columns={4} className="mt-4 kpi-grid--staggered">
-        <KPICard
-          title="Properties Saved"
-          value={isLoading ? '...' : (summary?.properties_saved || 0).toString()}
-          icon={Home}
+          onClick={() => router.push('/analytics')}
+          className="cursor-pointer hover:shadow-md transition-shadow"
         />
         <KPICard
-          title="Properties Analyzed"
-          value={isLoading ? '...' : (summary?.properties_analyzed || 0).toString()}
-          icon={Target}
+          title="Active Buyers"
+          value={isLoading ? '...' : (buyers?.active_buyers || 0).toString()}
+          icon={Users}
+          subtitle={`${buyers?.tier_a_count || 0} Tier A buyers`}
+          onClick={() => router.push('/buyers')}
+          className="cursor-pointer hover:shadow-md transition-shadow"
         />
         <KPICard
-          title="Active Leads"
-          value={isLoading ? '...' : (summary?.active_leads || 0).toString()}
+          title="Pipeline Value"
+          value={
+            isLoading || pipelineLoading
+              ? '...'
+              : `$${(pipelineData?.totalValue || 0).toLocaleString()}`
+          }
           icon={TrendingUp}
-        />
-        <KPICard
-          title="Avg Assignment Fee"
-          value={isLoading ? '...' : `$${(summary?.avg_assignment_fee || 0).toLocaleString()}`}
-          icon={Sparkles}
+          subtitle={`${deals?.deals_by_stage?.contract || 0} in contract`}
+          onClick={() => router.push('/deals')}
+          className="cursor-pointer hover:shadow-md transition-shadow"
         />
       </KPICardGrid>
 

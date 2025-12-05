@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { AppShell, AppShellProvider } from '@/components/layout/AppShell';
 import { NavigationSidebar } from '@/components/layout/NavigationSidebar';
 import { ViewContextProvider } from '@/contexts/ViewContext';
+import { GlobalProviders } from '@/components/layout/GlobalProviders';
 import { AIChatSidebarWrapper } from './ai-chat-wrapper';
 
 /**
@@ -15,6 +16,7 @@ import { AIChatSidebarWrapper } from './ai-chat-wrapper';
  * - Right Sidebar: 360px (AI Chat)
  *
  * ViewContextProvider enables AI context awareness across all pages.
+ * GlobalProviders includes Command Palette (Cmd+K) and Breadcrumb context.
  */
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -28,14 +30,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <ViewContextProvider>
-      <AppShellProvider>
-        <AppShell
-          leftSidebar={<NavigationSidebar user={user} />}
-          rightSidebar={<AIChatSidebarWrapper />}
-        >
-          <div className="page-content">{children}</div>
-        </AppShell>
-      </AppShellProvider>
+      <GlobalProviders>
+        <AppShellProvider>
+          <AppShell
+            leftSidebar={<NavigationSidebar user={user} />}
+            rightSidebar={<AIChatSidebarWrapper />}
+          >
+            <div className="page-content">{children}</div>
+          </AppShell>
+        </AppShellProvider>
+      </GlobalProviders>
     </ViewContextProvider>
   );
 }
