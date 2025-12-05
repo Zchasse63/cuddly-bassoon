@@ -49,7 +49,10 @@ import {
   Clock,
   AlertCircle,
   CheckCircle2,
+  Brain,
 } from 'lucide-react';
+import { MotivationScoreCard, MotivationScoreBadge } from '@/components/motivation';
+import { useMotivationScore } from '@/hooks/useMotivationScore';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -68,6 +71,17 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
   const [activeTab, setActiveTab] = useState('overview');
   const [showCreateDealDialog, setShowCreateDealDialog] = useState(false);
   const [isCreatingDeal, setIsCreatingDeal] = useState(false);
+
+  // Fetch motivation score
+  const {
+    data: motivationData,
+    isLoading: motivationLoading,
+    refetch: refetchMotivation,
+  } = useMotivationScore({
+    propertyId: property.id,
+    scoreType: 'both', // Get both standard and DealFlow IQ
+    enabled: true,
+  });
 
   // Set page context for AI awareness
   usePageContext('property-detail', {
@@ -262,6 +276,43 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
+          {/* Motivation Score Card - Full Width */}
+          {(motivationData || motivationLoading) && (
+            <div className="mb-6">
+              {motivationLoading ? (
+                <Card className="card-elevated">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-brand-500" />
+                      Seller Motivation Analysis
+                    </CardTitle>
+                    <CardDescription>Analyzing seller motivation signals...</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-12 bg-muted rounded-md w-1/3" />
+                      <div className="h-20 bg-muted rounded-md" />
+                      <div className="h-16 bg-muted rounded-md" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : motivationData ? (
+                <MotivationScoreCard
+                  score={motivationData.standardScore.score}
+                  confidence={motivationData.standardScore.confidence}
+                  factors={motivationData.standardScore.factors}
+                  recommendation={motivationData.standardScore.recommendation}
+                  ownerClassification={motivationData.ownerClassification}
+                  modelUsed={motivationData.standardScore.modelUsed}
+                  riskFactors={motivationData.standardScore.riskFactors}
+                  dealFlowIQ={motivationData.dealFlowIQ}
+                  onRefresh={refetchMotivation}
+                  isLoading={motivationLoading}
+                />
+              ) : null}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Property Details */}
             <Card className="card-elevated">
