@@ -11,6 +11,20 @@ import { chunkDocument, type DocumentChunk } from './chunker';
 import { generateBatchEmbeddings, formatEmbeddingForPgVector, EMBEDDING_MODEL } from './embedder';
 import type { Database } from '@/types/database';
 
+/**
+ * Validates that a file path entry name is safe (no path separators or traversal).
+ */
+function validateEntryName(name: string): boolean {
+  // Reject names with path separators or parent directory references
+  return (
+    !name.includes(path.sep) &&
+    !name.includes('/') &&
+    !name.includes('\\') &&
+    name !== '..' &&
+    name !== '.'
+  );
+}
+
 export interface IngestionProgress {
   phase: 'reading' | 'processing' | 'chunking' | 'embedding' | 'storing' | 'complete';
   current: number;
@@ -52,11 +66,24 @@ export async function ingestAllDocuments(
   let chunksCreated = 0;
   let embeddingsGenerated = 0;
 
-  // Find all markdown files
-  const files = findMarkdownFiles(knowledgeBasePath);
+  // Resolve and validate the base path
+  const resolvedBasePath = path.resolve(knowledgeBasePath);
+
+  // Ensure the path exists and is a directory
+  if (!fs.existsSync(resolvedBasePath) || !fs.statSync(resolvedBasePath).isDirectory()) {
+    throw new Error(`Invalid knowledge base path: ${knowledgeBasePath}`);
+  }
+
+  // Find all markdown files (findMarkdownFiles will enforce base directory constraints)
+  const files = findMarkdownFiles(resolvedBasePath);
   const totalFiles = files.length;
 
-  onProgress?.({ phase: 'reading', current: 0, total: totalFiles, message: `Found ${totalFiles} documents` });
+  onProgress?.({
+    phase: 'reading',
+    current: 0,
+    total: totalFiles,
+    message: `Found ${totalFiles} documents`,
+  });
 
   const supabase = getSupabaseClient();
 
@@ -64,7 +91,7 @@ export async function ingestAllDocuments(
   for (let i = 0; i < files.length; i++) {
     const filePath = files[i];
     if (!filePath) continue;
-    const fileName = path.relative(knowledgeBasePath, filePath);
+    const fileName = path.relative(resolvedBasePath, filePath);
 
     onProgress?.({ phase: 'processing', current: i + 1, total: totalFiles, currentFile: fileName });
 
@@ -93,8 +120,13 @@ export async function ingestAllDocuments(
       chunksCreated += chunkIds.length;
 
       // Generate embeddings
-      onProgress?.({ phase: 'embedding', current: i + 1, total: totalFiles, currentFile: fileName });
-      const chunkContents = chunks.map(c => c.content);
+      onProgress?.({
+        phase: 'embedding',
+        current: i + 1,
+        total: totalFiles,
+        currentFile: fileName,
+      });
+      const chunkContents = chunks.map((c) => c.content);
       const embeddingResults = await generateBatchEmbeddings(chunkContents, (completed, total) => {
         onProgress?.({
           phase: 'embedding',
@@ -124,7 +156,12 @@ export async function ingestAllDocuments(
   }
 
   const duration = Date.now() - startTime;
-  onProgress?.({ phase: 'complete', current: totalFiles, total: totalFiles, message: 'Ingestion complete' });
+  onProgress?.({
+    phase: 'complete',
+    current: totalFiles,
+    total: totalFiles,
+    message: 'Ingestion complete',
+  });
 
   return {
     success: errors.length === 0,
@@ -136,14 +173,34 @@ export async function ingestAllDocuments(
   };
 }
 
-function findMarkdownFiles(dir: string): string[] {
+function findMarkdownFiles(dir: string, baseDir?: string): string[] {
+  // Use provided base or initialize with the starting directory
+  const effectiveBase = baseDir ?? path.resolve(dir);
   const files: string[] = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  // Validate that dir is within base directory
+  const resolvedDir = path.resolve(dir);
+  if (!resolvedDir.startsWith(effectiveBase + path.sep) && resolvedDir !== effectiveBase) {
+    throw new Error(`Path traversal detected: directory escapes base`);
+  }
+
+  const entries = fs.readdirSync(resolvedDir, { withFileTypes: true });
 
   for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
+    // Validate entry name to prevent path traversal via malicious filenames
+    if (!validateEntryName(entry.name)) {
+      continue; // Skip entries with unsafe names
+    }
+
+    const fullPath = path.join(resolvedDir, entry.name);
+
+    // Double-check the joined path is still within base
+    if (!fullPath.startsWith(effectiveBase + path.sep) && fullPath !== effectiveBase) {
+      continue; // Skip paths that escape the base directory
+    }
+
     if (entry.isDirectory()) {
-      files.push(...findMarkdownFiles(fullPath));
+      files.push(...findMarkdownFiles(fullPath, effectiveBase));
     } else if (entry.isFile() && entry.name.endsWith('.md')) {
       files.push(fullPath);
     }
@@ -157,18 +214,21 @@ async function storeDocument(
 ): Promise<string> {
   const { data, error } = await supabase
     .from('documents')
-    .upsert({
-      slug: doc.metadata.slug,
-      title: doc.metadata.title,
-      category: doc.metadata.category,
-      subcategory: doc.metadata.subcategory,
-      content: doc.content,
-      tags: doc.metadata.tags,
-      related_docs: doc.metadata.related_docs,
-      difficulty_level: doc.metadata.difficulty_level,
-      version: doc.metadata.version ? parseFloat(doc.metadata.version) : 1.0,
-      is_active: true,
-    }, { onConflict: 'slug' })
+    .upsert(
+      {
+        slug: doc.metadata.slug,
+        title: doc.metadata.title,
+        category: doc.metadata.category,
+        subcategory: doc.metadata.subcategory,
+        content: doc.content,
+        tags: doc.metadata.tags,
+        related_docs: doc.metadata.related_docs,
+        difficulty_level: doc.metadata.difficulty_level,
+        version: doc.metadata.version ? parseFloat(doc.metadata.version) : 1.0,
+        is_active: true,
+      },
+      { onConflict: 'slug' }
+    )
     .select('id')
     .single();
 
