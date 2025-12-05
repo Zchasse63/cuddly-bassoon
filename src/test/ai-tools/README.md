@@ -22,13 +22,13 @@ npx vitest run src/test/ai-tools --reporter=verbose
 Create a `.env.local` file with:
 
 ```env
-# Required - Claude API
-ANTHROPIC_API_KEY=sk-ant-...
+# Required - xAI Grok API
+XAI_API_KEY=xai-...
 
 # Required - Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
 
 # Optional - External APIs (tests will skip if not available)
 MAPBOX_ACCESS_TOKEN=pk.eyJ...
@@ -87,7 +87,7 @@ npx tsx src/test/ai-tools/seed-test-data.ts
 ## API Usage
 
 Tests use **REAL APIs** by default:
-- ✅ Claude API (Anthropic)
+- ✅ xAI Grok (AI/LLM)
 - ✅ Supabase (database)
 - ✅ Mapbox (geocoding, isochrones)
 - ✅ Shovels (permits, contractors)
@@ -96,25 +96,25 @@ Tests use **REAL APIs** by default:
 
 ## Model Selection Strategy
 
-The test suite uses a **deliberate model selection strategy**:
+The test suite uses a **deliberate model selection strategy** with xAI Grok models:
 
 | Test File | Model Used | Reason |
 |-----------|------------|--------|
-| `model-selection.test.ts` | Opus/Sonnet/Haiku | Explicitly tests routing logic |
-| `single-turn-tools.test.ts` | Sonnet | Tool selection tests |
-| `multi-turn-conversation.test.ts` | Sonnet | Context retention tests |
-| `tool-selection-precision.test.ts` | Sonnet | Precision tests |
+| `model-selection.test.ts` | Reasoning/Fast | Explicitly tests routing logic |
+| `single-turn-tools.test.ts` | Fast | Tool selection tests |
+| `multi-turn-conversation.test.ts` | Fast | Context retention tests |
+| `tool-selection-precision.test.ts` | Fast | Precision tests |
 
-**Why Sonnet for most tests?**
+**Why Grok Fast for most tests?**
 - Balance between speed and capability
 - Cost-effective for high-volume testing
 - Sufficient for tool selection accuracy
 - Model routing is tested separately in `model-selection.test.ts`
 
 **The routing logic** (`src/lib/ai/router.ts`) routes tasks as:
-- **Opus (High)**: Complex analysis, deal evaluation, property analysis
-- **Sonnet (Medium)**: Content generation, buyer matching, offer letters
-- **Haiku (Low)**: Simple Q&A, intent classification, data extraction
+- **Reasoning (High)**: Complex analysis, deal evaluation, property analysis
+- **Fast (Medium)**: Content generation, buyer matching, offer letters
+- **Standard (Low)**: Simple Q&A, intent classification, data extraction
 
 ## Configuration
 

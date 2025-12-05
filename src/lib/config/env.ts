@@ -24,7 +24,6 @@ const envSchema = z.object({
 
   // AI/LLM (Optional)
   XAI_API_KEY: z.string().optional(),
-  ANTHROPIC_API_KEY: z.string().optional(), // Legacy - kept for backwards compatibility
   OPENAI_API_KEY: z.string().optional(),
 
   // Communication Services (Optional - Phase 9)

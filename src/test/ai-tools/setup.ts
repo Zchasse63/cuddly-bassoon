@@ -41,7 +41,6 @@ const OPTIONAL_ENV_VARS = [
   'SUPABASE_SECRET_KEY',
   'SHOVELS_API_KEY',
   'RENTCAST_API_KEY',
-  'ANTHROPIC_API_KEY', // Legacy - kept for backwards compatibility
 ];
 
 // ============================================================================
