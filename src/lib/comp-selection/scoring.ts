@@ -262,8 +262,16 @@ export function createCompAnalysis(
   boundaries?: {
     blockGroup: CensusBoundaryFeature | null;
     tract: CensusBoundaryFeature | null;
-  }
+  },
+  geocodingErrors?: Array<{ id: string; error: string }>
 ): CompAnalysis {
+  const summary = generateAnalysisSummary(scoredComps);
+
+  // Add geocoding failure count to summary
+  if (geocodingErrors && geocodingErrors.length > 0) {
+    summary.geocodingFailedCount = geocodingErrors.length;
+  }
+
   return {
     id: crypto.randomUUID(),
     subjectProperty: subject,
@@ -272,7 +280,8 @@ export function createCompAnalysis(
     scoredComps,
     analysisDate: new Date(),
     scoringConfig: config,
-    summary: generateAnalysisSummary(scoredComps),
+    geocodingErrors: geocodingErrors && geocodingErrors.length > 0 ? geocodingErrors : undefined,
+    summary,
   };
 }
 

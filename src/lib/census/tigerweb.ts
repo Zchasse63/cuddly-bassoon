@@ -264,7 +264,7 @@ export function getFeatureAreaSqMiles(feature: CensusBoundaryFeature): number {
 export function getFeatureCenter(
   feature: CensusBoundaryFeature
 ): { lat: number; lng: number } | null {
-  const geometry = feature.geometry;
+  const { geometry } = feature;
 
   if (!geometry || !geometry.coordinates) {
     return null;
@@ -310,7 +310,7 @@ export function isPointInFeature(
   lng: number,
   feature: CensusBoundaryFeature
 ): boolean {
-  const geometry = feature.geometry;
+  const { geometry } = feature;
 
   if (!geometry || !geometry.coordinates) {
     return false;

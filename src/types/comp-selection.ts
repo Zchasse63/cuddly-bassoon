@@ -188,6 +188,14 @@ export interface ScoredComparable extends GeocodedComparable {
 // ============================================
 
 /**
+ * Geocoding error for a specific property
+ */
+export interface GeocodingError {
+  id: string;
+  error: string;
+}
+
+/**
  * Complete comp analysis result
  */
 export interface CompAnalysis {
@@ -198,6 +206,8 @@ export interface CompAnalysis {
   scoredComps: ScoredComparable[];
   analysisDate: Date;
   scoringConfig: CompScoringConfig;
+  /** Errors encountered during geocoding - empty if all geocoding succeeded */
+  geocodingErrors?: GeocodingError[];
   summary: {
     totalCompsAnalyzed: number;
     excellentCount: number;
@@ -208,6 +218,8 @@ export interface CompAnalysis {
     averageDistance: number;
     estimatedARV?: number;
     arvConfidence?: number;
+    /** Count of comps that failed geocoding */
+    geocodingFailedCount?: number;
   };
 }
 

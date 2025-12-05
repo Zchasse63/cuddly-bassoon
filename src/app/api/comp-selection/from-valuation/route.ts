@@ -194,30 +194,23 @@ export async function POST(request: NextRequest) {
     };
 
     // Build subject property
-    // If lat/lng not provided, we need to geocode the address
-    let subjectLat = latitude;
-    let subjectLng = longitude;
-
-    // If no coordinates provided, try to get from first comp's relative position
-    // or use a default (this should be improved with address geocoding)
-    if (!subjectLat || !subjectLng) {
-      // For now, estimate from comps (center of all comps)
-      if (compsWithCoords.length > 0) {
-        subjectLat =
-          compsWithCoords.reduce((sum, c) => sum + c.latitude, 0) / compsWithCoords.length;
-        subjectLng =
-          compsWithCoords.reduce((sum, c) => sum + c.longitude, 0) / compsWithCoords.length;
-      } else {
-        return NextResponse.json(
-          {
-            error: 'Cannot determine subject property location',
-            details:
-              'Provide latitude and longitude, or ensure valuation has comps with coordinates',
-          },
-          { status: 400 }
-        );
-      }
+    // Require explicit coordinates - do not silently estimate from comps
+    if (latitude === undefined || longitude === undefined) {
+      return NextResponse.json(
+        {
+          error: 'Subject property coordinates required',
+          details:
+            'Latitude and longitude are required to accurately determine Census geography. ' +
+            'Please provide explicit coordinates for the subject property, or use the /api/census/geocode ' +
+            'endpoint to geocode the address first.',
+          suggestion: 'geocode_address_first',
+        },
+        { status: 400 }
+      );
     }
+
+    const subjectLat = latitude;
+    const subjectLng = longitude;
 
     const subject = {
       id: crypto.randomUUID(),

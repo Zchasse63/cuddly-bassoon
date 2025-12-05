@@ -93,11 +93,14 @@ export async function analyzeComps(
 
   // Step 2: Geocode all comps
   let geocodedComps: GeocodedComparable[];
+  let geocodingErrors: Array<{ id: string; error: string }> = [];
 
   if (skipGeocoding) {
     geocodedComps = rawComps as GeocodedComparable[];
   } else {
-    geocodedComps = await geocodeComparables(rawComps);
+    const geocodeResult = await geocodeComparables(rawComps);
+    geocodedComps = geocodeResult.comps;
+    geocodingErrors = geocodeResult.errors;
   }
 
   // Step 3: Score and rank comps
@@ -118,8 +121,14 @@ export async function analyzeComps(
     );
   }
 
-  // Step 5: Create and return analysis
-  const analysis = createCompAnalysis(subjectWithGeo, scoredComps, config, boundaries);
+  // Step 5: Create and return analysis (including any geocoding errors)
+  const analysis = createCompAnalysis(
+    subjectWithGeo,
+    scoredComps,
+    config,
+    boundaries,
+    geocodingErrors
+  );
 
   // Calculate weighted ARV if we have prices
   const weightedARV = calculateWeightedARV(scoredComps);
@@ -131,30 +140,67 @@ export async function analyzeComps(
 }
 
 /**
- * Geocode an array of raw comparables
+ * Result of geocoding comparables, including error information
  */
-export async function geocodeComparables(comps: RawComparable[]): Promise<GeocodedComparable[]> {
-  // Prepare coordinates for batch geocoding
-  const coordinates = comps
-    .filter((comp) => comp.latitude && comp.longitude)
-    .map((comp) => ({
-      id: comp.id,
-      lat: comp.latitude,
-      lng: comp.longitude,
-    }));
+export interface GeocodeComparablesResult {
+  /** Successfully geocoded comparables with Census geography */
+  comps: GeocodedComparable[];
+  /** Errors encountered during geocoding */
+  errors: Array<{ id: string; error: string }>;
+  /** Count of successfully geocoded comps */
+  successCount: number;
+  /** Count of comps that failed geocoding */
+  failureCount: number;
+}
 
-  // Batch geocode all comps
-  const { results } = await batchCensusGeocode(coordinates);
+/**
+ * Geocode an array of raw comparables
+ * Returns both geocoded comps and any errors encountered
+ */
+export async function geocodeComparables(
+  comps: RawComparable[]
+): Promise<GeocodeComparablesResult> {
+  // Prepare coordinates for batch geocoding
+  const compsWithCoords = comps.filter((comp) => comp.latitude && comp.longitude);
+  const compsWithoutCoords = comps.filter((comp) => !comp.latitude || !comp.longitude);
+
+  const coordinates = compsWithCoords.map((comp) => ({
+    id: comp.id,
+    lat: comp.latitude,
+    lng: comp.longitude,
+  }));
+
+  // Batch geocode all comps with coordinates
+  const { results, errors: geocodeErrors } = await batchCensusGeocode(coordinates);
+
+  // Build error list for comps without coordinates
+  const errors: Array<{ id: string; error: string }> = compsWithoutCoords.map((comp) => ({
+    id: comp.id,
+    error: 'Missing coordinates (latitude/longitude)',
+  }));
+
+  // Add geocoding errors
+  errors.push(...geocodeErrors);
 
   // Attach Census data to comps
-  return comps.map((comp) => {
+  const geocodedComps = comps.map((comp) => {
     const geo = results.get(comp.id);
     return {
       ...comp,
       blockGroupGeoid: geo?.blockGroupGeoid,
       tractGeoid: geo?.tractGeoid,
+      geocodingFailed: !geo && comp.latitude && comp.longitude ? true : undefined,
     };
   });
+
+  const successCount = geocodedComps.filter((c) => c.blockGroupGeoid).length;
+
+  return {
+    comps: geocodedComps,
+    errors,
+    successCount,
+    failureCount: comps.length - successCount,
+  };
 }
 
 /**

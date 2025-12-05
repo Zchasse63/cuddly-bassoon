@@ -486,7 +486,7 @@ const getCensusBoundaryByPointHandler: ToolHandler<
 function calculateBbox(
   feature: CensusBoundaryFeature
 ): [number, number, number, number] | undefined {
-  const geometry = feature.geometry;
+  const { geometry } = feature;
   if (!geometry || !geometry.coordinates) return undefined;
 
   let minLng = Infinity;
@@ -494,7 +494,7 @@ function calculateBbox(
   let maxLng = -Infinity;
   let maxLat = -Infinity;
 
-  function processRing(ring: number[][]) {
+  const processRing = (ring: number[][]) => {
     for (const coord of ring) {
       const lng = coord[0];
       const lat = coord[1];
@@ -505,7 +505,7 @@ function calculateBbox(
         maxLat = Math.max(maxLat, lat);
       }
     }
-  }
+  };
 
   if (geometry.type === 'Polygon') {
     for (const ring of geometry.coordinates as number[][][]) {
