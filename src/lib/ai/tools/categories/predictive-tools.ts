@@ -23,6 +23,8 @@ import {
 } from '@/lib/deals-rag';
 import {
   calculateSellerMotivation,
+  batchCalculateMotivation,
+  classifyOwner,
   type ScoringResult,
 } from '@/lib/seller-motivation';
 
@@ -813,14 +815,288 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
 };
 
 // ============================================================================
+// Owner Classification Tool
+// ============================================================================
+const classifyOwnerInput = z.object({
+  ownerName: z.string().describe('The owner name to classify'),
+  ownerType: z.string().optional().describe('Optional owner type hint from property data'),
+  ownerOccupied: z.boolean().optional().describe('Whether the property is owner-occupied'),
+  mailingState: z.string().optional().describe('Owner mailing address state'),
+  propertyState: z.string().optional().describe('Property state for out-of-state detection'),
+});
+
+const classifyOwnerOutput = z.object({
+  primaryClass: z.enum(['individual', 'investor_entity', 'institutional_distressed']),
+  subClass: z.string(),
+  confidence: z.number(),
+  matchedPatterns: z.array(z.string()),
+  interpretation: z.string(),
+});
+
+type ClassifyOwnerInput = z.infer<typeof classifyOwnerInput>;
+type ClassifyOwnerOutput = z.infer<typeof classifyOwnerOutput>;
+
+const classifyOwnerDefinition: ToolDefinition<ClassifyOwnerInput, ClassifyOwnerOutput> = {
+  id: 'predict.classify_owner',
+  name: 'Classify Owner Type',
+  description: 'Classify a property owner into categories: Individual (owner-occupied/absentee), Investor/Entity (LLC, corporation, trust), or Institutional (bank REO, government, estate). Uses pattern matching on owner name and optional signals.',
+  category: 'predictive',
+  requiredPermission: 'read',
+  inputSchema: classifyOwnerInput,
+  outputSchema: classifyOwnerOutput,
+  requiresConfirmation: false,
+  estimatedDuration: 500,
+  rateLimit: 50,
+  tags: ['predictive', 'owner', 'classification', 'entity-detection'],
+};
+
+const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput> = async (input) => {
+  console.log('[Predictive] Classifying owner:', input.ownerName);
+
+  const classification = classifyOwner(input.ownerName, {
+    ownerType: input.ownerType,
+    ownerOccupied: input.ownerOccupied,
+    mailingState: input.mailingState,
+    propertyState: input.propertyState,
+  });
+
+  // Generate interpretation
+  const interpretations: Record<string, string> = {
+    individual: 'Individual owners respond to personal approaches. Focus on their life situation and timeline.',
+    investor_entity: 'Investor/entities are numbers-driven. Focus on ROI, quick closes, and professional terms.',
+    institutional_distressed: 'Institutional owners have strict processes. Follow protocols and expect longer timelines.',
+  };
+
+  const subClassDetails: Record<string, string> = {
+    owner_occupied: 'Lives in property - emotional attachment, life events drive decisions.',
+    absentee: 'Doesn\'t live there - may be tired landlord or inherited property.',
+    out_of_state: 'Lives far away - management burden increases motivation.',
+    inherited: 'Likely inherited - beneficiaries often want quick liquidation.',
+    small_investor: 'Small portfolio (1-4 properties) - may be approachable.',
+    portfolio_investor: 'Large portfolio (5+) - professional, ROI-focused.',
+    llc_single: 'Single-property LLC - could be personal asset protection.',
+    llc_multi: 'Multi-property LLC - active investor, less likely motivated.',
+    corporate: 'Corporation - professional investor with holding power.',
+    trust_living: 'Living trust - estate planning, owner still in control.',
+    trust_irrevocable: 'Irrevocable trust - complex decision process.',
+    bank_reo: 'Bank REO - motivated but slow process (45-60 days).',
+    government_federal: 'Federal agency - strict protocols, limited negotiation.',
+    government_state: 'State agency - bureaucratic process.',
+    government_local: 'Local government - may have community programs.',
+    tax_lien: 'Tax lien holder - property may be redeemable.',
+    estate_probate: 'Estate in probate - highly motivated, legal clearance needed.',
+    estate_executor: 'Executor sale - motivated to settle estate.',
+  };
+
+  return {
+    primaryClass: classification.primaryClass,
+    subClass: classification.subClass,
+    confidence: classification.confidence,
+    matchedPatterns: classification.matchedPatterns,
+    interpretation: `${interpretations[classification.primaryClass]} ${subClassDetails[classification.subClass] || ''}`.trim(),
+  };
+};
+
+// ============================================================================
+// Batch Motivation Scoring Tool
+// ============================================================================
+const batchMotivationInput = z.object({
+  properties: z.array(z.object({
+    propertyId: z.string().optional(),
+    address: z.string(),
+  })).max(20).describe('List of properties to score (max 20)'),
+  scoreType: z.enum(['standard', 'dealflow_iq']).default('standard'),
+});
+
+const batchMotivationOutput = z.object({
+  results: z.array(z.object({
+    address: z.string(),
+    propertyId: z.string().optional(),
+    score: z.number().nullable(),
+    confidence: z.number().nullable(),
+    ownerClass: z.string().nullable(),
+    recommendation: z.string().nullable(),
+    error: z.string().optional(),
+  })),
+  summary: z.object({
+    total: z.number(),
+    successful: z.number(),
+    failed: z.number(),
+    avgScore: z.number(),
+    highMotivationCount: z.number(),
+  }),
+});
+
+type BatchMotivationInput = z.infer<typeof batchMotivationInput>;
+type BatchMotivationOutput = z.infer<typeof batchMotivationOutput>;
+
+const batchMotivationDefinition: ToolDefinition<BatchMotivationInput, BatchMotivationOutput> = {
+  id: 'predict.batch_motivation',
+  name: 'Batch Score Seller Motivation',
+  description: 'Calculate seller motivation scores for multiple properties at once. Returns scores, owner classifications, and recommendations for up to 20 properties. Useful for prioritizing lead lists.',
+  category: 'predictive',
+  requiredPermission: 'read',
+  inputSchema: batchMotivationInput,
+  outputSchema: batchMotivationOutput,
+  requiresConfirmation: false,
+  estimatedDuration: 30000,
+  rateLimit: 5,
+  tags: ['predictive', 'motivation', 'batch', 'lead-scoring'],
+};
+
+const batchMotivationHandler: ToolHandler<BatchMotivationInput, BatchMotivationOutput> = async (input) => {
+  console.log('[Predictive] Batch scoring', input.properties.length, 'properties');
+
+  const batchResults = await batchCalculateMotivation(
+    input.properties,
+    { scoreType: input.scoreType, concurrency: 5 }
+  );
+
+  const results = batchResults.map(({ input: prop, result, error }) => ({
+    address: prop.address,
+    propertyId: prop.propertyId,
+    score: result?.standardScore.score ?? null,
+    confidence: result?.standardScore.confidence ?? null,
+    ownerClass: result ? `${result.classification.primaryClass}/${result.classification.subClass}` : null,
+    recommendation: result?.standardScore.recommendation ?? null,
+    error,
+  }));
+
+  const successful = results.filter(r => r.score !== null);
+  const avgScore = successful.length > 0
+    ? successful.reduce((sum, r) => sum + (r.score || 0), 0) / successful.length
+    : 0;
+  const highMotivationCount = successful.filter(r => (r.score || 0) >= 65).length;
+
+  return {
+    results,
+    summary: {
+      total: results.length,
+      successful: successful.length,
+      failed: results.length - successful.length,
+      avgScore: Math.round(avgScore),
+      highMotivationCount,
+    },
+  };
+};
+
+// ============================================================================
+// Compare Motivation Scores Tool
+// ============================================================================
+const compareMotivationInput = z.object({
+  propertyIds: z.array(z.string()).min(2).max(10).optional(),
+  addresses: z.array(z.string()).min(2).max(10).optional(),
+}).refine(data => data.propertyIds || data.addresses, {
+  message: 'Either propertyIds or addresses must be provided',
+});
+
+const compareMotivationOutput = z.object({
+  comparisons: z.array(z.object({
+    address: z.string(),
+    score: z.number(),
+    ownerClass: z.string(),
+    keyFactor: z.string(),
+    rank: z.number(),
+  })),
+  analysis: z.object({
+    highestScore: z.object({ address: z.string(), score: z.number() }),
+    lowestScore: z.object({ address: z.string(), score: z.number() }),
+    recommendation: z.string(),
+    priorityOrder: z.array(z.string()),
+  }),
+});
+
+type CompareMotivationInput = z.infer<typeof compareMotivationInput>;
+type CompareMotivationOutput = z.infer<typeof compareMotivationOutput>;
+
+const compareMotivationDefinition: ToolDefinition<CompareMotivationInput, CompareMotivationOutput> = {
+  id: 'predict.compare_motivation',
+  name: 'Compare Motivation Scores',
+  description: 'Compare seller motivation scores across multiple properties to prioritize outreach. Ranks properties and provides analysis of which to contact first.',
+  category: 'predictive',
+  requiredPermission: 'read',
+  inputSchema: compareMotivationInput,
+  outputSchema: compareMotivationOutput,
+  requiresConfirmation: false,
+  estimatedDuration: 15000,
+  rateLimit: 10,
+  tags: ['predictive', 'motivation', 'comparison', 'prioritization'],
+};
+
+const compareMotivationHandler: ToolHandler<CompareMotivationInput, CompareMotivationOutput> = async (input) => {
+  // Build property list
+  const properties = input.addresses
+    ? input.addresses.map(addr => ({ address: addr }))
+    : input.propertyIds!.map(id => ({ propertyId: id, address: '' }));
+
+  console.log('[Predictive] Comparing motivation for', properties.length, 'properties');
+
+  const batchResults = await batchCalculateMotivation(properties, { scoreType: 'standard' });
+
+  // Filter successful results and sort by score
+  const successfulResults = batchResults
+    .filter(r => r.result !== null)
+    .map(r => ({
+      address: r.input.address || r.result!.signals.ownerMailingAddress || 'Unknown',
+      score: r.result!.standardScore.score,
+      ownerClass: `${r.result!.classification.primaryClass}/${r.result!.classification.subClass}`,
+      keyFactor: r.result!.standardScore.factors
+        .filter(f => f.impact === 'positive')
+        .sort((a, b) => b.weight - a.weight)[0]?.name || 'No positive factors',
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  // Add ranks
+  const comparisons = successfulResults.map((r, idx) => ({ ...r, rank: idx + 1 }));
+
+  if (comparisons.length === 0) {
+    throw new Error('Could not score any of the provided properties');
+  }
+
+  const highest = comparisons[0]!;
+  const lowest = comparisons[comparisons.length - 1]!;
+
+  // Generate recommendation
+  let recommendation: string;
+  const scoreDiff = highest.score - lowest.score;
+
+  if (scoreDiff < 10) {
+    recommendation = 'Scores are similar across properties. Consider other factors like property value or location for prioritization.';
+  } else if (highest.score >= 70) {
+    recommendation = `Prioritize ${highest.address} with a score of ${highest.score}. This property shows strong motivation signals.`;
+  } else if (highest.score >= 50) {
+    recommendation = `${highest.address} has the highest score (${highest.score}) but motivation is moderate. Consider investigating for additional signals before outreach.`;
+  } else {
+    recommendation = 'All properties show low motivation scores. Consider waiting for circumstances to change or focusing on other lead sources.';
+  }
+
+  return {
+    comparisons,
+    analysis: {
+      highestScore: { address: highest.address, score: highest.score },
+      lowestScore: { address: lowest.address, score: lowest.score },
+      recommendation,
+      priorityOrder: comparisons.map(c => c.address),
+    },
+  };
+};
+
+// ============================================================================
 // Register All Predictive Tools
 // ============================================================================
 export function registerPredictiveTools() {
+  // Core prediction tools
   toolRegistry.register(sellerMotivationDefinition, sellerMotivationHandler);
   toolRegistry.register(dealCloseProbabilityDefinition, dealCloseProbabilityHandler);
   toolRegistry.register(optimalOfferPriceDefinition, optimalOfferPriceHandler);
   toolRegistry.register(timeToCloseDefinition, timeToCloseHandler);
-  console.log('[Predictive Tools] Registered 4 tools with real heuristics');
+
+  // Owner classification and batch tools
+  toolRegistry.register(classifyOwnerDefinition, classifyOwnerHandler);
+  toolRegistry.register(batchMotivationDefinition, batchMotivationHandler);
+  toolRegistry.register(compareMotivationDefinition, compareMotivationHandler);
+
+  console.log('[Predictive Tools] Registered 7 tools with stratified scoring system');
 }
 
 export const predictiveTools = {
@@ -828,4 +1104,7 @@ export const predictiveTools = {
   dealCloseProbability: dealCloseProbabilityDefinition,
   optimalOfferPrice: optimalOfferPriceDefinition,
   timeToClose: timeToCloseDefinition,
+  classifyOwner: classifyOwnerDefinition,
+  batchMotivation: batchMotivationDefinition,
+  compareMotivation: compareMotivationDefinition,
 };
