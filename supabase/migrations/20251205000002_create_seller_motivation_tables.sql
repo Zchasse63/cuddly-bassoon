@@ -305,17 +305,44 @@ CREATE POLICY property_signals_insert ON public.property_signals
 CREATE POLICY property_signals_update ON public.property_signals
     FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
 
--- Scoring Experiments - Full access for authenticated users
-CREATE POLICY scoring_experiments_all ON public.scoring_experiments
-    FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+-- Scoring Experiments - Separate policies for each operation
+CREATE POLICY scoring_experiments_select ON public.scoring_experiments
+    FOR SELECT TO authenticated USING (TRUE);
 
--- Experiment Assignments - Full access for authenticated users
-CREATE POLICY experiment_assignments_all ON public.experiment_assignments
-    FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY scoring_experiments_insert ON public.scoring_experiments
+    FOR INSERT TO authenticated WITH CHECK (auth.uid() = created_by);
 
--- Experiment Outcomes - Full access for authenticated users
-CREATE POLICY experiment_outcomes_all ON public.experiment_outcomes
-    FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY scoring_experiments_update ON public.scoring_experiments
+    FOR UPDATE TO authenticated USING (auth.uid() = created_by) WITH CHECK (auth.uid() = created_by);
+
+CREATE POLICY scoring_experiments_delete ON public.scoring_experiments
+    FOR DELETE TO authenticated USING (auth.uid() = created_by);
+
+-- Experiment Assignments - Separate policies for each operation
+CREATE POLICY experiment_assignments_select ON public.experiment_assignments
+    FOR SELECT TO authenticated USING (TRUE);
+
+CREATE POLICY experiment_assignments_insert ON public.experiment_assignments
+    FOR INSERT TO authenticated WITH CHECK (TRUE);
+
+CREATE POLICY experiment_assignments_update ON public.experiment_assignments
+    FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
+
+CREATE POLICY experiment_assignments_delete ON public.experiment_assignments
+    FOR DELETE TO authenticated USING (FALSE);
+
+-- Experiment Outcomes - Separate policies for each operation
+CREATE POLICY experiment_outcomes_select ON public.experiment_outcomes
+    FOR SELECT TO authenticated USING (TRUE);
+
+CREATE POLICY experiment_outcomes_insert ON public.experiment_outcomes
+    FOR INSERT TO authenticated WITH CHECK (TRUE);
+
+CREATE POLICY experiment_outcomes_update ON public.experiment_outcomes
+    FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
+
+CREATE POLICY experiment_outcomes_delete ON public.experiment_outcomes
+    FOR DELETE TO authenticated USING (FALSE);
 
 -- Distress Indicators - Read access for authenticated users
 CREATE POLICY distress_indicators_select ON public.distress_indicators

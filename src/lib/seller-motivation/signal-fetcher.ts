@@ -349,25 +349,36 @@ export async function getCachedSignals(
 
 /**
  * Store signals in cache
+ * Note: Uses composite unique key (property_id, address, signal_source)
  */
 export async function cacheSignals(
   propertyId: string,
   signals: RawPropertySignals,
-  ttlSeconds: number = 3600
+  ttlSeconds: number = 3600,
+  address?: string
 ): Promise<void> {
   try {
     const supabase = await createClient();
     const expiresAt = new Date(Date.now() + ttlSeconds * 1000);
 
+    // Delete existing entry first, then insert new one
+    // This handles the composite unique constraint correctly
     await supabase
       .from('property_signals')
-      .upsert({
+      .delete()
+      .eq('property_id', propertyId)
+      .eq('signal_source', 'combined');
+
+    await supabase
+      .from('property_signals')
+      .insert({
         property_id: propertyId,
+        address: address || null,
         signal_data: signals,
         signal_source: 'combined',
         fetched_at: new Date().toISOString(),
         expires_at: expiresAt.toISOString(),
-      }, { onConflict: 'property_id' });
+      });
   } catch (e) {
     console.warn('[SignalFetcher] Cache write error:', e);
   }

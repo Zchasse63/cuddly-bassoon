@@ -17,10 +17,19 @@ import type {
 
 function getSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error('Supabase credentials not configured');
+  const key = process.env.SUPABASE_SECRET_KEY;
+
+  if (!url) {
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL not configured');
   }
+
+  if (!key) {
+    throw new Error(
+      'SUPABASE_SECRET_KEY required for historical deals search. ' +
+      'This service requires elevated permissions to access deal data across users.'
+    );
+  }
+
   return createClient(url, key);
 }
 

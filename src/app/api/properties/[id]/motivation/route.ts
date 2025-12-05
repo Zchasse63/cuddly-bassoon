@@ -76,11 +76,14 @@ export async function GET(
       cacheTtlSeconds: 3600, // 1 hour
     });
 
-    // Store score in database for analytics
-    await supabase.from('motivation_scores').insert({
+    // Store score(s) in database for analytics
+    const scoreInserts = [];
+
+    // Always store standard score
+    scoreInserts.push({
       property_id: propertyId,
       address,
-      score_type: scoreType === 'both' ? 'standard' : scoreType,
+      score_type: 'standard',
       score: result.standardScore.score,
       confidence: result.standardScore.confidence,
       model_used: result.standardScore.modelUsed,
@@ -88,7 +91,26 @@ export async function GET(
       recommendation: result.standardScore.recommendation,
       risk_factors: result.standardScore.riskFactors,
       created_by: user.id,
-    }).catch((err) => {
+    });
+
+    // Store DealFlow IQ score if calculated
+    if (result.dealFlowIQ) {
+      scoreInserts.push({
+        property_id: propertyId,
+        address,
+        score_type: 'dealflow_iq',
+        score: result.dealFlowIQ.iqScore,
+        confidence: result.standardScore.confidence, // Use same confidence
+        model_used: `${result.standardScore.modelUsed}_dealflow`,
+        factors: result.standardScore.factors, // Base factors
+        ai_adjustments: result.dealFlowIQ.aiAdjustments,
+        recommendation: result.standardScore.recommendation,
+        risk_factors: result.standardScore.riskFactors,
+        created_by: user.id,
+      });
+    }
+
+    await supabase.from('motivation_scores').insert(scoreInserts).catch((err) => {
       // Non-critical, just log
       console.warn('[Motivation API] Failed to store score:', err);
     });

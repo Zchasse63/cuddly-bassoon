@@ -270,7 +270,7 @@ const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput>
     if (error || !deals || deals.length === 0) {
       return {
         strategies: [],
-        dataAvailable: deals ? true : false,
+        dataAvailable: !!deals,
       };
     }
 
@@ -404,7 +404,7 @@ const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, 
         locations: [],
         diversificationScore: 0,
         recommendation: 'No deal data available. Start tracking deals to analyze geographic concentration.',
-        dataAvailable: deals ? true : false,
+        dataAvailable: !!deals,
       };
     }
 

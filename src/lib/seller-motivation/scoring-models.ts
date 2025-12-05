@@ -597,14 +597,12 @@ function generateRecommendation(
     } else {
       parts.push('Look for tired landlord signals or portfolio exit opportunity.');
     }
+  } else if (classification.subClass === 'bank_reo') {
+    parts.push('Follow REO protocols. Patience required - expect 45-60 day process.');
+  } else if (classification.subClass.includes('estate')) {
+    parts.push('High motivation but verify legal authority. May need probate clearance.');
   } else {
-    if (classification.subClass === 'bank_reo') {
-      parts.push('Follow REO protocols. Patience required - expect 45-60 day process.');
-    } else if (classification.subClass.includes('estate')) {
-      parts.push('High motivation but verify legal authority. May need probate clearance.');
-    } else {
-      parts.push('Institutional seller - follow their process, limited negotiation flexibility.');
-    }
+    parts.push('Institutional seller - follow their process, limited negotiation flexibility.');
   }
 
   // Key factor callout
