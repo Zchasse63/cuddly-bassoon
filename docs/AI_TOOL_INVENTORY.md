@@ -1,8 +1,8 @@
 # AI Tool Inventory - Comprehensive Report
 
-**Generated**: December 2024
+**Generated**: December 2024 (Updated: December 2025)
 **Platform**: AI Real Estate Wholesaling Platform
-**Total Tools**: 187 AI Tools across 29 Categories
+**Total Tools**: 190 AI Tools across 29 Categories
 
 ---
 
@@ -14,12 +14,12 @@ This document provides a comprehensive inventory of all AI tools implemented in 
 
 | Metric | Value |
 |--------|-------|
-| Total Tools | 187 |
+| Total Tools | 190 |
 | Categories | 29 |
-| Fully Implemented | 142 |
+| Fully Implemented | 145 |
 | Mock/Placeholder | 45 |
 | External API Integrations | 6 |
-| Database-Connected | 89 |
+| Database-Connected | 92 |
 
 ### External API Dependencies
 
@@ -364,14 +364,19 @@ This document provides a comprehensive inventory of all AI tools implemented in 
 ---
 
 ### 21. Predictive Tools (`predictive-tools.ts`)
-**Tools**: 4 | **Status**: ✅ Active
+**Tools**: 7 | **Status**: ✅ Active
 
 | Tool ID | Name | Description | External API |
 |---------|------|-------------|--------------|
-| `predict.seller_motivation` | Predict Seller Motivation | Motivation scoring | Supabase |
+| `predict.seller_motivation` | Predict Seller Motivation | Stratified motivation scoring by owner type | Supabase/RentCast/Shovels |
+| `predict.classify_owner` | Classify Owner | Classify owners (individual/investor/institutional) | Supabase |
+| `predict.batch_motivation` | Batch Score Motivation | Score up to 20 properties at once | Supabase/RentCast/Shovels |
+| `predict.compare_motivation` | Compare Motivation Scores | Compare and rank properties by motivation | Supabase |
 | `predict.deal_close_probability` | Predict Deal Close Probability | Close prediction | Supabase |
 | `predict.optimal_offer_price` | Calculate Optimal Offer Price | Offer optimization | RentCast |
 | `predict.time_to_close` | Predict Time to Close | Timeline prediction | Supabase |
+
+> **Note**: The seller motivation system includes stratified scoring models for different owner types (Individual, Investor, Institutional) with DealFlow IQ AI-enhanced predictions. Supporting modules in `/src/lib/seller-motivation/`.
 
 ---
 
@@ -478,8 +483,8 @@ This document provides a comprehensive inventory of all AI tools implemented in 
 
 | Status | Count | Percentage |
 |--------|-------|------------|
-| ✅ Fully Implemented | 142 | 76% |
-| 🔄 Partial/Scaffolded | 35 | 19% |
+| ✅ Fully Implemented | 145 | 76% |
+| 🔄 Partial/Scaffolded | 35 | 18% |
 | ⚠️ Mock Only | 10 | 5% |
 
 ### Mock Tools Requiring External API Integration

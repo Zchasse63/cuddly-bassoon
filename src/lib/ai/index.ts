@@ -182,3 +182,33 @@ export {
   type ToolOrchestrationStep,
   type OrchestrationResult,
 } from './tools';
+
+// Tool Discovery (User-facing metadata for ~190 tools)
+export {
+  // Types
+  type DiscoveryCategory,
+  type ContextType,
+  type ToolExample,
+  type DiscoveryToolDefinition,
+  type CategoryDefinition,
+  type ToolCallRecord,
+  type ChatMessageWithTools,
+  type OnboardingState,
+  type CommandPaletteState,
+  type InsertPromptOptions,
+  // Categories
+  categoryDefinitions,
+  getCategory,
+  getSortedCategories,
+  getCategoryColor,
+  getCategoryIcon,
+  // Registry
+  toolRegistry as discoveryToolRegistry,
+  getToolBySlug,
+  getToolsByCategory,
+  getFeaturedTools,
+  searchTools,
+  getBeginnerTools,
+  getToolDisplayName,
+  getToolIcon,
+} from './tool-discovery';
