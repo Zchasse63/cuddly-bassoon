@@ -6,6 +6,7 @@
  * - RentCast for property valuations, owner data, and market conditions
  * - Shovels for permit activity and property condition signals
  * - Supabase for cached property data and geo vitality scores
+ * - Stratified Seller Motivation Scoring System with owner-type-specific models
  */
 
 import { z } from 'zod';
@@ -20,6 +21,10 @@ import {
   type DealType,
   type SellerType,
 } from '@/lib/deals-rag';
+import {
+  calculateSellerMotivation,
+  type ScoringResult,
+} from '@/lib/seller-motivation';
 
 // ============================================================================
 // Seller Motivation Score Tool
@@ -28,6 +33,7 @@ const sellerMotivationInput = z.object({
   propertyId: z.string().optional(),
   address: z.string().optional(),
   includeFactors: z.boolean().default(true),
+  scoreType: z.enum(['standard', 'dealflow_iq', 'both']).default('standard'),
 });
 
 const sellerMotivationOutput = z.object({
@@ -40,6 +46,28 @@ const sellerMotivationOutput = z.object({
     description: z.string(),
   })),
   recommendation: z.string(),
+  // Owner classification (new stratified system)
+  ownerClassification: z.object({
+    primaryClass: z.enum(['individual', 'investor_entity', 'institutional_distressed']),
+    subClass: z.string(),
+    confidence: z.number(),
+  }).optional(),
+  modelUsed: z.string().optional(),
+  riskFactors: z.array(z.string()).optional(),
+  // DealFlow IQ fields (when scoreType includes dealflow_iq)
+  dealFlowIQ: z.object({
+    iqScore: z.number(),
+    aiAdjustments: z.array(z.object({
+      factor: z.string(),
+      adjustment: z.number(),
+      reasoning: z.string(),
+    })),
+    predictions: z.object({
+      timeToDecision: z.string(),
+      bestApproachTiming: z.string(),
+      optimalOfferRange: z.object({ min: z.number(), max: z.number() }),
+    }),
+  }).optional(),
 });
 
 type SellerMotivationInput = z.infer<typeof sellerMotivationInput>;
@@ -48,7 +76,7 @@ type SellerMotivationOutput = z.infer<typeof sellerMotivationOutput>;
 const sellerMotivationDefinition: ToolDefinition<SellerMotivationInput, SellerMotivationOutput> = {
   id: 'predict.seller_motivation',
   name: 'Predict Seller Motivation',
-  description: 'Analyze property and owner data to predict seller motivation level using real API data.',
+  description: 'Analyze property and owner data using stratified scoring models. Uses different scoring logic based on owner type: Individual (long ownership = HIGH motivation), Investor/Entity (long ownership = LOW motivation), Institutional (process-focused). Optionally includes AI-enhanced DealFlow IQ score.',
   category: 'predictive',
   requiredPermission: 'read',
   inputSchema: sellerMotivationInput,
@@ -56,17 +84,17 @@ const sellerMotivationDefinition: ToolDefinition<SellerMotivationInput, SellerMo
   requiresConfirmation: false,
   estimatedDuration: 5000,
   rateLimit: 20,
-  tags: ['predictive', 'motivation', 'seller', 'analysis'],
+  tags: ['predictive', 'motivation', 'seller', 'analysis', 'stratified-scoring'],
 };
 
-interface MotivationFactor {
-  name: string;
-  impact: 'positive' | 'negative' | 'neutral';
-  weight: number;
-  description: string;
-  score: number; // 0-100 contribution to motivation
-}
-
+/**
+ * Seller Motivation Handler
+ *
+ * Uses the stratified scoring system with different models per owner type:
+ * - Individual: Long ownership = HIGH motivation (life transition)
+ * - Investor/Entity: Long ownership = LOW motivation (stable investment)
+ * - Institutional: Process-focused scoring (bureaucratic factors)
+ */
 const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivationOutput> = async (input) => {
   console.log('[Predictive] Seller motivation for:', input.propertyId || input.address);
 
@@ -74,294 +102,54 @@ const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivati
     throw new Error('Either propertyId or address is required');
   }
 
-  const factors: MotivationFactor[] = [];
-  let totalWeight = 0;
-  let weightedScore = 0;
-  let dataPointsAvailable = 0;
-
   try {
-    const rentcastClient = getRentCastClient();
-    let address = input.address;
+    // Use the new stratified scoring engine
+    const result: ScoringResult = await calculateSellerMotivation({
+      propertyId: input.propertyId,
+      address: input.address,
+      scoreType: input.scoreType,
+      useCache: true,
+      cacheTtlSeconds: 3600, // 1 hour cache
+    });
 
-    // If we have a propertyId, try to get address from Supabase first
-    if (input.propertyId) {
-      const supabase = await createClient();
-      const { data: shovelsData } = await supabase
-        .from('shovels_address_metrics')
-        .select('formatted_address')
-        .eq('address_id', input.propertyId)
-        .single();
+    // Transform factors to the expected output format
+    const factors = input.includeFactors
+      ? result.standardScore.factors.map(f => ({
+          name: f.name,
+          impact: f.impact,
+          weight: f.weight,
+          description: f.description,
+        }))
+      : [];
 
-      if (shovelsData?.formatted_address) {
-        address = shovelsData.formatted_address;
-      }
-    }
-
-    if (!address) {
-      throw new Error('Could not resolve property address');
-    }
-
-    // Fetch property data from RentCast
-    let propertyData = null;
-    let marketData = null;
-
-    try {
-      const properties = await rentcastClient.searchProperties({ address, limit: 1 });
-      propertyData = properties[0] || null;
-
-      if (propertyData?.zipCode) {
-        marketData = await rentcastClient.getMarketData(propertyData.zipCode);
-      }
-    } catch (apiError) {
-      console.warn('[Predictive] RentCast API error:', apiError);
-    }
-
-    // Factor 1: Owner Type (weight: 20%)
-    // Nuanced scoring based on real-world seller behavior patterns
-    if (propertyData?.owner?.ownerType) {
-      dataPointsAvailable++;
-      const ownerType = propertyData.owner.ownerType;
-      let ownerScore = 50;
-      let description = 'Individual owner - motivation depends on circumstances';
-      let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
-
-      if (ownerType === 'Trust') {
-        // Trusts often indicate estate/inheritance - beneficiaries frequently want quick liquidation
-        ownerScore = 75;
-        description = 'Trust ownership - likely estate/inheritance situation, beneficiaries often motivated to liquidate';
-        impact = 'positive';
-      } else if (ownerType === 'Bank') {
-        // REO properties: Banks want to sell BUT process is slow and bureaucratic
-        // Better to catch pre-foreclosure. REO = missed early opportunity but still viable
-        ownerScore = 55;
-        description = 'Bank-owned (REO) - motivated but slow bureaucratic process. Consider if pre-foreclosure opportunities exist nearby';
-        impact = 'neutral';
-      } else if (ownerType === 'Company') {
-        // LLCs/Corps are typically investors who BUY properties, not distressed sellers
-        // Check for "tired landlord" signals: long ownership + property issues
-        const lastSale = propertyData.lastSaleDate ? new Date(propertyData.lastSaleDate) : null;
-        const yearsOwned = lastSale ? (Date.now() - lastSale.getTime()) / (365 * 24 * 60 * 60 * 1000) : 0;
-
-        if (yearsOwned > 10) {
-          // Long-term LLC owner could be tired landlord
-          ownerScore = 55;
-          description = `Long-term LLC owner (${Math.round(yearsOwned)} years) - possible tired landlord, worth investigating`;
-          impact = 'neutral';
-        } else {
-          ownerScore = 40;
-          description = 'Corporate/LLC owner - typically professional investors with holding power, less likely to be distressed';
-          impact = 'negative';
-        }
-      } else if (ownerType === 'Government') {
-        // Government sales have strict protocols, long timelines
-        ownerScore = 35;
-        description = 'Government-owned - strict protocols, long timelines, limited negotiation flexibility';
-        impact = 'negative';
-      } else if (ownerType === 'Individual') {
-        // Individuals vary widely - other factors matter more
-        ownerScore = 50;
-        description = 'Individual owner - motivation determined by other factors (equity, duration, circumstances)';
-        impact = 'neutral';
-      }
-
-      factors.push({
-        name: 'Owner Type',
-        impact,
-        weight: 0.20,
-        description,
-        score: ownerScore,
-      });
-      totalWeight += 0.20;
-      weightedScore += ownerScore * 0.20;
-    }
-
-    // Factor 2: Ownership Duration (weight: 20%)
-    // Long-term owners (10+ years) often have high equity and may be ready to sell
-    if (propertyData?.lastSaleDate) {
-      dataPointsAvailable++;
-      const lastSale = new Date(propertyData.lastSaleDate);
-      const yearsOwned = (Date.now() - lastSale.getTime()) / (365 * 24 * 60 * 60 * 1000);
-      let durationScore = 50;
-      let description = 'Average ownership duration';
-      let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
-
-      if (yearsOwned > 15) {
-        durationScore = 85;
-        description = `Long-term owner (${Math.round(yearsOwned)} years) - likely high equity, potentially ready to move`;
-        impact = 'positive';
-      } else if (yearsOwned > 10) {
-        durationScore = 70;
-        description = `${Math.round(yearsOwned)} years ownership - substantial equity likely`;
-        impact = 'positive';
-      } else if (yearsOwned > 5) {
-        durationScore = 55;
-        description = `${Math.round(yearsOwned)} years ownership - moderate equity`;
-        impact = 'neutral';
-      } else if (yearsOwned < 2) {
-        durationScore = 30;
-        description = `Recent purchase (${Math.round(yearsOwned * 12)} months) - likely underwater or minimal equity`;
-        impact = 'negative';
-      }
-
-      factors.push({
-        name: 'Ownership Duration',
-        impact,
-        weight: 0.2,
-        description,
-        score: durationScore,
-      });
-      totalWeight += 0.2;
-      weightedScore += durationScore * 0.2;
-    }
-
-    // Factor 3: Absentee Owner (weight: 15%)
-    if (propertyData?.ownerOccupied !== undefined) {
-      dataPointsAvailable++;
-      const isAbsentee = !propertyData.ownerOccupied;
-      const absenteeScore = isAbsentee ? 75 : 40;
-      const description = isAbsentee
-        ? 'Absentee owner - often more motivated to sell investment property'
-        : 'Owner-occupied - typically less motivated, emotional attachment';
-      const impact: 'positive' | 'negative' | 'neutral' = isAbsentee ? 'positive' : 'negative';
-
-      factors.push({
-        name: 'Absentee Owner',
-        impact,
-        weight: 0.15,
-        description,
-        score: absenteeScore,
-      });
-      totalWeight += 0.15;
-      weightedScore += absenteeScore * 0.15;
-    }
-
-    // Factor 4: Property Condition via Permits (weight: 20%)
-    // Recent repair/renovation permits may indicate distress or owner preparing to sell
-    try {
-      const addresses = await searchAddresses(address);
-      if (addresses.length > 0) {
-        dataPointsAvailable++;
-        const addressId = addresses[0].address_id;
-        const twoYearsAgo = new Date();
-        twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-
-        const permits = await getPermitsForAddress(addressId, {
-          from: twoYearsAgo.toISOString().split('T')[0],
-        });
-
-        let conditionScore = 50;
-        let description = 'No recent permit activity';
-        let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
-
-        if (permits.length > 0) {
-          const repairTags = ['remodel', 'roofing', 'plumbing', 'electrical', 'hvac'];
-          const hasRepairPermits = permits.some(p =>
-            p.tags?.some(tag => repairTags.includes(tag))
-          );
-          const hasInactivePermits = permits.some(p => p.status === 'inactive');
-
-          if (hasInactivePermits) {
-            conditionScore = 80;
-            description = 'Abandoned permits found - indicates potential distress';
-            impact = 'positive';
-          } else if (hasRepairPermits) {
-            conditionScore = 65;
-            description = 'Recent repair permits - property may need updates';
-            impact = 'positive';
-          } else {
-            conditionScore = 45;
-            description = 'Recent permits but no repair indicators';
-            impact = 'neutral';
-          }
-        }
-
-        factors.push({
-          name: 'Property Condition (Permits)',
-          impact,
-          weight: 0.2,
-          description,
-          score: conditionScore,
-        });
-        totalWeight += 0.2;
-        weightedScore += conditionScore * 0.2;
-      }
-    } catch (shovelsError) {
-      console.warn('[Predictive] Shovels API error:', shovelsError);
-    }
-
-    // Factor 5: Market Conditions (weight: 20%)
-    // High DOM, low sale-to-list ratio indicates buyer's market = more motivated sellers
-    if (marketData) {
-      dataPointsAvailable++;
-      let marketScore = 50;
-      let description = 'Average market conditions';
-      let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
-
-      const dom = marketData.daysOnMarket || 30;
-      const saleToList = marketData.saleToListRatio || 0.98;
-
-      if (dom > 60 && saleToList < 0.95) {
-        marketScore = 85;
-        description = `Slow market (${dom} DOM, ${Math.round(saleToList * 100)}% sale-to-list) - sellers motivated`;
-        impact = 'positive';
-      } else if (dom > 45 || saleToList < 0.97) {
-        marketScore = 70;
-        description = `Cooling market (${dom} DOM) - increased seller flexibility`;
-        impact = 'positive';
-      } else if (dom < 20 && saleToList > 1.0) {
-        marketScore = 25;
-        description = `Hot market (${dom} DOM, ${Math.round(saleToList * 100)}% sale-to-list) - sellers have leverage`;
-        impact = 'negative';
-      } else if (dom < 30) {
-        marketScore = 40;
-        description = `Active market (${dom} DOM) - balanced conditions`;
-        impact = 'neutral';
-      }
-
-      factors.push({
-        name: 'Market Conditions',
-        impact,
-        weight: 0.2,
-        description,
-        score: marketScore,
-      });
-      totalWeight += 0.2;
-      weightedScore += marketScore * 0.2;
-    }
-
-    // Calculate final score
-    let finalScore = totalWeight > 0 ? weightedScore / totalWeight : 50;
-    finalScore = Math.round(Math.max(0, Math.min(100, finalScore)));
-
-    // Calculate confidence based on data availability
-    const maxDataPoints = 5;
-    const confidence = Math.round((dataPointsAvailable / maxDataPoints) * 100) / 100;
-
-    // Generate recommendation
-    let recommendation = '';
-    if (finalScore >= 80) {
-      recommendation = 'Very high motivation detected. Excellent candidate for aggressive offer (15-20% below market). Act quickly.';
-    } else if (finalScore >= 65) {
-      recommendation = 'High motivation indicators. Consider making an offer 10-15% below market with quick close terms.';
-    } else if (finalScore >= 50) {
-      recommendation = 'Moderate motivation. Standard negotiation approach recommended. Look for additional motivation signals.';
-    } else if (finalScore >= 35) {
-      recommendation = 'Low motivation signals. May need to offer closer to market value or find other deal leverage.';
-    } else {
-      recommendation = 'Minimal motivation indicators. Consider deprioritizing or waiting for circumstances to change.';
-    }
-
-    return {
-      score: finalScore,
-      confidence,
-      factors: input.includeFactors ? factors.map(({ name, impact, weight, description }) => ({
-        name,
-        impact,
-        weight,
-        description,
-      })) : [],
-      recommendation,
+    // Build response
+    const response: SellerMotivationOutput = {
+      score: result.standardScore.score,
+      confidence: result.standardScore.confidence,
+      factors,
+      recommendation: result.standardScore.recommendation,
+      ownerClassification: {
+        primaryClass: result.classification.primaryClass,
+        subClass: result.classification.subClass,
+        confidence: result.classification.confidence,
+      },
+      modelUsed: result.standardScore.modelUsed,
+      riskFactors: result.standardScore.riskFactors,
     };
+
+    // Add DealFlow IQ if requested
+    if (result.dealFlowIQ) {
+      response.dealFlowIQ = {
+        iqScore: result.dealFlowIQ.iqScore,
+        aiAdjustments: result.dealFlowIQ.aiAdjustments,
+        predictions: result.dealFlowIQ.predictions,
+      };
+    }
+
+    // Log timing for performance monitoring
+    console.log(`[Predictive] Scoring completed in ${result.timing.totalMs}ms (fetch: ${result.timing.fetchMs}ms, classify: ${result.timing.classifyMs}ms, score: ${result.timing.scoreMs}ms)`);
+
+    return response;
   } catch (error) {
     console.error('[Predictive] Seller motivation error:', error);
     throw new Error(`Failed to calculate seller motivation: ${error instanceof Error ? error.message : 'Unknown error'}`);
