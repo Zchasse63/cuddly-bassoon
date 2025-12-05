@@ -7,7 +7,8 @@
  * Displays context-aware AI suggestions without user prompting
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useViewContextSafe } from '@/contexts/ViewContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,7 +50,8 @@ interface ProactiveInsightsProps {
 // Generate context-specific insights based on current view and entity
 function generateInsights(
   view: string,
-  entity: { type: string | null; name: string | null; data?: Record<string, unknown> } | null
+  entity: { type: string | null; name: string | null; data?: Record<string, unknown> } | null,
+  navigate: (path: string) => void
 ): Insight[] {
   const insights: Insight[] = [];
 
@@ -63,7 +65,7 @@ function generateInsights(
       priority: 'high',
       action: {
         label: 'View Stale Deals',
-        onClick: () => (window.location.href = '/deals?filter=stale'),
+        onClick: () => navigate('/deals?filter=stale'),
       },
     });
     insights.push({
@@ -74,7 +76,7 @@ function generateInsights(
       priority: 'medium',
       action: {
         label: 'View Matches',
-        onClick: () => (window.location.href = '/properties'),
+        onClick: () => navigate('/properties'),
       },
     });
   }
@@ -222,9 +224,18 @@ export function ProactiveInsights({
   customInsights,
   onAIAction: _onAIAction,
 }: ProactiveInsightsProps) {
+  const router = useRouter();
   const viewContext = useViewContextSafe();
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [_isLoading, _setIsLoading] = useState(false);
+
+  // Navigate function for insights
+  const navigate = useCallback(
+    (path: string) => {
+      router.push(path);
+    },
+    [router]
+  );
 
   // Generate insights based on context
   const insights = useMemo(() => {
@@ -239,8 +250,8 @@ export function ProactiveInsights({
         }
       : null;
 
-    return generateInsights(viewContext.currentView, entityForInsights);
-  }, [viewContext, customInsights]);
+    return generateInsights(viewContext.currentView, entityForInsights, navigate);
+  }, [viewContext, customInsights, navigate]);
 
   // Filter out dismissed insights and limit count
   const visibleInsights = useMemo(() => {

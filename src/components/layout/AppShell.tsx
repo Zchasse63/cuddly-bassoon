@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileBottomNav, MobileActionFAB, MobileChatSheet } from './MobileNav';
@@ -87,6 +88,7 @@ interface AppShellProps {
 }
 
 export function AppShell({ children, leftSidebar, rightSidebar, className }: AppShellProps) {
+  const router = useRouter();
   const { leftCollapsed, rightCollapsed, isMobile, mobileChatOpen, setMobileChatOpen } =
     useAppShell();
 
@@ -105,7 +107,7 @@ export function AppShell({ children, leftSidebar, rightSidebar, className }: App
           onOpenChat={() => setMobileChatOpen(true)}
           onAddProperty={() => {
             // Navigate to add property - can be customized per page
-            window.location.href = '/properties/new';
+            router.push('/properties/new');
           }}
         />
 

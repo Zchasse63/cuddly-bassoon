@@ -13,11 +13,11 @@ import { PropertyDetailClient } from './property-detail-client';
 import { PropertyDetailSkeleton } from './property-detail-skeleton';
 
 interface PropertyDetailPageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  const { id } = await params;
+  const { id } = params;
   const supabase = await createClient();
 
   // Get authenticated user

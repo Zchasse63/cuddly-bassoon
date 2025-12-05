@@ -158,7 +158,7 @@ export function Breadcrumbs({
  * Allows pages to set custom labels for their breadcrumb items
  */
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 
 interface BreadcrumbContextValue {
   dynamicLabels: Record<string, string>;
@@ -194,16 +194,13 @@ export function useBreadcrumbLabel(path: string, label: string) {
   const context = useContext(BreadcrumbContext);
 
   // Set label on mount, clear on unmount
-  useState(() => {
-    if (context) {
-      context.setLabel(path, label);
-    }
+  useEffect(() => {
+    if (!context) return;
+    context.setLabel(path, label);
     return () => {
-      if (context) {
-        context.clearLabel(path);
-      }
+      context.clearLabel(path);
     };
-  });
+  }, [context, path, label]);
 }
 
 /**

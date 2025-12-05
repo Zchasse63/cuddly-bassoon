@@ -108,6 +108,39 @@ describe('Routing Options', () => {
     });
     expect(decision.model).toBe(GROK_MODELS.FAST);
   });
+
+  it('should prioritize preferQuality over preferSpeed when both are true', () => {
+    const decision = routeByCategory('complex_analysis', {
+      preferSpeed: true,
+      preferQuality: true,
+    });
+    // When both are set, preferQuality should win for complex tasks
+    expect(decision.model).toBe(GROK_MODELS.REASONING);
+  });
+
+  it('should let forceModel take precedence over preferences and category defaults', () => {
+    const decision = routeByCategory('complex_analysis', {
+      forceModel: GROK_MODELS.FAST,
+      preferQuality: true,
+      preferSpeed: true,
+    });
+    expect(decision.model).toBe(GROK_MODELS.FAST);
+    expect(decision.reason).toContain('override');
+  });
+
+  it('should not double-downgrade when category already uses Fast and preferSpeed is true', () => {
+    const decision = routeByCategory('simple_qa', {
+      preferSpeed: true,
+    });
+    expect(decision.model).toBe(GROK_MODELS.FAST);
+  });
+
+  it('should not double-upgrade when category already uses Reasoning and preferQuality is true', () => {
+    const decision = routeByCategory('complex_analysis', {
+      preferQuality: true,
+    });
+    expect(decision.model).toBe(GROK_MODELS.REASONING);
+  });
 });
 
 // ============================================================================

@@ -126,59 +126,46 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       try {
         const results: SearchResult[] = [];
 
-        // Search properties
-        const propertiesRes = await fetch(
-          `/api/search?type=properties&q=${encodeURIComponent(debouncedQuery)}&limit=5`
+        // Single consolidated search API call with type=all
+        const searchRes = await fetch(
+          `/api/search?type=all&q=${encodeURIComponent(debouncedQuery)}&limit=15`
         );
-        if (propertiesRes.ok) {
-          const { results: props } = await propertiesRes.json();
-          results.push(
-            ...props.map((p: { id: string; address: string; city?: string; state?: string }) => ({
-              id: `property-${p.id}`,
-              type: 'property' as const,
-              title: p.address,
-              subtitle: `${p.city || ''}, ${p.state || ''}`.trim(),
-              icon: Building2,
-              href: `/properties/${p.id}`,
-            }))
-          );
-        }
 
-        // Search deals
-        const dealsRes = await fetch(
-          `/api/search?type=deals&q=${encodeURIComponent(debouncedQuery)}&limit=5`
-        );
-        if (dealsRes.ok) {
-          const { results: deals } = await dealsRes.json();
-          results.push(
-            ...deals.map((d: { id: string; property_address: string; stage: string }) => ({
-              id: `deal-${d.id}`,
-              type: 'deal' as const,
-              title: d.property_address,
-              subtitle: `Deal • ${d.stage}`,
-              icon: Briefcase,
-              href: `/deals/${d.id}`,
-              badge: d.stage,
-            }))
-          );
-        }
+        if (searchRes.ok) {
+          const { results: apiResults } = await searchRes.json();
 
-        // Search buyers
-        const buyersRes = await fetch(
-          `/api/search?type=buyers&q=${encodeURIComponent(debouncedQuery)}&limit=5`
-        );
-        if (buyersRes.ok) {
-          const { results: buyers } = await buyersRes.json();
-          results.push(
-            ...buyers.map((b: { id: string; name: string; company_name?: string }) => ({
-              id: `buyer-${b.id}`,
-              type: 'buyer' as const,
-              title: b.name,
-              subtitle: b.company_name || 'Buyer',
-              icon: Users,
-              href: `/buyers/${b.id}`,
-            }))
-          );
+          // Map API results to SearchResult format based on _type
+          for (const item of apiResults) {
+            if (item._type === 'property') {
+              results.push({
+                id: `property-${item.id}`,
+                type: 'property' as const,
+                title: item.address,
+                subtitle: `${item.city || ''}, ${item.state || ''}`.trim(),
+                icon: Building2,
+                href: `/properties/${item.id}`,
+              });
+            } else if (item._type === 'deal') {
+              results.push({
+                id: `deal-${item.id}`,
+                type: 'deal' as const,
+                title: item.property_address,
+                subtitle: `Deal • ${item.stage}`,
+                icon: Briefcase,
+                href: `/deals/${item.id}`,
+                badge: item.stage,
+              });
+            } else if (item._type === 'buyer') {
+              results.push({
+                id: `buyer-${item.id}`,
+                type: 'buyer' as const,
+                title: item.name,
+                subtitle: item.company_name || 'Buyer',
+                icon: Users,
+                href: `/buyers/${item.id}`,
+              });
+            }
+          }
         }
 
         // Filter pages by query

@@ -261,20 +261,24 @@ export class PropertyService {
       // Bedroom match
       const minBed = prefs.min_bedrooms as number | null;
       const maxBed = prefs.max_bedrooms as number | null;
-      if (property.bedrooms) {
-        if ((!minBed || property.bedrooms >= minBed) && (!maxBed || property.bedrooms <= maxBed)) {
-          score += 10;
-          matchReasons.push(`${property.bedrooms} bed matches criteria`);
-        }
+      if (
+        property.bedrooms &&
+        (!minBed || property.bedrooms >= minBed) &&
+        (!maxBed || property.bedrooms <= maxBed)
+      ) {
+        score += 10;
+        matchReasons.push(`${property.bedrooms} bed matches criteria`);
       }
 
       // Property type match
       const prefTypes = prefs.preferred_property_types as string[] | null;
-      if (prefTypes && property.propertyType) {
-        if (prefTypes.includes(property.propertyType.toLowerCase())) {
-          score += 10;
-          matchReasons.push('Property type matches');
-        }
+      if (
+        prefTypes &&
+        property.propertyType &&
+        prefTypes.includes(property.propertyType.toLowerCase())
+      ) {
+        score += 10;
+        matchReasons.push('Property type matches');
       }
 
       // Location match
