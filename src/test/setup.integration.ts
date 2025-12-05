@@ -17,9 +17,8 @@ const REQUIRED_ENV_VARS = [
 
 const OPTIONAL_ENV_VARS = [
   'SHOVELS_API_KEY',
-  'RANKCAST_API_KEY',
+  'RENTCAST_API_KEY',
   'SKIP_TRACE_API_KEY', // Skip trace remains mocked
-  'ANTHROPIC_API_KEY', // Legacy - kept for backwards compatibility
 ];
 
 // Track API call stats

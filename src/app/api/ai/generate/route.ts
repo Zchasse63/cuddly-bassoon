@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { createChatCompletion } from '@/lib/ai/claude-service';
+import { createChatCompletion } from '@/lib/ai/grok-service';
 import { GROK_MODELS } from '@/lib/ai/models';
 import { PROPERTY_DESCRIPTION_PROMPT, OFFER_LETTER_PROMPT } from '@/lib/ai/prompts';
 import { parseAIError, getErrorMessage } from '@/lib/ai/errors';
