@@ -20,7 +20,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
   {
     slug: 'property_search.search',
     displayName: 'Natural Language Search',
-    shortDescription: 'Find properties by describing what you\'re looking for',
+    shortDescription: "Find properties by describing what you're looking for",
     fullDescription:
       'Search the property database using plain English. Describe the type of properties you want (location, bedrooms, price range, owner characteristics) and the AI will find matching results. Supports all standard filters plus contrarian filters like "tired landlords" and "underwater owners".',
     category: 'property-search',
@@ -42,7 +42,16 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
         resultPreview: 'Properties with no outstanding loans',
       },
     ],
-    keywords: ['find', 'search', 'properties', 'houses', 'filter', 'landlord', 'equity', 'absentee'],
+    keywords: [
+      'find',
+      'search',
+      'properties',
+      'houses',
+      'filter',
+      'landlord',
+      'equity',
+      'absentee',
+    ],
     isPrimary: true,
     isAdvanced: false,
     requiresContext: ['none'],
@@ -116,7 +125,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'Calculator',
     examples: [
       {
-        prompt: 'What\'s the MAO for this property?',
+        prompt: "What's the MAO for this property?",
         description: 'Calculate max offer based on ARV and repairs',
         resultPreview: 'MAO breakdown with formula',
       },
@@ -165,7 +174,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'UserSearch',
     examples: [
       {
-        prompt: 'Who\'s buying 3 beds in this zip code?',
+        prompt: "Who's buying 3 beds in this zip code?",
         description: 'Find active buyers by property type and area',
         resultPreview: 'Buyer list with match scores and contact info',
       },
@@ -189,8 +198,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     slug: 'buyer_management.search_buyers',
     displayName: 'Search Buyers',
     shortDescription: 'Search your buyer database',
-    fullDescription:
-      'Search through your buyer contacts by name, criteria, location, or tags.',
+    fullDescription: 'Search through your buyer contacts by name, criteria, location, or tags.',
     category: 'buyer-intelligence',
     icon: 'Users',
     examples: [
@@ -215,12 +223,12 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     displayName: 'Buyer Insights',
     shortDescription: 'Get analytics on a buyer',
     fullDescription:
-      'Deep dive into a buyer\'s purchase history, preferences, and behavior patterns.',
+      "Deep dive into a buyer's purchase history, preferences, and behavior patterns.",
     category: 'buyer-intelligence',
     icon: 'BarChart3',
     examples: [
       {
-        prompt: 'Tell me about this buyer\'s purchase history',
+        prompt: "Tell me about this buyer's purchase history",
         description: 'Get buying pattern analysis',
         resultPreview: 'Transaction history and preferences',
       },
@@ -244,12 +252,12 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'TrendingUp',
     examples: [
       {
-        prompt: 'How\'s the Tampa market doing?',
+        prompt: "How's the Tampa market doing?",
         description: 'General market health check',
         resultPreview: 'Key metrics with trend indicators',
       },
       {
-        prompt: 'What\'s the median price in 33607?',
+        prompt: "What's the median price in 33607?",
         description: 'Specific metric for a zip code',
         resultPreview: 'Median price with historical context',
       },
@@ -274,7 +282,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'Gauge',
     examples: [
       {
-        prompt: 'What\'s the market velocity in Tampa?',
+        prompt: "What's the market velocity in Tampa?",
         description: 'Get MVI for a city',
         resultPreview: 'Velocity score with interpretation',
       },
@@ -353,7 +361,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'DollarSign',
     examples: [
       {
-        prompt: 'What\'s this property worth?',
+        prompt: "What's this property worth?",
         description: 'Get AVM valuation',
         resultPreview: 'Value estimate with range',
       },
@@ -486,7 +494,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
         resultPreview: 'Phone numbers and emails with confidence scores',
       },
       {
-        prompt: 'Find the owner\'s phone number',
+        prompt: "Find the owner's phone number",
         description: 'Quick phone lookup',
         resultPreview: 'Phone numbers ranked by confidence',
       },
@@ -549,13 +557,12 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     slug: 'pipeline.analyze_pipeline',
     displayName: 'Analyze Pipeline',
     shortDescription: 'Get insights on your deal pipeline',
-    fullDescription:
-      'Analyze your pipeline health, identify bottlenecks, and get recommendations.',
+    fullDescription: 'Analyze your pipeline health, identify bottlenecks, and get recommendations.',
     category: 'pipeline',
     icon: 'BarChart3',
     examples: [
       {
-        prompt: 'How\'s my pipeline looking?',
+        prompt: "How's my pipeline looking?",
         description: 'Pipeline health check',
         resultPreview: 'Pipeline analysis with recommendations',
       },
@@ -629,7 +636,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     icon: 'Target',
     examples: [
       {
-        prompt: 'What\'s the motivation score for this owner?',
+        prompt: "What's the motivation score for this owner?",
         description: 'Get seller motivation analysis',
         resultPreview: 'Score with factors and recommendation',
       },
@@ -732,8 +739,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     slug: 'workflow.auto_follow_up',
     displayName: 'Auto Follow-Up',
     shortDescription: 'Set up automated follow-up sequences',
-    fullDescription:
-      'Configure automated follow-up actions when certain conditions are met.',
+    fullDescription: 'Configure automated follow-up actions when certain conditions are met.',
     category: 'automation',
     icon: 'Zap',
     examples: [
@@ -776,8 +782,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     slug: 'crm.add_note',
     displayName: 'Add Note',
     shortDescription: 'Add notes to properties, deals, or contacts',
-    fullDescription:
-      'Attach notes to any entity for reference and team collaboration.',
+    fullDescription: 'Attach notes to any entity for reference and team collaboration.',
     category: 'list-management',
     icon: 'StickyNote',
     examples: [
@@ -796,8 +801,7 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     slug: 'search.save_filter',
     displayName: 'Save Search',
     shortDescription: 'Save current search for later',
-    fullDescription:
-      'Save your current search criteria as a reusable filter.',
+    fullDescription: 'Save your current search criteria as a reusable filter.',
     category: 'list-management',
     icon: 'Bookmark',
     examples: [
@@ -810,6 +814,834 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     keywords: ['save', 'search', 'filter', 'bookmark'],
     isPrimary: false,
     isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // PROPERTY DETAILS & INSIGHTS
+  // ==========================================
+  {
+    slug: 'property.neighborhood',
+    displayName: 'Neighborhood Insights',
+    shortDescription: 'Analyze the surrounding area and neighborhood',
+    fullDescription:
+      'Get comprehensive neighborhood analysis including crime statistics, school ratings, walkability scores, nearby amenities, and market trends. Helps assess location quality for investment.',
+    category: 'market-research',
+    icon: 'MapPin',
+    examples: [
+      {
+        prompt: 'Tell me about the neighborhood for this property',
+        description: 'Get neighborhood overview',
+        resultPreview: 'Crime stats, schools, walkability, amenities',
+      },
+      {
+        prompt: 'Is this a good neighborhood for rental property?',
+        description: 'Rental neighborhood assessment',
+        resultPreview: 'Rental market analysis with recommendations',
+      },
+    ],
+    keywords: ['neighborhood', 'area', 'location', 'crime', 'schools', 'amenities'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+  {
+    slug: 'property.rental',
+    displayName: 'Rental Analysis',
+    shortDescription: 'Assess rental income potential',
+    fullDescription:
+      'Estimate potential rental income, calculate cap rate, analyze cash flow projections, and compare to market rental rates. Essential for buy-and-hold investors.',
+    category: 'deal-analysis',
+    icon: 'DollarSign',
+    examples: [
+      {
+        prompt: 'What could this property rent for?',
+        description: 'Estimate rental income',
+        resultPreview: 'Monthly rent estimate with market data',
+      },
+      {
+        prompt: 'Calculate the cap rate for this property',
+        description: 'Investment return calculation',
+        resultPreview: 'Cap rate with cash flow projection',
+      },
+    ],
+    keywords: ['rental', 'rent', 'cap rate', 'cash flow', 'income'],
+    isPrimary: true,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+  {
+    slug: 'property.issues',
+    displayName: 'Property Red Flags',
+    shortDescription: 'Identify potential issues and red flags',
+    fullDescription:
+      'Scan for title issues, liens, code violations, permit problems, and other red flags that could affect the deal. Helps avoid problematic properties.',
+    category: 'deal-analysis',
+    icon: 'AlertTriangle',
+    examples: [
+      {
+        prompt: 'Check this property for red flags',
+        description: 'Comprehensive issue scan',
+        resultPreview: 'List of identified issues with severity',
+      },
+      {
+        prompt: 'Are there any liens on this property?',
+        description: 'Lien search',
+        resultPreview: 'Lien status and details',
+      },
+    ],
+    keywords: ['issues', 'red flags', 'liens', 'violations', 'problems'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+
+  // ==========================================
+  // ADVANCED SEARCH & FILTERING
+  // ==========================================
+  {
+    slug: 'search.similar_to_deal',
+    displayName: 'Find Similar Properties',
+    shortDescription: 'Find properties like your successful deals',
+    fullDescription:
+      'Analyze your past successful deals and find similar properties in the market. Uses AI to match property characteristics, owner profiles, and deal metrics.',
+    category: 'property-search',
+    icon: 'Target',
+    examples: [
+      {
+        prompt: 'Find properties similar to my best deal',
+        description: 'Match to successful deal',
+        resultPreview: 'Properties matching your winning criteria',
+      },
+      {
+        prompt: 'Show me more properties like this one',
+        description: 'Find similar properties',
+        resultPreview: 'Similar properties ranked by match',
+      },
+    ],
+    keywords: ['similar', 'like', 'match', 'find more'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property', 'deal'],
+  },
+  {
+    slug: 'search.by_description',
+    displayName: 'Conversational Search',
+    shortDescription: 'Search using natural language description',
+    fullDescription:
+      "Describe what you're looking for in plain English and let the AI translate it into precise search criteria. The most flexible way to search.",
+    category: 'property-search',
+    icon: 'MessageSquare',
+    examples: [
+      {
+        prompt: 'I need fix and flip opportunities under $150k in decent neighborhoods',
+        description: 'Natural language search',
+        resultPreview: 'Properties matching description',
+      },
+      {
+        prompt: 'Find me wholesale deals that I can assign quickly',
+        description: 'Strategy-based search',
+        resultPreview: 'High-assignment properties',
+      },
+    ],
+    keywords: ['search', 'find', 'looking for', 'describe'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // MARKET ANALYSIS & TRENDS
+  // ==========================================
+  {
+    slug: 'market_analysis.forecast',
+    displayName: 'Price Forecast',
+    shortDescription: 'Predict future property prices',
+    fullDescription:
+      'AI-powered price forecasting using historical trends, market conditions, and economic indicators. Helps time your market entry and exit.',
+    category: 'market-research',
+    icon: 'TrendingUp',
+    examples: [
+      {
+        prompt: 'What will prices do in Tampa over the next 6 months?',
+        description: 'Market price forecast',
+        resultPreview: 'Price trend prediction with confidence',
+      },
+      {
+        prompt: 'Should I buy now or wait?',
+        description: 'Timing recommendation',
+        resultPreview: 'Market timing analysis',
+      },
+    ],
+    keywords: ['forecast', 'predict', 'future', 'trends', 'timing'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'market_velocity.get_velocity',
+    displayName: 'Market Velocity',
+    shortDescription: 'Check how fast properties are selling',
+    fullDescription:
+      'Get the Market Velocity Index showing how quickly properties move in an area. Higher velocity means faster transactions and more opportunity.',
+    category: 'market-research',
+    icon: 'Gauge',
+    examples: [
+      {
+        prompt: 'How fast is the Tampa market moving?',
+        description: 'Check market speed',
+        resultPreview: 'Velocity score with interpretation',
+      },
+      {
+        prompt: 'Find the hottest markets in Florida',
+        description: 'High-velocity market discovery',
+        resultPreview: 'Markets ranked by velocity',
+      },
+    ],
+    keywords: ['velocity', 'speed', 'fast', 'moving', 'hot markets'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'heat_mapping.detect_opportunities',
+    displayName: 'Opportunity Zones',
+    shortDescription: 'Find high-opportunity investment areas',
+    fullDescription:
+      'Identify geographic areas with high concentrations of motivated sellers, equity, and deal potential. Visual heat mapping shows where to focus your efforts.',
+    category: 'market-research',
+    icon: 'Map',
+    examples: [
+      {
+        prompt: 'Where are the best opportunities in Tampa?',
+        description: 'Find hot zones',
+        resultPreview: 'Heat map of opportunity areas',
+      },
+      {
+        prompt: 'Show me areas with motivated sellers',
+        description: 'Motivation-based mapping',
+        resultPreview: 'Motivation heat map',
+      },
+    ],
+    keywords: ['opportunity', 'zones', 'areas', 'heat map', 'where'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // PERMITS & PROPERTY CONDITION
+  // ==========================================
+  {
+    slug: 'permit.history',
+    displayName: 'Permit History',
+    shortDescription: 'Check permit and renovation history',
+    fullDescription:
+      'View complete permit history to understand what work has been done on the property, identify deferred maintenance, and spot motivation signals.',
+    category: 'property-search',
+    icon: 'FileText',
+    examples: [
+      {
+        prompt: 'Show me the permit history for this property',
+        description: 'Full permit history',
+        resultPreview: 'Timeline of all permits',
+      },
+      {
+        prompt: 'Has this property been recently renovated?',
+        description: 'Recent work check',
+        resultPreview: 'Recent permit activity summary',
+      },
+    ],
+    keywords: ['permits', 'history', 'renovations', 'work done'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+  {
+    slug: 'permit.analyze_patterns',
+    displayName: 'Permit Pattern Analysis',
+    shortDescription: 'Identify motivation signals from permits',
+    fullDescription:
+      'Analyze permit patterns to identify seller motivation signals like stalled projects, expired permits, or lack of maintenance.',
+    category: 'deal-analysis',
+    icon: 'Activity',
+    examples: [
+      {
+        prompt: 'Analyze permit patterns for motivation',
+        description: 'Motivation signal detection',
+        resultPreview: 'Motivation indicators from permits',
+      },
+    ],
+    keywords: ['permits', 'patterns', 'motivation', 'stalled', 'signals'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['property'],
+  },
+
+  // ==========================================
+  // BUYER MANAGEMENT & DISPOSITION
+  // ==========================================
+  {
+    slug: 'buyer.suggest_outreach',
+    displayName: 'Buyer Outreach Suggestions',
+    shortDescription: 'Get recommendations on which buyers to contact',
+    fullDescription:
+      'AI-powered buyer outreach recommendations based on deal characteristics, buyer preferences, and historical activity.',
+    category: 'buyer-intelligence',
+    icon: 'Target',
+    examples: [
+      {
+        prompt: 'Which buyers should I contact for this deal?',
+        description: 'Get buyer recommendations',
+        resultPreview: 'Prioritized buyer list with reasons',
+      },
+      {
+        prompt: 'Help me choose the best buyer for this property',
+        description: 'Buyer selection help',
+        resultPreview: 'Top buyer matches with scoring',
+      },
+    ],
+    keywords: ['buyers', 'contact', 'suggest', 'recommend', 'outreach'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property', 'deal'],
+  },
+  {
+    slug: 'buyer_management.analyze_buyer_activity',
+    displayName: 'Buyer Activity Analysis',
+    shortDescription: 'Analyze buyer engagement and performance',
+    fullDescription:
+      'Track buyer activity, identify top performers, and find buyers who need attention. Helps maintain a healthy buyer network.',
+    category: 'buyer-intelligence',
+    icon: 'BarChart3',
+    examples: [
+      {
+        prompt: 'Which buyers are most active right now?',
+        description: 'Find active buyers',
+        resultPreview: 'Active buyers with recent activity',
+      },
+      {
+        prompt: "Show me buyers I haven't contacted in a while",
+        description: 'Find dormant buyers',
+        resultPreview: 'Buyers needing engagement',
+      },
+    ],
+    keywords: ['buyer', 'activity', 'active', 'engagement', 'performance'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'buyer.score_fit',
+    displayName: 'Buyer Match Score',
+    shortDescription: 'Score how well a buyer matches a property',
+    fullDescription:
+      'Calculate a match score between a buyer and a property based on their criteria, history, and preferences.',
+    category: 'buyer-intelligence',
+    icon: 'Target',
+    examples: [
+      {
+        prompt: 'How good of a match is this buyer for this property?',
+        description: 'Calculate match score',
+        resultPreview: 'Match score with explanation',
+      },
+    ],
+    keywords: ['match', 'score', 'fit', 'buyer', 'property'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['buyer', 'property'],
+  },
+
+  // ==========================================
+  // COMMUNICATION & OUTREACH
+  // ==========================================
+  {
+    slug: 'notification.send_sms',
+    displayName: 'Send SMS',
+    shortDescription: 'Send text message to a lead or contact',
+    fullDescription:
+      'Send SMS messages directly to property owners, buyers, or other contacts. Track delivery and responses.',
+    category: 'outreach',
+    icon: 'MessageSquare',
+    examples: [
+      {
+        prompt: "Send an SMS to this owner asking if they're interested in selling",
+        description: 'Direct SMS outreach',
+        resultPreview: 'SMS sent with tracking',
+      },
+      {
+        prompt: 'Text this buyer about a new deal',
+        description: 'Buyer SMS notification',
+        resultPreview: 'Message sent to buyer',
+      },
+    ],
+    keywords: ['sms', 'text', 'send', 'message'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property', 'buyer'],
+  },
+  {
+    slug: 'notification.send_email',
+    displayName: 'Send Email',
+    shortDescription: 'Send email to a lead or contact',
+    fullDescription:
+      'Send professional emails to property owners, buyers, or contacts. Supports templates and tracking.',
+    category: 'outreach',
+    icon: 'Mail',
+    examples: [
+      {
+        prompt: 'Email this owner with an offer',
+        description: 'Send offer email',
+        resultPreview: 'Email sent with tracking',
+      },
+    ],
+    keywords: ['email', 'send', 'message', 'contact'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property', 'buyer'],
+  },
+  {
+    slug: 'notification.create_drip_campaign',
+    displayName: 'Create Drip Campaign',
+    shortDescription: 'Set up automated follow-up sequence',
+    fullDescription:
+      'Create multi-touch drip campaigns with automated emails and SMS over time. Perfect for nurturing leads.',
+    category: 'automation',
+    icon: 'Zap',
+    examples: [
+      {
+        prompt: 'Set up a 5-email drip campaign for this seller',
+        description: 'Create email sequence',
+        resultPreview: 'Drip campaign configured',
+      },
+    ],
+    keywords: ['drip', 'campaign', 'sequence', 'automation', 'follow-up'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+
+  // ==========================================
+  // DASHBOARD & ANALYTICS
+  // ==========================================
+  {
+    slug: 'dashboard.insights',
+    displayName: 'Dashboard Insights',
+    shortDescription: 'Get AI-powered insights from your data',
+    fullDescription:
+      'Receive personalized insights about your deal flow, conversion rates, and opportunities based on your activity.',
+    category: 'help',
+    icon: 'Sparkles',
+    examples: [
+      {
+        prompt: 'What insights do you have for me?',
+        description: 'Get personalized insights',
+        resultPreview: 'AI-generated insights and recommendations',
+      },
+      {
+        prompt: 'How am I performing this month?',
+        description: 'Performance summary',
+        resultPreview: 'Monthly performance overview',
+      },
+    ],
+    keywords: ['insights', 'dashboard', 'performance', 'analytics'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'dashboard.funnel',
+    displayName: 'Conversion Funnel',
+    shortDescription: 'Analyze your deal conversion funnel',
+    fullDescription:
+      'See where leads drop off in your pipeline and get recommendations to improve conversion rates.',
+    category: 'pipeline',
+    icon: 'GitBranch',
+    examples: [
+      {
+        prompt: 'Show me my conversion funnel',
+        description: 'View funnel analysis',
+        resultPreview: 'Pipeline stages with conversion rates',
+      },
+      {
+        prompt: 'Where am I losing deals?',
+        description: 'Identify bottlenecks',
+        resultPreview: 'Drop-off analysis with suggestions',
+      },
+    ],
+    keywords: ['funnel', 'conversion', 'pipeline', 'analyze'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // BATCH OPERATIONS
+  // ==========================================
+  {
+    slug: 'batch.skip_trace_bulk',
+    displayName: 'Bulk Skip Trace',
+    shortDescription: 'Skip trace multiple properties at once',
+    fullDescription:
+      'Queue multiple properties for skip tracing in a single operation. More efficient and cost-effective than one-by-one.',
+    category: 'skip-tracing',
+    icon: 'Users',
+    examples: [
+      {
+        prompt: 'Skip trace all 50 properties in this list',
+        description: 'Bulk skip trace',
+        resultPreview: 'Skip trace job queued',
+      },
+    ],
+    keywords: ['bulk', 'batch', 'skip trace', 'multiple'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['list'],
+  },
+  {
+    slug: 'batch.export_properties',
+    displayName: 'Export Properties',
+    shortDescription: 'Export property data to CSV or Excel',
+    fullDescription:
+      'Export property lists, search results, or deal data to CSV, Excel, or JSON format for external use.',
+    category: 'list-management',
+    icon: 'FileSpreadsheet',
+    examples: [
+      {
+        prompt: 'Export these properties to Excel',
+        description: 'Export to spreadsheet',
+        resultPreview: 'Download Excel file',
+      },
+      {
+        prompt: 'Download this list as CSV',
+        description: 'CSV export',
+        resultPreview: 'Download CSV file',
+      },
+    ],
+    keywords: ['export', 'download', 'csv', 'excel', 'spreadsheet'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['list', 'none'],
+  },
+
+  // ==========================================
+  // PREDICTIVE & AI-POWERED TOOLS
+  // ==========================================
+  {
+    slug: 'predict.deal_success',
+    displayName: 'Deal Success Prediction',
+    shortDescription: 'Predict likelihood of closing a deal',
+    fullDescription:
+      'AI-powered prediction of deal success based on property characteristics, seller motivation, market conditions, and your historical performance.',
+    category: 'deal-analysis',
+    icon: 'Target',
+    examples: [
+      {
+        prompt: 'What are my chances of closing this deal?',
+        description: 'Predict deal success',
+        resultPreview: 'Success probability with factors',
+      },
+      {
+        prompt: 'Is this deal worth pursuing?',
+        description: 'Deal viability check',
+        resultPreview: 'Recommendation with reasoning',
+      },
+    ],
+    keywords: ['predict', 'success', 'probability', 'likelihood', 'close'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['deal', 'property'],
+  },
+  {
+    slug: 'predict.optimal_offer',
+    displayName: 'Optimal Offer Suggestion',
+    shortDescription: 'Get AI-recommended offer strategy',
+    fullDescription:
+      'Receive tiered offer recommendations (optimal, target, max, walk-away) based on property analysis, seller motivation, and market conditions.',
+    category: 'deal-analysis',
+    icon: 'DollarSign',
+    examples: [
+      {
+        prompt: 'What should I offer for this property?',
+        description: 'Get offer recommendation',
+        resultPreview: 'Tiered offer strategy',
+      },
+      {
+        prompt: 'Help me create an offer strategy',
+        description: 'Strategic offer planning',
+        resultPreview: 'Multi-level offer plan',
+      },
+    ],
+    keywords: ['offer', 'optimal', 'suggest', 'recommend', 'strategy'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property'],
+  },
+  {
+    slug: 'predict.lead_score',
+    displayName: 'Lead Scoring',
+    shortDescription: 'Score and prioritize leads',
+    fullDescription:
+      'AI-powered lead scoring based on motivation indicators, property characteristics, and conversion likelihood. Helps you focus on the best opportunities.',
+    category: 'list-management',
+    icon: 'Star',
+    examples: [
+      {
+        prompt: 'Score these leads for me',
+        description: 'Prioritize leads',
+        resultPreview: 'Leads ranked by score',
+      },
+      {
+        prompt: 'Which leads should I focus on first?',
+        description: 'Lead prioritization',
+        resultPreview: 'Top leads with reasons',
+      },
+    ],
+    keywords: ['score', 'lead', 'prioritize', 'rank'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['list', 'none'],
+  },
+
+  // ==========================================
+  // CRM & DEAL MANAGEMENT
+  // ==========================================
+  {
+    slug: 'deal.predict_outcome',
+    displayName: 'Deal Outcome Prediction',
+    shortDescription: 'Predict likelihood of deal closing',
+    fullDescription:
+      'Analyze deal progress and predict the likelihood of successful closing based on activity, timeline, and historical patterns.',
+    category: 'pipeline',
+    icon: 'Target',
+    examples: [
+      {
+        prompt: 'Will this deal close?',
+        description: 'Predict deal outcome',
+        resultPreview: 'Close probability with factors',
+      },
+    ],
+    keywords: ['predict', 'outcome', 'close', 'deal'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['deal'],
+  },
+  {
+    slug: 'deal.flag_issues',
+    displayName: 'Flag Deal Issues',
+    shortDescription: 'Identify deals that need attention',
+    fullDescription:
+      'Automatically identify deals with issues like long time in stage, lack of activity, or missing information.',
+    category: 'pipeline',
+    icon: 'AlertTriangle',
+    examples: [
+      {
+        prompt: 'Which deals need my attention?',
+        description: 'Find problem deals',
+        resultPreview: 'Deals with issues flagged',
+      },
+      {
+        prompt: 'Show me stalled deals',
+        description: 'Find inactive deals',
+        resultPreview: 'Stalled deals with suggestions',
+      },
+    ],
+    keywords: ['issues', 'problems', 'stalled', 'attention', 'flag'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'crm.identify_hot',
+    displayName: 'Hot Leads',
+    shortDescription: 'Find your hottest leads to contact',
+    fullDescription:
+      'Identify leads with the highest motivation scores and best characteristics. Shows you who to call first.',
+    category: 'list-management',
+    icon: 'Flame',
+    examples: [
+      {
+        prompt: 'Show me my hottest leads',
+        description: 'Find top leads',
+        resultPreview: 'Leads ranked by temperature',
+      },
+      {
+        prompt: 'Who should I call today?',
+        description: 'Daily call list',
+        resultPreview: 'Prioritized contact list',
+      },
+    ],
+    keywords: ['hot', 'leads', 'priority', 'contact', 'call'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // MAP & GEOGRAPHIC TOOLS
+  // ==========================================
+  {
+    slug: 'map.compare_areas',
+    displayName: 'Compare Geographic Areas',
+    shortDescription: 'Compare multiple areas side-by-side',
+    fullDescription:
+      'Compare different geographic areas on metrics like median price, days on market, inventory, and opportunity scores.',
+    category: 'market-research',
+    icon: 'GitCompare',
+    examples: [
+      {
+        prompt: 'Compare downtown Tampa vs South Tampa',
+        description: 'Area comparison',
+        resultPreview: 'Side-by-side area metrics',
+      },
+    ],
+    keywords: ['compare', 'areas', 'geographic', 'map'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'map.show_commute_time',
+    displayName: 'Commute Time Analysis',
+    shortDescription: 'Show areas by drive time',
+    fullDescription:
+      'Display isochrone maps showing areas reachable within a specified drive time. Useful for targeting around employment centers.',
+    category: 'property-search',
+    icon: 'MapPin',
+    examples: [
+      {
+        prompt: 'Show properties within 20 minutes of downtown',
+        description: 'Drive time search',
+        resultPreview: 'Properties in commute zone',
+      },
+    ],
+    keywords: ['commute', 'drive time', 'distance', 'map'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // INTEGRATION & SYNC TOOLS
+  // ==========================================
+  {
+    slug: 'sync.crm_export',
+    displayName: 'Export to CRM',
+    shortDescription: 'Export data to external CRM systems',
+    fullDescription:
+      'Export leads, contacts, and deals to external CRM platforms like Salesforce, HubSpot, or Podio.',
+    category: 'settings',
+    icon: 'Upload',
+    examples: [
+      {
+        prompt: 'Export these leads to my CRM',
+        description: 'CRM export',
+        resultPreview: 'Data synced to CRM',
+      },
+    ],
+    keywords: ['export', 'crm', 'sync', 'integration'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['list', 'none'],
+  },
+
+  // ==========================================
+  // CONTRACTOR & REPAIR TOOLS
+  // ==========================================
+  {
+    slug: 'contractor.search',
+    displayName: 'Find Contractors',
+    shortDescription: 'Search for contractors by location and specialty',
+    fullDescription:
+      'Find licensed contractors for your renovation projects. Search by location, specialty (roofing, electrical, plumbing, etc.), and ratings.',
+    category: 'documents',
+    subcategory: 'contractors',
+    icon: 'Hammer',
+    examples: [
+      {
+        prompt: 'Find roofers in Tampa',
+        description: 'Search contractors',
+        resultPreview: 'Contractor list with ratings',
+      },
+      {
+        prompt: 'Who are the best general contractors in this area?',
+        description: 'Top contractors',
+        resultPreview: 'Highly-rated contractors',
+      },
+    ],
+    keywords: ['contractor', 'find', 'search', 'renovation', 'repair'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['property', 'none'],
+  },
+  {
+    slug: 'contractor.compare',
+    displayName: 'Compare Contractors',
+    shortDescription: 'Compare multiple contractors side-by-side',
+    fullDescription:
+      'Compare contractors on price, ratings, experience, and past project quality to make the best choice.',
+    category: 'documents',
+    subcategory: 'contractors',
+    icon: 'GitCompare',
+    examples: [
+      {
+        prompt: 'Compare these 3 contractors',
+        description: 'Side-by-side comparison',
+        resultPreview: 'Contractor comparison table',
+      },
+    ],
+    keywords: ['compare', 'contractor', 'evaluate'],
+    isPrimary: false,
+    isAdvanced: false,
+    requiresContext: ['none'],
+  },
+
+  // ==========================================
+  // INTELLIGENCE & COMPETITIVE ANALYSIS
+  // ==========================================
+  {
+    slug: 'intel.competitor_activity',
+    displayName: 'Competitor Analysis',
+    shortDescription: 'Analyze investor activity in your market',
+    fullDescription:
+      "Track competitor investor and flipper activity using permit data. See where other investors are buying and what they're doing.",
+    category: 'market-research',
+    icon: 'Users',
+    examples: [
+      {
+        prompt: 'What are other investors doing in Tampa?',
+        description: 'Competitor activity',
+        resultPreview: 'Investor activity heatmap',
+      },
+      {
+        prompt: 'Show me where flippers are buying',
+        description: 'Flipper tracking',
+        resultPreview: 'Active flip locations',
+      },
+    ],
+    keywords: ['competitor', 'investor', 'activity', 'flippers'],
+    isPrimary: false,
+    isAdvanced: true,
+    requiresContext: ['none'],
+  },
+  {
+    slug: 'intel.market_saturation',
+    displayName: 'Market Saturation Analysis',
+    shortDescription: 'Check if a market is oversaturated',
+    fullDescription:
+      'Analyze market saturation by comparing investor activity, inventory levels, and days on market. Helps avoid overly competitive markets.',
+    category: 'market-research',
+    icon: 'Activity',
+    examples: [
+      {
+        prompt: 'Is the Tampa market oversaturated?',
+        description: 'Saturation check',
+        resultPreview: 'Saturation analysis with score',
+      },
+    ],
+    keywords: ['saturation', 'competition', 'crowded', 'oversaturated'],
+    isPrimary: false,
+    isAdvanced: true,
     requiresContext: ['none'],
   },
 ];
@@ -838,9 +1670,7 @@ export function getToolsByCategory(category: DiscoveryCategory): DiscoveryToolDe
  * Get primary/featured tools for onboarding
  */
 export function getFeaturedTools(): DiscoveryToolDefinition[] {
-  return toolRegistry
-    .filter((tool) => tool.isPrimary && !tool.isAdvanced)
-    .slice(0, 8);
+  return toolRegistry.filter((tool) => tool.isPrimary && !tool.isAdvanced).slice(0, 8);
 }
 
 /**

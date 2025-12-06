@@ -9,8 +9,8 @@
  */
 
 import { classifyOwner } from './owner-classifier';
-import { calculateMotivationScore, getModelForOwnerClass } from './scoring-models';
-import { fetchPropertySignals, getCachedSignals, cacheSignals, SignalFetchOptions } from './signal-fetcher';
+import { calculateMotivationScore } from './scoring-models';
+import { fetchPropertySignals, getCachedSignals, cacheSignals } from './signal-fetcher';
 import type {
   OwnerClassification,
   RawPropertySignals,
@@ -72,9 +72,7 @@ export interface ScoringResult {
 /**
  * Calculate seller motivation score for a property
  */
-export async function calculateSellerMotivation(
-  options: ScoringOptions
-): Promise<ScoringResult> {
+export async function calculateSellerMotivation(options: ScoringOptions): Promise<ScoringResult> {
   const startTime = Date.now();
   let fetchMs = 0;
   let classifyMs = 0;
@@ -90,7 +88,7 @@ export async function calculateSellerMotivation(
   if (!signals) {
     // Check cache first
     if (options.useCache && options.propertyId) {
-      signals = await getCachedSignals(options.propertyId) || undefined;
+      signals = (await getCachedSignals(options.propertyId)) || undefined;
     }
 
     if (!signals) {
@@ -189,9 +187,10 @@ async function calculateDealFlowIQScore(
     aiAdjustments.push({
       factor: 'Seasonal Timing',
       adjustment: seasonalAdjustment,
-      reasoning: seasonalAdjustment > 0
-        ? 'Off-season listings often indicate higher motivation'
-        : 'Peak season gives sellers more leverage',
+      reasoning:
+        seasonalAdjustment > 0
+          ? 'Off-season listings often indicate higher motivation'
+          : 'Peak season gives sellers more leverage',
     });
   }
 
@@ -220,7 +219,8 @@ async function calculateDealFlowIQScore(
 
   // 3. Owner duration pattern adjustment
   if (signals.lastSaleDate) {
-    const years = (Date.now() - new Date(signals.lastSaleDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+    const years =
+      (Date.now() - new Date(signals.lastSaleDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
 
     // 7-year itch pattern for individuals
     if (classification.primaryClass === 'individual' && years >= 6 && years <= 8) {
@@ -381,11 +381,11 @@ function calculateDataQuality(
   ];
 
   const presentSignals = allPossibleSignals.filter(
-    key => (signals as Record<string, unknown>)[key] !== undefined
+    (key) => (signals as Record<string, unknown>)[key] !== undefined
   );
 
   const missingSignals = allPossibleSignals.filter(
-    key => (signals as Record<string, unknown>)[key] === undefined
+    (key) => (signals as Record<string, unknown>)[key] === undefined
   );
 
   const sourcesUsed: string[] = [];
@@ -397,8 +397,8 @@ function calculateDataQuality(
 
   // Calculate confidence based on available data
   const dataConfidence = presentSignals.length / allPossibleSignals.length;
-  const factorConfidence = factors.filter(f => f.rawValue !== null).length / factors.length;
-  const overallConfidence = (dataConfidence * 0.5 + factorConfidence * 0.5);
+  const factorConfidence = factors.filter((f) => f.rawValue !== null).length / factors.length;
+  const overallConfidence = dataConfidence * 0.5 + factorConfidence * 0.5;
 
   return {
     signalsAvailable: presentSignals.length,
@@ -421,8 +421,18 @@ export async function batchCalculateMotivation(
     scoreType?: 'standard' | 'dealflow_iq' | 'both';
     concurrency?: number;
   }
-): Promise<Array<{ input: { propertyId?: string; address: string }; result: ScoringResult | null; error?: string }>> {
-  const results: Array<{ input: { propertyId?: string; address: string }; result: ScoringResult | null; error?: string }> = [];
+): Promise<
+  Array<{
+    input: { propertyId?: string; address: string };
+    result: ScoringResult | null;
+    error?: string;
+  }>
+> {
+  const results: Array<{
+    input: { propertyId?: string; address: string };
+    result: ScoringResult | null;
+    error?: string;
+  }> = [];
   const concurrency = options?.concurrency || 5;
 
   // Process in batches
@@ -460,9 +470,7 @@ export async function batchCalculateMotivation(
 /**
  * Quick score for API responses - returns just the essential data
  */
-export async function quickScore(
-  options: { propertyId?: string; address?: string }
-): Promise<{
+export async function quickScore(options: { propertyId?: string; address?: string }): Promise<{
   score: number;
   confidence: number;
   ownerType: string;

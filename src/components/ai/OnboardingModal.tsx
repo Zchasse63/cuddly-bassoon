@@ -16,37 +16,12 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import {
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  Sparkles,
-  ArrowRight,
-  Zap,
-} from 'lucide-react';
+import Link from 'next/link';
+import { Sparkles, ArrowRight, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getFeaturedTools } from '@/lib/ai/tool-discovery';
+import { renderIcon } from '@/lib/ai/icon-map';
 import type { DiscoveryToolDefinition } from '@/lib/ai/tool-discovery/types';
-
-// Icon mapping for dynamic icon rendering
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  UserSearch: Users,
-  Scale: Calculator,
-  Mail: MessageSquare,
-  Target: Sparkles,
-  Phone: MessageSquare,
-  FileText: MessageSquare,
-  Home: Search,
-};
 
 interface OnboardingModalProps {
   /** Whether the modal is open */
@@ -65,7 +40,6 @@ interface OnboardingCardProps {
 }
 
 function OnboardingCard({ tool, onTry }: OnboardingCardProps) {
-  const Icon = iconMap[tool.icon] || Sparkles;
   const firstExample = tool.examples[0];
 
   return (
@@ -84,13 +58,11 @@ function OnboardingCard({ tool, onTry }: OnboardingCardProps) {
             'bg-primary/10 text-primary'
           )}
         >
-          <Icon className="h-5 w-5" />
+          {renderIcon(tool.icon, 'h-5 w-5', Sparkles)}
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-sm">{tool.displayName}</h3>
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            {tool.shortDescription}
-          </p>
+          <p className="text-xs text-muted-foreground line-clamp-1">{tool.shortDescription}</p>
         </div>
       </div>
 
@@ -150,8 +122,8 @@ export function OnboardingModal({
           </div>
           <DialogTitle className="text-xl">What can Scout help you with?</DialogTitle>
           <DialogDescription className="text-base">
-            Scout is your AI assistant for finding deals, analyzing properties, and connecting
-            with buyers. Try any of these:
+            Scout is your AI assistant for finding deals, analyzing properties, and connecting with
+            buyers. Try any of these:
           </DialogDescription>
         </DialogHeader>
 
@@ -178,23 +150,25 @@ export function OnboardingModal({
                 <Zap className="h-3 w-3 inline" />
               </kbd>{' '}
               button in the chat to browse all tools, or press{' '}
-              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs">
-                ⌘K
-              </kbd>{' '}
-              anytime.
+              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs">⌘K</kbd> anytime.
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end pt-4">
-          <Button variant="outline" onClick={handleBrowseAll}>
-            Browse all tools
-          </Button>
-          <Button onClick={handleDismiss}>
-            Got it, let&apos;s go
-            <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-between pt-4">
+          <Link href="/help/ai-tools" className="text-sm text-muted-foreground hover:text-primary">
+            View all 253 AI tools →
+          </Link>
+          <div className="flex flex-col-reverse sm:flex-row gap-2">
+            <Button variant="outline" onClick={handleBrowseAll}>
+              Browse tools
+            </Button>
+            <Button onClick={handleDismiss}>
+              Got it, let&apos;s go
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

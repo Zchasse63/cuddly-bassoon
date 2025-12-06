@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid parameters. Required: type, name, state',
-          details: validation.error.errors,
+          details: validation.error.issues,
         },
         { status: 400 }
       );
@@ -77,9 +77,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to get area velocity data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get area velocity data' }, { status: 500 });
   }
 }

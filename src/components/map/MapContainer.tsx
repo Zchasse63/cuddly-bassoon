@@ -6,7 +6,12 @@
  */
 
 import { useRef, useCallback, useEffect } from 'react';
-import Map, { NavigationControl, GeolocateControl, ScaleControl, MapRef } from 'react-map-gl/mapbox';
+import Map, {
+  NavigationControl,
+  GeolocateControl,
+  ScaleControl,
+  MapRef,
+} from 'react-map-gl/mapbox';
 import { useDebouncedCallback } from 'use-debounce';
 import { useMap } from './MapProvider';
 import { PropertyMarkers } from './PropertyMarkers';
@@ -68,18 +73,21 @@ export function MapContainer({
   }, [setBounds]);
 
   // Handle draw create
-  const handleDrawCreate = useCallback((features: DrawFeature[]) => {
-    features.forEach((feature) => {
-      if (feature.type === 'Polygon') {
-        addDrawnArea({
-          id: feature.id,
-          type: feature.type,
-          coordinates: feature.coordinates,
-          properties: feature.properties,
-        });
-      }
-    });
-  }, [addDrawnArea]);
+  const handleDrawCreate = useCallback(
+    (features: DrawFeature[]) => {
+      features.forEach((feature) => {
+        if (feature.type === 'Polygon') {
+          addDrawnArea({
+            id: feature.id,
+            type: feature.type,
+            coordinates: feature.coordinates,
+            properties: feature.properties,
+          });
+        }
+      });
+    },
+    [addDrawnArea]
+  );
 
   // Handle draw delete
   const handleDrawDelete = useCallback(() => {
@@ -99,7 +107,7 @@ export function MapContainer({
         duration: 1000,
       });
     }
-  }, [state.viewport.longitude, state.viewport.latitude, state.viewport.zoom]);
+  }, [state.viewport, state.viewport.longitude, state.viewport.latitude, state.viewport.zoom]);
 
   if (!MAPBOX_TOKEN) {
     return (
@@ -160,4 +168,3 @@ export function MapContainer({
     </div>
   );
 }
-

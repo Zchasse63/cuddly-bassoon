@@ -7,17 +7,12 @@
  * owner classification, and recommendations.
  */
 
-import { useState } from 'react';
+import { useState, useMemo, createElement } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import {
   Brain,
@@ -162,7 +157,10 @@ export function MotivationScoreCard({
   const [showFactors, setShowFactors] = useState(false);
   const [showAIDetails, setShowAIDetails] = useState(false);
 
-  const OwnerIcon = getOwnerIcon(ownerClassification?.primaryClass);
+  const OwnerIconComponent = useMemo(
+    () => getOwnerIcon(ownerClassification?.primaryClass),
+    [ownerClassification?.primaryClass]
+  );
   const ownerLabels = getOwnerLabel(
     ownerClassification?.primaryClass,
     ownerClassification?.subClass
@@ -177,17 +175,10 @@ export function MotivationScoreCard({
               <Brain className="h-5 w-5 text-brand-500" />
               Seller Motivation Analysis
             </CardTitle>
-            <CardDescription>
-              AI-powered analysis of seller motivation signals
-            </CardDescription>
+            <CardDescription>AI-powered analysis of seller motivation signals</CardDescription>
           </div>
           {onRefresh && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={onRefresh}
-              disabled={isLoading}
-            >
+            <Button variant="ghost" size="icon-sm" onClick={onRefresh} disabled={isLoading}>
               <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
             </Button>
           )}
@@ -233,7 +224,7 @@ export function MotivationScoreCard({
         {ownerClassification && (
           <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
             <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center">
-              <OwnerIcon className="h-5 w-5 text-brand-600" />
+              {createElement(OwnerIconComponent, { className: 'h-5 w-5 text-brand-600' })}
             </div>
             <div className="flex-1">
               <div className="font-medium">{ownerLabels.primary}</div>

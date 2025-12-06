@@ -3,13 +3,7 @@
  * Central registry for all AI tools
  */
 
-import {
-  RegisteredTool,
-  ToolCategory,
-  ToolFilter,
-  ToolDefinition,
-  ToolHandler,
-} from './types';
+import { RegisteredTool, ToolCategory, ToolFilter, ToolDefinition, ToolHandler } from './types';
 
 class ToolRegistry {
   private tools: Map<string, RegisteredTool> = new Map();
@@ -69,7 +63,9 @@ class ToolRegistry {
   /**
    * Get a tool by ID
    */
-  get<TInput = unknown, TOutput = unknown>(toolId: string): RegisteredTool<TInput, TOutput> | undefined {
+  get<TInput = unknown, TOutput = unknown>(
+    toolId: string
+  ): RegisteredTool<TInput, TOutput> | undefined {
     return this.tools.get(toolId) as RegisteredTool<TInput, TOutput> | undefined;
   }
 
@@ -111,9 +107,12 @@ class ToolRegistry {
     }
 
     // Get tools from IDs or all tools
-    let tools = toolIds !== null
-      ? Array.from(toolIds).map((id) => this.tools.get(id)!).filter(Boolean)
-      : this.getAll();
+    let tools =
+      toolIds !== null
+        ? Array.from(toolIds)
+            .map((id) => this.tools.get(id)!)
+            .filter(Boolean)
+        : this.getAll();
 
     // Filter by permission
     if (filter.permission) {
@@ -165,10 +164,11 @@ class ToolRegistry {
    * Get tool definitions for AI (without handlers)
    */
   getDefinitionsForAI(): Omit<ToolDefinition, 'inputSchema' | 'outputSchema'>[] {
-    return this.getAll().map(({ handler, inputSchema, outputSchema, ...def }) => def);
+    return this.getAll().map(
+      ({ handler: _handler, inputSchema: _inputSchema, outputSchema: _outputSchema, ...def }) => def
+    );
   }
 }
 
 // Singleton instance
 export const toolRegistry = new ToolRegistry();
-

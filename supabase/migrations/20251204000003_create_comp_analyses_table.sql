@@ -113,6 +113,7 @@ ON comp_analyses USING gin(comps);
 ALTER TABLE comp_analyses ENABLE ROW LEVEL SECURITY;
 
 -- Users can view their own analyses
+DROP POLICY IF EXISTS comp_analyses_select_own ON comp_analyses;
 CREATE POLICY comp_analyses_select_own
 ON comp_analyses FOR SELECT
 USING (
@@ -121,6 +122,7 @@ USING (
 );
 
 -- Users can insert their own analyses
+DROP POLICY IF EXISTS comp_analyses_insert_own ON comp_analyses;
 CREATE POLICY comp_analyses_insert_own
 ON comp_analyses FOR INSERT
 WITH CHECK (
@@ -129,12 +131,14 @@ WITH CHECK (
 );
 
 -- Users can update their own analyses
+DROP POLICY IF EXISTS comp_analyses_update_own ON comp_analyses;
 CREATE POLICY comp_analyses_update_own
 ON comp_analyses FOR UPDATE
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
 -- Users can delete their own analyses
+DROP POLICY IF EXISTS comp_analyses_delete_own ON comp_analyses;
 CREATE POLICY comp_analyses_delete_own
 ON comp_analyses FOR DELETE
 USING (auth.uid() = user_id);

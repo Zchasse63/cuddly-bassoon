@@ -282,75 +282,141 @@ ALTER TABLE public.experiment_outcomes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.distress_indicators ENABLE ROW LEVEL SECURITY;
 
 -- Owner Classifications - Read access for authenticated users
+DROP POLICY IF EXISTS owner_classifications_select ON public.owner_classifications;
+DROP POLICY IF EXISTS owner_classifications_select ON public.owner_classifications;
+DROP POLICY IF EXISTS owner_classifications_select ON public.owner_classifications;
 CREATE POLICY owner_classifications_select ON public.owner_classifications
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS owner_classifications_insert ON public.owner_classifications;
+DROP POLICY IF EXISTS owner_classifications_insert ON public.owner_classifications;
+DROP POLICY IF EXISTS owner_classifications_insert ON public.owner_classifications;
 CREATE POLICY owner_classifications_insert ON public.owner_classifications
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
 -- Motivation Scores - Users can see all, but created_by tracks who made them
+DROP POLICY IF EXISTS motivation_scores_select ON public.motivation_scores;
+DROP POLICY IF EXISTS motivation_scores_select ON public.motivation_scores;
+DROP POLICY IF EXISTS motivation_scores_select ON public.motivation_scores;
 CREATE POLICY motivation_scores_select ON public.motivation_scores
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS motivation_scores_insert ON public.motivation_scores;
+DROP POLICY IF EXISTS motivation_scores_insert ON public.motivation_scores;
+DROP POLICY IF EXISTS motivation_scores_insert ON public.motivation_scores;
 CREATE POLICY motivation_scores_insert ON public.motivation_scores
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
 -- Property Signals - Read access for authenticated users
+DROP POLICY IF EXISTS property_signals_select ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_select ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_select ON public.property_signals;
 CREATE POLICY property_signals_select ON public.property_signals
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS property_signals_insert ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_insert ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_insert ON public.property_signals;
 CREATE POLICY property_signals_insert ON public.property_signals
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS property_signals_update ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_update ON public.property_signals;
+DROP POLICY IF EXISTS property_signals_update ON public.property_signals;
 CREATE POLICY property_signals_update ON public.property_signals
     FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
 
 -- Scoring Experiments - Separate policies for each operation
+DROP POLICY IF EXISTS scoring_experiments_select ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_select ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_select ON public.scoring_experiments;
 CREATE POLICY scoring_experiments_select ON public.scoring_experiments
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS scoring_experiments_insert ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_insert ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_insert ON public.scoring_experiments;
 CREATE POLICY scoring_experiments_insert ON public.scoring_experiments
     FOR INSERT TO authenticated WITH CHECK (auth.uid() = created_by);
 
+DROP POLICY IF EXISTS scoring_experiments_update ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_update ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_update ON public.scoring_experiments;
 CREATE POLICY scoring_experiments_update ON public.scoring_experiments
     FOR UPDATE TO authenticated USING (auth.uid() = created_by) WITH CHECK (auth.uid() = created_by);
 
+DROP POLICY IF EXISTS scoring_experiments_delete ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_delete ON public.scoring_experiments;
+DROP POLICY IF EXISTS scoring_experiments_delete ON public.scoring_experiments;
 CREATE POLICY scoring_experiments_delete ON public.scoring_experiments
     FOR DELETE TO authenticated USING (auth.uid() = created_by);
 
 -- Experiment Assignments - Separate policies for each operation
+DROP POLICY IF EXISTS experiment_assignments_select ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_select ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_select ON public.experiment_assignments;
 CREATE POLICY experiment_assignments_select ON public.experiment_assignments
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS experiment_assignments_insert ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_insert ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_insert ON public.experiment_assignments;
 CREATE POLICY experiment_assignments_insert ON public.experiment_assignments
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS experiment_assignments_update ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_update ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_update ON public.experiment_assignments;
 CREATE POLICY experiment_assignments_update ON public.experiment_assignments
     FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS experiment_assignments_delete ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_delete ON public.experiment_assignments;
+DROP POLICY IF EXISTS experiment_assignments_delete ON public.experiment_assignments;
 CREATE POLICY experiment_assignments_delete ON public.experiment_assignments
     FOR DELETE TO authenticated USING (FALSE);
 
 -- Experiment Outcomes - Separate policies for each operation
+DROP POLICY IF EXISTS experiment_outcomes_select ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_select ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_select ON public.experiment_outcomes;
 CREATE POLICY experiment_outcomes_select ON public.experiment_outcomes
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS experiment_outcomes_insert ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_insert ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_insert ON public.experiment_outcomes;
 CREATE POLICY experiment_outcomes_insert ON public.experiment_outcomes
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS experiment_outcomes_update ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_update ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_update ON public.experiment_outcomes;
 CREATE POLICY experiment_outcomes_update ON public.experiment_outcomes
     FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS experiment_outcomes_delete ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_delete ON public.experiment_outcomes;
+DROP POLICY IF EXISTS experiment_outcomes_delete ON public.experiment_outcomes;
 CREATE POLICY experiment_outcomes_delete ON public.experiment_outcomes
     FOR DELETE TO authenticated USING (FALSE);
 
 -- Distress Indicators - Read access for authenticated users
+DROP POLICY IF EXISTS distress_indicators_select ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_select ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_select ON public.distress_indicators;
 CREATE POLICY distress_indicators_select ON public.distress_indicators
     FOR SELECT TO authenticated USING (TRUE);
 
+DROP POLICY IF EXISTS distress_indicators_insert ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_insert ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_insert ON public.distress_indicators;
 CREATE POLICY distress_indicators_insert ON public.distress_indicators
     FOR INSERT TO authenticated WITH CHECK (TRUE);
 
+DROP POLICY IF EXISTS distress_indicators_update ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_update ON public.distress_indicators;
+DROP POLICY IF EXISTS distress_indicators_update ON public.distress_indicators;
 CREATE POLICY distress_indicators_update ON public.distress_indicators
     FOR UPDATE TO authenticated USING (TRUE) WITH CHECK (TRUE);
 

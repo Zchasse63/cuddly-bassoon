@@ -5,7 +5,7 @@
  * Renders the Market Velocity Index heat map layer on the Mapbox map
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Source, Layer } from 'react-map-gl/mapbox';
 import { useQuery } from '@tanstack/react-query';
 import { useMap } from './MapProvider';
@@ -99,7 +99,8 @@ export function MarketVelocityLayer({
   onAreaClick,
 }: MarketVelocityLayerProps) {
   const { state, setLoading } = useMap();
-  const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
+  // Hovered feature state for styling - setter will be used when events are moved to Map level
+  const [hoveredFeature] = useState<string | null>(null);
 
   // Query for velocity data
   const { data: velocityData, isLoading } = useQuery({
@@ -118,24 +119,9 @@ export function MarketVelocityLayer({
     setLoading(isLoading);
   }, [isLoading, setLoading]);
 
-  // Handle layer click
-  const handleLayerClick = useCallback(
-    (e: mapboxgl.MapLayerMouseEvent) => {
-      if (!onAreaClick || !e.features?.length) return;
-
-      const feature = e.features[0];
-      const props = feature?.properties;
-
-      if (props?.zipCode) {
-        onAreaClick(props.zipCode, {
-          zipCode: props.zipCode as string,
-          velocityIndex: props.velocityIndex as number,
-          classification: props.classification as VelocityClassification,
-        });
-      }
-    },
-    [onAreaClick]
-  );
+  // TODO: Move layer click handler to parent Map component with interactiveLayerIds
+  // The onAreaClick callback is available but needs to be wired up at the Map level
+  void onAreaClick; // Acknowledge prop exists for future implementation
 
   // Don't render if not visible
   if (!visible) return null;
@@ -166,36 +152,14 @@ export function MarketVelocityLayer({
             VELOCITY_COLOR_SCALE[5]!.color, // 85-100: On Fire (Red)
           ],
           // Size based on zoom level
-          'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            4,
-            4,
-            8,
-            8,
-            12,
-            12,
-            16,
-            20,
-          ],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 4, 8, 8, 12, 12, 16, 20],
           'circle-opacity': opacity,
-          'circle-stroke-width': [
-            'case',
-            ['==', ['get', 'zipCode'], hoveredFeature || ''],
-            2,
-            0.5,
-          ],
+          'circle-stroke-width': ['case', ['==', ['get', 'zipCode'], hoveredFeature || ''], 2, 0.5],
           'circle-stroke-color': '#1F2937',
           'circle-stroke-opacity': 0.8,
         }}
-        onClick={handleLayerClick}
-        onMouseEnter={(e) => {
-          if (e.features?.length) {
-            setHoveredFeature(e.features[0]?.properties?.zipCode || null);
-          }
-        }}
-        onMouseLeave={() => setHoveredFeature(null)}
+        // Note: Event handlers need to be registered at the Map level with interactiveLayerIds
+        // TODO: Move onClick, onMouseEnter, onMouseLeave to parent Map component
       />
 
       {/* Label layer for zip codes at higher zoom */}
@@ -219,16 +183,4 @@ export function MarketVelocityLayer({
       />
     </Source>
   );
-}
-
-// Type declaration for Mapbox events
-declare global {
-  namespace mapboxgl {
-    interface MapLayerMouseEvent {
-      features?: Array<{
-        properties?: Record<string, unknown>;
-        geometry: GeoJSON.Geometry;
-      }>;
-    }
-  }
 }

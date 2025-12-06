@@ -43,7 +43,9 @@ const skipTraceBulkDefinition: ToolDefinition<SkipTraceBulkInput, SkipTraceBulkO
 };
 
 // Skip trace bulk remains mocked - requires external skip trace API integration
-const skipTraceBulkHandler: ToolHandler<SkipTraceBulkInput, SkipTraceBulkOutput> = async (input) => {
+const skipTraceBulkHandler: ToolHandler<SkipTraceBulkInput, SkipTraceBulkOutput> = async (
+  input
+) => {
   console.log('[Batch] Skip trace bulk:', input.propertyIds.length, 'properties');
 
   // TODO: Integrate with external skip trace API (e.g., BatchSkipTracing, REISkip)
@@ -90,7 +92,10 @@ const addToListBulkDefinition: ToolDefinition<AddToListBulkInput, AddToListBulkO
   tags: ['batch', 'list', 'bulk'],
 };
 
-const addToListBulkHandler: ToolHandler<AddToListBulkInput, AddToListBulkOutput> = async (input, ctx) => {
+const addToListBulkHandler: ToolHandler<AddToListBulkInput, AddToListBulkOutput> = async (
+  input,
+  ctx
+) => {
   const supabase = await createClient();
 
   let added = 0;
@@ -163,7 +168,10 @@ const updateDealStatusBulkOutput = z.object({
 type UpdateDealStatusBulkInput = z.infer<typeof updateDealStatusBulkInput>;
 type UpdateDealStatusBulkOutput = z.infer<typeof updateDealStatusBulkOutput>;
 
-const updateDealStatusBulkDefinition: ToolDefinition<UpdateDealStatusBulkInput, UpdateDealStatusBulkOutput> = {
+const updateDealStatusBulkDefinition: ToolDefinition<
+  UpdateDealStatusBulkInput,
+  UpdateDealStatusBulkOutput
+> = {
   id: 'batch.update_deal_status',
   name: 'Bulk Update Deal Status',
   description: 'Update the status of multiple deals at once.',
@@ -177,10 +185,10 @@ const updateDealStatusBulkDefinition: ToolDefinition<UpdateDealStatusBulkInput, 
   tags: ['batch', 'deals', 'status'],
 };
 
-const updateDealStatusBulkHandler: ToolHandler<UpdateDealStatusBulkInput, UpdateDealStatusBulkOutput> = async (
-  input,
-  ctx
-) => {
+const updateDealStatusBulkHandler: ToolHandler<
+  UpdateDealStatusBulkInput,
+  UpdateDealStatusBulkOutput
+> = async (input, ctx) => {
   const supabase = await createClient();
 
   let updated = 0;
@@ -255,7 +263,10 @@ const exportPropertiesDefinition: ToolDefinition<ExportPropertiesInput, ExportPr
   tags: ['batch', 'export', 'download'],
 };
 
-const exportPropertiesHandler: ToolHandler<ExportPropertiesInput, ExportPropertiesOutput> = async (input, ctx) => {
+const exportPropertiesHandler: ToolHandler<ExportPropertiesInput, ExportPropertiesOutput> = async (
+  input,
+  ctx
+) => {
   const supabase = await createClient();
 
   // Define fields to select based on input
@@ -299,7 +310,7 @@ const exportPropertiesHandler: ToolHandler<ExportPropertiesInput, ExportProperti
     const rows = (properties || []).map((p) =>
       selectFields
         .map((f) => {
-          const val = (p as Record<string, unknown>)[f];
+          const val = (p as unknown as Record<string, unknown>)[f];
           if (val === null || val === undefined) return '';
           if (typeof val === 'string' && val.includes(',')) return `"${val}"`;
           return String(val);

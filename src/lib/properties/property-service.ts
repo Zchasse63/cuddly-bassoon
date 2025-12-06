@@ -34,7 +34,7 @@ export class PropertyService {
       return null;
     }
 
-    // Transform to PropertyWithDetails
+    // Transform to PropertyWithDetails (only using columns that exist in properties table)
     const propertyWithDetails: PropertyWithDetails = {
       id: property.id,
       address: property.address,
@@ -50,27 +50,24 @@ export class PropertyService {
       ownerName: property.owner_name,
       ownerType: property.owner_type,
       ownershipMonths: property.ownership_length_months,
-      estimatedValue: property.estimated_value,
-      mortgageBalance: property.mortgage_balance,
-      equityPercent: property.equity_percent,
-      rentEstimate: property.rent_estimate,
-      taxAmount: property.tax_amount,
       listingStatus: property.listing_status,
-      daysOnMarket: property.days_on_market,
-      lastSaleDate: property.last_sale_date,
-      lastSalePrice: property.last_sale_price,
       latitude: property.latitude,
       longitude: property.longitude,
 
-      // Computed fields
-      estimatedEquity:
-        property.estimated_value && property.equity_percent
-          ? Math.round(property.estimated_value * (property.equity_percent / 100))
-          : undefined,
-      pricePerSqft:
-        property.estimated_value && property.square_footage
-          ? Math.round(property.estimated_value / property.square_footage)
-          : undefined,
+      // These fields come from related tables (valuations, market_data) - not directly on properties
+      // TODO: Join with valuations table to get these values
+      estimatedValue: undefined,
+      mortgageBalance: undefined,
+      equityPercent: undefined,
+      rentEstimate: undefined,
+      taxAmount: undefined,
+      daysOnMarket: undefined,
+      lastSaleDate: undefined,
+      lastSalePrice: undefined,
+
+      // Computed fields (will be undefined since source data is not available)
+      estimatedEquity: undefined,
+      pricePerSqft: undefined,
       daysOwned: property.ownership_length_months
         ? property.ownership_length_months * 30
         : undefined,
@@ -90,12 +87,12 @@ export class PropertyService {
           id: p.id,
           permitNumber: p.permit_number || '',
           type: p.permit_type || 'unknown',
-          status: (p.status as 'active' | 'completed' | 'expired' | 'cancelled') || 'active',
-          description: p.description,
-          jobValue: p.job_value,
-          issuedDate: p.issue_date,
-          completedDate: p.completed_date,
-          expirationDate: p.expiration_date,
+          status: (p.permit_status as 'active' | 'completed' | 'expired' | 'cancelled') || 'active',
+          description: p.permit_description || undefined,
+          jobValue: p.job_value || undefined,
+          issuedDate: p.issue_date || undefined,
+          completedDate: p.final_date || undefined,
+          expirationDate: p.expiration_date || undefined,
         }));
       }
     } catch {
@@ -114,9 +111,10 @@ export class PropertyService {
 
   /**
    * List properties with filtering and pagination
+   * @param _userId - User ID (reserved for future RLS filtering)
    */
   async listProperties(
-    userId: string,
+    _userId: string,
     filters: PropertyListFilters = {},
     page = 1,
     limit = 25
@@ -182,8 +180,9 @@ export class PropertyService {
       bathrooms: p.bathrooms,
       squareFootage: p.square_footage,
       yearBuilt: p.year_built,
-      estimatedValue: p.estimated_value,
-      equityPercent: p.equity_percent,
+      // These columns are in valuations table, not properties
+      estimatedValue: undefined,
+      equityPercent: undefined,
       ownerName: p.owner_name,
       ownerType: p.owner_type,
       listingStatus: p.listing_status,
@@ -408,15 +407,16 @@ export class PropertyService {
 
   /**
    * Search properties by address for quick search/command palette
+   * @param _userId - User ID (reserved for future RLS filtering)
    */
   async searchProperties(
     query: string,
-    userId: string,
+    _userId: string,
     limit = 10
   ): Promise<PropertyWithDetails[]> {
     const { data, error } = await this.supabase
       .from('properties')
-      .select('id, address, city, state, zip, estimated_value, bedrooms, bathrooms')
+      .select('id, address, city, state, zip, bedrooms, bathrooms')
       .or(`address.ilike.%${query}%,city.ilike.%${query}%`)
       .limit(limit);
 
@@ -430,7 +430,7 @@ export class PropertyService {
       city: p.city,
       state: p.state,
       zip: p.zip,
-      estimatedValue: p.estimated_value,
+      estimatedValue: undefined, // In valuations table, not properties
       bedrooms: p.bedrooms,
       bathrooms: p.bathrooms,
     }));

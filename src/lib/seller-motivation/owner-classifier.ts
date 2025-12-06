@@ -11,7 +11,6 @@ import type {
   OwnerSubClass,
   IndividualSubClass,
   InvestorSubClass,
-  InstitutionalSubClass,
 } from './types';
 
 // ============================================================================
@@ -25,8 +24,8 @@ interface EntityPattern {
   pattern: RegExp;
   primaryClass: OwnerPrimaryClass;
   subClass: OwnerSubClass;
-  confidence: number;  // Base confidence for this pattern match
-  name: string;        // Human-readable pattern name
+  confidence: number; // Base confidence for this pattern match
+  name: string; // Human-readable pattern name
 }
 
 /**
@@ -34,26 +33,122 @@ interface EntityPattern {
  */
 const bankPatterns: EntityPattern[] = [
   // Major banks
-  { pattern: /\b(BANK\s+OF\s+AMERICA|BOA)\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'Bank of America' },
-  { pattern: /\bWELLS\s+FARGO\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'Wells Fargo' },
-  { pattern: /\bJPMORGAN|JP\s+MORGAN|CHASE\s+BANK\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'JPMorgan Chase' },
-  { pattern: /\bCITIBANK|CITIGROUP|CITI\s+MORTGAGE\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'Citibank' },
-  { pattern: /\bUS\s+BANK|U\.?S\.?\s+BANK\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'US Bank' },
-  { pattern: /\bPNC\s+BANK\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.95, name: 'PNC Bank' },
-  { pattern: /\bTRUST\s*BANK|TRUSTMARK\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Trust Bank' },
+  {
+    pattern: /\b(BANK\s+OF\s+AMERICA|BOA)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'Bank of America',
+  },
+  {
+    pattern: /\bWELLS\s+FARGO\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'Wells Fargo',
+  },
+  {
+    pattern: /\bJPMORGAN|JP\s+MORGAN|CHASE\s+BANK\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'JPMorgan Chase',
+  },
+  {
+    pattern: /\bCITIBANK|CITIGROUP|CITI\s+MORTGAGE\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'Citibank',
+  },
+  {
+    pattern: /\bUS\s+BANK|U\.?S\.?\s+BANK\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'US Bank',
+  },
+  {
+    pattern: /\bPNC\s+BANK\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.95,
+    name: 'PNC Bank',
+  },
+  {
+    pattern: /\bTRUST\s*BANK|TRUSTMARK\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Trust Bank',
+  },
 
   // Mortgage servicers and lenders
-  { pattern: /\bNATIONSTAR|MR\.?\s*COOPER\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Mr. Cooper/Nationstar' },
-  { pattern: /\bOCWEN|PHH\s+MORTGAGE\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Ocwen/PHH' },
-  { pattern: /\bSELENE\s+FINANCE\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Selene Finance' },
-  { pattern: /\bCARRINGTON\s+MORTGAGE\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Carrington' },
-  { pattern: /\bDITECH\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.90, name: 'Ditech' },
+  {
+    pattern: /\bNATIONSTAR|MR\.?\s*COOPER\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Mr. Cooper/Nationstar',
+  },
+  {
+    pattern: /\bOCWEN|PHH\s+MORTGAGE\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Ocwen/PHH',
+  },
+  {
+    pattern: /\bSELENE\s+FINANCE\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Selene Finance',
+  },
+  {
+    pattern: /\bCARRINGTON\s+MORTGAGE\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Carrington',
+  },
+  {
+    pattern: /\bDITECH\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.9,
+    name: 'Ditech',
+  },
 
   // Generic bank patterns (lower confidence)
-  { pattern: /\bBANK\s+N\.?A\.?\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.85, name: 'Generic Bank NA' },
-  { pattern: /\b(FEDERAL\s+)?SAVINGS\s+(BANK|ASSOC)/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.85, name: 'Savings Bank' },
-  { pattern: /\bCREDIT\s+UNION\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.80, name: 'Credit Union' },
-  { pattern: /\bMORTGAGE\s+(CORP|COMPANY|CO\.?|INC)\b/i, primaryClass: 'institutional_distressed', subClass: 'bank_reo', confidence: 0.75, name: 'Mortgage Company' },
+  {
+    pattern: /\bBANK\s+N\.?A\.?\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.85,
+    name: 'Generic Bank NA',
+  },
+  {
+    pattern: /\b(FEDERAL\s+)?SAVINGS\s+(BANK|ASSOC)/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.85,
+    name: 'Savings Bank',
+  },
+  {
+    pattern: /\bCREDIT\s+UNION\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.8,
+    name: 'Credit Union',
+  },
+  {
+    pattern: /\bMORTGAGE\s+(CORP|COMPANY|CO\.?|INC)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'bank_reo',
+    confidence: 0.75,
+    name: 'Mortgage Company',
+  },
 ];
 
 /**
@@ -61,22 +156,94 @@ const bankPatterns: EntityPattern[] = [
  */
 const governmentPatterns: EntityPattern[] = [
   // Federal agencies
-  { pattern: /\b(HUD|HOUSING\s+AND\s+URBAN\s+DEVELOPMENT)\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'HUD' },
-  { pattern: /\b(VA|VETERANS?\s+AFFAIRS?|VETERANS?\s+ADMIN)\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'VA' },
-  { pattern: /\b(FHA|FEDERAL\s+HOUSING)\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'FHA' },
-  { pattern: /\bFANNIE\s+MAE|FNMA\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'Fannie Mae' },
-  { pattern: /\bFREDDIE\s+MAC|FHLMC\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'Freddie Mac' },
-  { pattern: /\bUNITED\s+STATES\s+(OF\s+AMERICA\s+)?GOVERNMENT\b/i, primaryClass: 'institutional_distressed', subClass: 'government_federal', confidence: 0.95, name: 'US Government' },
+  {
+    pattern: /\b(HUD|HOUSING\s+AND\s+URBAN\s+DEVELOPMENT)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'HUD',
+  },
+  {
+    pattern: /\b(VA|VETERANS?\s+AFFAIRS?|VETERANS?\s+ADMIN)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'VA',
+  },
+  {
+    pattern: /\b(FHA|FEDERAL\s+HOUSING)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'FHA',
+  },
+  {
+    pattern: /\bFANNIE\s+MAE|FNMA\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'Fannie Mae',
+  },
+  {
+    pattern: /\bFREDDIE\s+MAC|FHLMC\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'Freddie Mac',
+  },
+  {
+    pattern: /\bUNITED\s+STATES\s+(OF\s+AMERICA\s+)?GOVERNMENT\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_federal',
+    confidence: 0.95,
+    name: 'US Government',
+  },
 
   // State agencies
-  { pattern: /\bSTATE\s+OF\s+\w+/i, primaryClass: 'institutional_distressed', subClass: 'government_state', confidence: 0.85, name: 'State Government' },
-  { pattern: /\b\w+\s+STATE\s+(HOUSING|DEVELOPMENT|FINANCE)\b/i, primaryClass: 'institutional_distressed', subClass: 'government_state', confidence: 0.85, name: 'State Housing Agency' },
+  {
+    pattern: /\bSTATE\s+OF\s+\w+/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_state',
+    confidence: 0.85,
+    name: 'State Government',
+  },
+  {
+    pattern: /\b\w+\s+STATE\s+(HOUSING|DEVELOPMENT|FINANCE)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_state',
+    confidence: 0.85,
+    name: 'State Housing Agency',
+  },
 
   // Local agencies
-  { pattern: /\bCOUNTY\s+OF\s+\w+/i, primaryClass: 'institutional_distressed', subClass: 'government_local', confidence: 0.85, name: 'County Government' },
-  { pattern: /\bCITY\s+OF\s+\w+/i, primaryClass: 'institutional_distressed', subClass: 'government_local', confidence: 0.85, name: 'City Government' },
-  { pattern: /\b(HOUSING|REDEVELOPMENT)\s+AUTHORITY\b/i, primaryClass: 'institutional_distressed', subClass: 'government_local', confidence: 0.80, name: 'Housing Authority' },
-  { pattern: /\bMUNICIPAL(ITY)?\b/i, primaryClass: 'institutional_distressed', subClass: 'government_local', confidence: 0.75, name: 'Municipality' },
+  {
+    pattern: /\bCOUNTY\s+OF\s+\w+/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_local',
+    confidence: 0.85,
+    name: 'County Government',
+  },
+  {
+    pattern: /\bCITY\s+OF\s+\w+/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_local',
+    confidence: 0.85,
+    name: 'City Government',
+  },
+  {
+    pattern: /\b(HOUSING|REDEVELOPMENT)\s+AUTHORITY\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_local',
+    confidence: 0.8,
+    name: 'Housing Authority',
+  },
+  {
+    pattern: /\bMUNICIPAL(ITY)?\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'government_local',
+    confidence: 0.75,
+    name: 'Municipality',
+  },
 ];
 
 /**
@@ -84,26 +251,98 @@ const governmentPatterns: EntityPattern[] = [
  */
 const trustPatterns: EntityPattern[] = [
   // Revocable/Living trusts (usually investor or individual)
-  { pattern: /\b(REVOCABLE|LIVING|FAMILY)\s+TRUST\b/i, primaryClass: 'investor_entity', subClass: 'trust_living', confidence: 0.85, name: 'Living Trust' },
-  { pattern: /\b\w+\s+(REVOCABLE|LIVING)\s+TRUST\b/i, primaryClass: 'investor_entity', subClass: 'trust_living', confidence: 0.85, name: 'Named Living Trust' },
+  {
+    pattern: /\b(REVOCABLE|LIVING|FAMILY)\s+TRUST\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'trust_living',
+    confidence: 0.85,
+    name: 'Living Trust',
+  },
+  {
+    pattern: /\b\w+\s+(REVOCABLE|LIVING)\s+TRUST\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'trust_living',
+    confidence: 0.85,
+    name: 'Named Living Trust',
+  },
 
   // Irrevocable trusts
-  { pattern: /\bIRREVOCABLE\s+TRUST\b/i, primaryClass: 'investor_entity', subClass: 'trust_irrevocable', confidence: 0.85, name: 'Irrevocable Trust' },
+  {
+    pattern: /\bIRREVOCABLE\s+TRUST\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'trust_irrevocable',
+    confidence: 0.85,
+    name: 'Irrevocable Trust',
+  },
 
   // Estate/probate related trusts (distressed category)
-  { pattern: /\bESTATE\s+OF\s+\w+/i, primaryClass: 'institutional_distressed', subClass: 'estate_probate', confidence: 0.90, name: 'Estate Of' },
-  { pattern: /\bTRUST\s+(UNDER\s+)?WILL\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_probate', confidence: 0.85, name: 'Trust Under Will' },
-  { pattern: /\bTESTAMENTARY\s+TRUST\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_probate', confidence: 0.85, name: 'Testamentary Trust' },
-  { pattern: /\bDECEASED\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_probate', confidence: 0.90, name: 'Deceased Owner' },
+  {
+    pattern: /\bESTATE\s+OF\s+\w+/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_probate',
+    confidence: 0.9,
+    name: 'Estate Of',
+  },
+  {
+    pattern: /\bTRUST\s+(UNDER\s+)?WILL\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_probate',
+    confidence: 0.85,
+    name: 'Trust Under Will',
+  },
+  {
+    pattern: /\bTESTAMENTARY\s+TRUST\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_probate',
+    confidence: 0.85,
+    name: 'Testamentary Trust',
+  },
+  {
+    pattern: /\bDECEASED\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_probate',
+    confidence: 0.9,
+    name: 'Deceased Owner',
+  },
 
   // Executor sales
-  { pattern: /\bEXECUTOR|EXECUTRIX\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_executor', confidence: 0.90, name: 'Executor' },
-  { pattern: /\bPERSONAL\s+REP(RESENTATIVE)?\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_executor', confidence: 0.85, name: 'Personal Representative' },
-  { pattern: /\bADMINISTRATOR|ADMINISTRATRIX\b/i, primaryClass: 'institutional_distressed', subClass: 'estate_executor', confidence: 0.85, name: 'Administrator' },
+  {
+    pattern: /\bEXECUTOR|EXECUTRIX\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_executor',
+    confidence: 0.9,
+    name: 'Executor',
+  },
+  {
+    pattern: /\bPERSONAL\s+REP(RESENTATIVE)?\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_executor',
+    confidence: 0.85,
+    name: 'Personal Representative',
+  },
+  {
+    pattern: /\bADMINISTRATOR|ADMINISTRATRIX\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'estate_executor',
+    confidence: 0.85,
+    name: 'Administrator',
+  },
 
   // Generic trust pattern (lower confidence - could be living or irrevocable)
-  { pattern: /\bTRUST(EE)?\s*$/i, primaryClass: 'investor_entity', subClass: 'trust_living', confidence: 0.70, name: 'Generic Trust' },
-  { pattern: /\b\w+\s+TRUST\b/i, primaryClass: 'investor_entity', subClass: 'trust_living', confidence: 0.65, name: 'Named Trust' },
+  {
+    pattern: /\bTRUST(EE)?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'trust_living',
+    confidence: 0.7,
+    name: 'Generic Trust',
+  },
+  {
+    pattern: /\b\w+\s+TRUST\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'trust_living',
+    confidence: 0.65,
+    name: 'Named Trust',
+  },
 ];
 
 /**
@@ -111,43 +350,169 @@ const trustPatterns: EntityPattern[] = [
  */
 const llcCorporatePatterns: EntityPattern[] = [
   // LLCs
-  { pattern: /\bL\.?L\.?C\.?\s*$/i, primaryClass: 'investor_entity', subClass: 'llc_single', confidence: 0.85, name: 'LLC Suffix' },
-  { pattern: /\bLIMITED\s+LIABILITY\s+(COMPANY|CO\.?)\b/i, primaryClass: 'investor_entity', subClass: 'llc_single', confidence: 0.85, name: 'LLC Full' },
+  {
+    pattern: /\bL\.?L\.?C\.?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'llc_single',
+    confidence: 0.85,
+    name: 'LLC Suffix',
+  },
+  {
+    pattern: /\bLIMITED\s+LIABILITY\s+(COMPANY|CO\.?)\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'llc_single',
+    confidence: 0.85,
+    name: 'LLC Full',
+  },
 
   // Corporations
-  { pattern: /\bINC\.?\s*$/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.80, name: 'Inc Suffix' },
-  { pattern: /\bCORP\.?\s*$/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.80, name: 'Corp Suffix' },
-  { pattern: /\bCORPORATION\s*$/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.80, name: 'Corporation' },
-  { pattern: /\bCOMPANY|CO\.?\s*$/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.70, name: 'Company' },
+  {
+    pattern: /\bINC\.?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.8,
+    name: 'Inc Suffix',
+  },
+  {
+    pattern: /\bCORP\.?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.8,
+    name: 'Corp Suffix',
+  },
+  {
+    pattern: /\bCORPORATION\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.8,
+    name: 'Corporation',
+  },
+  {
+    pattern: /\bCOMPANY|CO\.?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.7,
+    name: 'Company',
+  },
 
   // Limited partnerships
-  { pattern: /\bL\.?P\.?\s*$/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.75, name: 'LP Suffix' },
-  { pattern: /\bLIMITED\s+PARTNERSHIP\b/i, primaryClass: 'investor_entity', subClass: 'corporate', confidence: 0.75, name: 'Limited Partnership' },
+  {
+    pattern: /\bL\.?P\.?\s*$/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.75,
+    name: 'LP Suffix',
+  },
+  {
+    pattern: /\bLIMITED\s+PARTNERSHIP\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'corporate',
+    confidence: 0.75,
+    name: 'Limited Partnership',
+  },
 ];
 
 /**
  * Investor indicator patterns (not definitive, adds confidence to investor classification)
  */
 const investorIndicatorPatterns: EntityPattern[] = [
-  { pattern: /\bPROPERT(Y|IES)\s*(INVEST|MGMT|MANAGEMENT)\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.90, name: 'Property Investment' },
-  { pattern: /\bREAL\s*(TY|ESTATE)\s*(INVEST|HOLDINGS)\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.90, name: 'Real Estate Investment' },
-  { pattern: /\bHOLDINGS?\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.70, name: 'Holdings' },
-  { pattern: /\bVENTURES?\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.65, name: 'Ventures' },
-  { pattern: /\bCAPITAL\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.65, name: 'Capital' },
-  { pattern: /\bINVESTMENTS?\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.70, name: 'Investments' },
-  { pattern: /\bRENTALS?\b/i, primaryClass: 'investor_entity', subClass: 'small_investor', confidence: 0.75, name: 'Rentals' },
-  { pattern: /\bGROUP\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.60, name: 'Group' },
-  { pattern: /\bENTERPRISES?\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.60, name: 'Enterprises' },
-  { pattern: /\bACQUISITIONS?\b/i, primaryClass: 'investor_entity', subClass: 'portfolio_investor', confidence: 0.70, name: 'Acquisitions' },
+  {
+    pattern: /\bPROPERT(Y|IES)\s*(INVEST|MGMT|MANAGEMENT)\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.9,
+    name: 'Property Investment',
+  },
+  {
+    pattern: /\bREAL\s*(TY|ESTATE)\s*(INVEST|HOLDINGS)\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.9,
+    name: 'Real Estate Investment',
+  },
+  {
+    pattern: /\bHOLDINGS?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.7,
+    name: 'Holdings',
+  },
+  {
+    pattern: /\bVENTURES?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.65,
+    name: 'Ventures',
+  },
+  {
+    pattern: /\bCAPITAL\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.65,
+    name: 'Capital',
+  },
+  {
+    pattern: /\bINVESTMENTS?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.7,
+    name: 'Investments',
+  },
+  {
+    pattern: /\bRENTALS?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'small_investor',
+    confidence: 0.75,
+    name: 'Rentals',
+  },
+  {
+    pattern: /\bGROUP\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.6,
+    name: 'Group',
+  },
+  {
+    pattern: /\bENTERPRISES?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.6,
+    name: 'Enterprises',
+  },
+  {
+    pattern: /\bACQUISITIONS?\b/i,
+    primaryClass: 'investor_entity',
+    subClass: 'portfolio_investor',
+    confidence: 0.7,
+    name: 'Acquisitions',
+  },
 ];
 
 /**
  * Tax lien patterns
  */
 const taxLienPatterns: EntityPattern[] = [
-  { pattern: /\bTAX\s+(LIEN|SALE|DEED)\b/i, primaryClass: 'institutional_distressed', subClass: 'tax_lien', confidence: 0.90, name: 'Tax Lien/Sale' },
-  { pattern: /\bTAX\s+COLLECTOR\b/i, primaryClass: 'institutional_distressed', subClass: 'tax_lien', confidence: 0.90, name: 'Tax Collector' },
-  { pattern: /\bTREASURER\s+(OF|FOR)\b/i, primaryClass: 'institutional_distressed', subClass: 'tax_lien', confidence: 0.80, name: 'Treasurer' },
+  {
+    pattern: /\bTAX\s+(LIEN|SALE|DEED)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'tax_lien',
+    confidence: 0.9,
+    name: 'Tax Lien/Sale',
+  },
+  {
+    pattern: /\bTAX\s+COLLECTOR\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'tax_lien',
+    confidence: 0.9,
+    name: 'Tax Collector',
+  },
+  {
+    pattern: /\bTREASURER\s+(OF|FOR)\b/i,
+    primaryClass: 'institutional_distressed',
+    subClass: 'tax_lien',
+    confidence: 0.8,
+    name: 'Treasurer',
+  },
 ];
 
 // Combine all patterns in priority order (more specific first)
@@ -155,7 +520,7 @@ const allPatterns: EntityPattern[] = [
   ...bankPatterns,
   ...governmentPatterns,
   ...taxLienPatterns,
-  ...trustPatterns,           // Trusts before LLC (some trusts have LLC in name)
+  ...trustPatterns, // Trusts before LLC (some trusts have LLC in name)
   ...llcCorporatePatterns,
   ...investorIndicatorPatterns,
 ];
@@ -170,11 +535,11 @@ const allPatterns: EntityPattern[] = [
 export function classifyOwner(
   ownerName: string,
   options?: {
-    ownerType?: string;           // From RentCast: Individual, Company, Bank, Trust, etc.
+    ownerType?: string; // From RentCast: Individual, Company, Bank, Trust, etc.
     ownerOccupied?: boolean;
-    mailingState?: string;        // Owner mailing state
-    propertyState?: string;       // Property state
-    portfolioSize?: number;       // Known portfolio size
+    mailingState?: string; // Owner mailing state
+    propertyState?: string; // Property state
+    portfolioSize?: number; // Known portfolio size
   }
 ): OwnerClassification {
   const normalizedName = ownerName.trim().toUpperCase();
@@ -243,12 +608,16 @@ function applyClassificationAdjustments(
       // RentCast says bank but patterns didn't catch it
       primaryClass = 'institutional_distressed';
       subClass = 'bank_reo';
-      confidence = 0.90;
-    } else if (ownerType === 'trust' && primaryClass !== 'investor_entity' && primaryClass !== 'institutional_distressed') {
+      confidence = 0.9;
+    } else if (
+      ownerType === 'trust' &&
+      primaryClass !== 'investor_entity' &&
+      primaryClass !== 'institutional_distressed'
+    ) {
       // RentCast says trust
       primaryClass = 'investor_entity';
       subClass = 'trust_living';
-      confidence = 0.80;
+      confidence = 0.8;
     } else if (ownerType === 'government' && primaryClass !== 'institutional_distressed') {
       primaryClass = 'institutional_distressed';
       subClass = 'government_local';
@@ -273,18 +642,17 @@ function classifyAsIndividual(
   }
 ): OwnerClassification {
   let subClass: IndividualSubClass = 'unknown';
-  let confidence = 0.70;  // Base confidence for individual
+  let confidence = 0.7; // Base confidence for individual
 
   // Check for investor indicators in name (even for individuals)
-  const looksLikeInvestorName =
-    /\bPROPERT|INVEST|RENTAL|HOLDING/i.test(ownerName);
+  const looksLikeInvestorName = /\bPROPERT|INVEST|RENTAL|HOLDING/i.test(ownerName);
 
   if (looksLikeInvestorName) {
     // This might be an individual investor using their name + property in title
     return {
       primaryClass: 'investor_entity',
       subClass: 'small_investor',
-      confidence: 0.60,
+      confidence: 0.6,
       matchedPatterns: ['Investor Name Pattern'],
       rawOwnerName: ownerName,
     };
@@ -305,7 +673,7 @@ function classifyAsIndividual(
       options.mailingState.toUpperCase() !== options.propertyState.toUpperCase()
     ) {
       subClass = 'out_of_state';
-      confidence = 0.90;
+      confidence = 0.9;
     }
   }
 
@@ -349,7 +717,9 @@ export function getMatchingPatterns(ownerName: string): string[] {
 
   for (const pattern of allPatterns) {
     if (pattern.pattern.test(normalizedName)) {
-      matches.push(`${pattern.name} (${pattern.primaryClass}/${pattern.subClass}) [${pattern.confidence}]`);
+      matches.push(
+        `${pattern.name} (${pattern.primaryClass}/${pattern.subClass}) [${pattern.confidence}]`
+      );
     }
   }
 

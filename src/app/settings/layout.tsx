@@ -6,6 +6,9 @@ import { User, CreditCard, Bell, Shield, Users, Settings, UserCog } from 'lucide
 import { createClient } from '@/lib/supabase/server';
 import { cn } from '@/lib/utils';
 
+// Force dynamic rendering - this layout uses auth
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Settings',
   description: 'Manage your account settings and preferences',

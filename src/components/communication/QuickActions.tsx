@@ -81,7 +81,7 @@ export function QuickActions({
       } else {
         toast.error(data.error || 'Failed to send SMS');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to send SMS');
     } finally {
       setIsSending(false);
@@ -113,7 +113,7 @@ export function QuickActions({
       } else {
         toast.error(data.error || 'Failed to send email');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to send email');
     } finally {
       setIsSending(false);

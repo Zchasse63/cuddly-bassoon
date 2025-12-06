@@ -37,11 +37,7 @@ const REQUIRED_ENV_VARS = [
   'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
 ];
 
-const OPTIONAL_ENV_VARS = [
-  'SUPABASE_SECRET_KEY',
-  'SHOVELS_API_KEY',
-  'RENTCAST_API_KEY',
-];
+const OPTIONAL_ENV_VARS = ['SUPABASE_SECRET_KEY', 'SHOVELS_API_KEY', 'RENTCAST_API_KEY'];
 
 // ============================================================================
 // API CALL TRACKING
@@ -71,7 +67,7 @@ export function trackApiCall(
 }
 
 export function resetApiStats(): void {
-  Object.keys(apiCallStats).forEach(key => {
+  Object.keys(apiCallStats).forEach((key) => {
     const k = key as keyof typeof apiCallStats;
     apiCallStats[k].calls = 0;
     apiCallStats[k].errors = 0;
@@ -98,11 +94,11 @@ export function printApiStats(): void {
 // ============================================================================
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const supabaseKey =
+  process.env.SUPABASE_SECRET_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export const testSupabase = supabaseUrl && supabaseKey
-  ? createClient<Database>(supabaseUrl, supabaseKey)
-  : null;
+export const testSupabase =
+  supabaseUrl && supabaseKey ? createClient<Database>(supabaseUrl, supabaseKey) : null;
 
 // ============================================================================
 // SKIP TRACE MOCKING (Only service without live API)
@@ -125,9 +121,7 @@ vi.mock('@/lib/skip-trace/client', () => ({
             { number: '+1-305-555-1234', type: 'mobile', confidence: 0.95 },
             { number: '+1-305-555-5678', type: 'landline', confidence: 0.85 },
           ],
-          emails: [
-            { address: 'test@example.com', type: 'personal', confidence: 0.92 },
-          ],
+          emails: [{ address: 'test@example.com', type: 'personal', confidence: 0.92 }],
           addresses: [
             { street: input.address || '123 Main St', city: 'Miami', state: 'FL', zip: '33101' },
           ],
@@ -181,29 +175,29 @@ vi.mock('@/lib/supabase/client', async () => {
 beforeAll(() => {
   console.log('\n🧪 AI Tools Test Suite');
   console.log('======================\n');
-  
+
   // Validate environment
   const missing: string[] = [];
   const present: string[] = [];
-  
-  REQUIRED_ENV_VARS.forEach(v => {
+
+  REQUIRED_ENV_VARS.forEach((v) => {
     if (process.env[v]) present.push(v);
     else missing.push(v);
   });
-  
+
   console.log('Required Environment Variables:');
-  present.forEach(v => console.log(`  ✅ ${v}`));
-  missing.forEach(v => console.log(`  ❌ ${v}`));
-  
+  present.forEach((v) => console.log(`  ✅ ${v}`));
+  missing.forEach((v) => console.log(`  ❌ ${v}`));
+
   console.log('\nOptional Environment Variables:');
-  OPTIONAL_ENV_VARS.forEach(v => {
+  OPTIONAL_ENV_VARS.forEach((v) => {
     console.log(`  ${process.env[v] ? '✅' : '⚠️ '} ${v}`);
   });
-  
+
   if (missing.length > 0) {
     console.warn('\n⚠️  Some required env vars missing - tests may fail');
   }
-  
+
   console.log('\n🚀 Starting AI tools tests with REAL APIs (xAI Grok)...\n');
   console.log('   (Skip Trace is MOCKED - no live API available)\n');
 });
@@ -268,7 +262,7 @@ export async function getTestUserId(): Promise<string> {
         console.log(`[Test Setup] Found seeded test user: ${cachedTestUserId}`);
         return cachedTestUserId;
       }
-    } catch (e) {
+    } catch {
       console.log('[Test Setup] Could not fetch test user from database');
     }
   }
@@ -329,7 +323,9 @@ export async function withApiTracking<T>(
   }
 }
 
-export function isApiAvailable(api: 'mapbox' | 'grok' | 'shovels' | 'rentcast' | 'supabase'): boolean {
+export function isApiAvailable(
+  api: 'mapbox' | 'grok' | 'shovels' | 'rentcast' | 'supabase'
+): boolean {
   const envVars = {
     mapbox: 'NEXT_PUBLIC_MAPBOX_TOKEN',
     grok: 'XAI_API_KEY',
@@ -354,4 +350,3 @@ vi.setConfig({
   testTimeout: 180000,
   hookTimeout: 60000,
 });
-

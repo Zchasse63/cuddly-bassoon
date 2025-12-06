@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { toolRegistry } from '../registry';
 import { ToolDefinition, ToolHandler } from '../types';
 import { getRentCastClient } from '@/lib/rentcast';
-import { searchPermits, getCityMetrics } from '@/lib/shovels/client';
+import { searchPermits } from '@/lib/shovels/client';
 import { createClient } from '@/lib/supabase/server';
 
 // ============================================================================
@@ -27,12 +27,14 @@ const competitorActivityInput = z.object({
 
 const competitorActivityOutput = z.object({
   totalActivity: z.number(),
-  byZipCode: z.array(z.object({
-    zipCode: z.string(),
-    permitCount: z.number(),
-    flipIndicators: z.number(), // Permits that suggest flip activity
-    avgJobValue: z.number().optional(),
-  })),
+  byZipCode: z.array(
+    z.object({
+      zipCode: z.string(),
+      permitCount: z.number(),
+      flipIndicators: z.number(), // Permits that suggest flip activity
+      avgJobValue: z.number().optional(),
+    })
+  ),
   activityTrend: z.enum(['increasing', 'stable', 'decreasing']),
   investorSignals: z.array(z.string()),
   confidence: z.number(),
@@ -41,7 +43,10 @@ const competitorActivityOutput = z.object({
 type CompetitorActivityInput = z.infer<typeof competitorActivityInput>;
 type CompetitorActivityOutput = z.infer<typeof competitorActivityOutput>;
 
-const competitorActivityDefinition: ToolDefinition<CompetitorActivityInput, CompetitorActivityOutput> = {
+const competitorActivityDefinition: ToolDefinition<
+  CompetitorActivityInput,
+  CompetitorActivityOutput
+> = {
   id: 'intel.competitor_activity',
   name: 'Analyze Competitor Activity',
   description: 'Analyze investor/flipper activity in zip codes using permit data.',
@@ -55,7 +60,10 @@ const competitorActivityDefinition: ToolDefinition<CompetitorActivityInput, Comp
   tags: ['intelligence', 'competitors', 'market', 'permits'],
 };
 
-const competitorActivityHandler: ToolHandler<CompetitorActivityInput, CompetitorActivityOutput> = async (input) => {
+const competitorActivityHandler: ToolHandler<
+  CompetitorActivityInput,
+  CompetitorActivityOutput
+> = async (input) => {
   console.log('[Intelligence] Competitor activity for:', input.zipCodes);
 
   const fromDate = new Date();
@@ -96,7 +104,7 @@ const competitorActivityHandler: ToolHandler<CompetitorActivityInput, Competitor
       let jobValueCount = 0;
 
       for (const permit of permits) {
-        const isFlipIndicator = permit.tags?.some(tag => flipTags.includes(tag));
+        const isFlipIndicator = permit.tags?.some((tag) => flipTags.includes(tag));
         if (isFlipIndicator) {
           flipIndicators++;
         }
@@ -117,12 +125,16 @@ const competitorActivityHandler: ToolHandler<CompetitorActivityInput, Competitor
 
       // Generate signals
       if (flipIndicators > 10) {
-        investorSignals.push(`High flip activity in ${zipCode} (${flipIndicators} renovation permits)`);
+        investorSignals.push(
+          `High flip activity in ${zipCode} (${flipIndicators} renovation permits)`
+        );
       }
       if (jobValueCount > 0) {
         const avgValue = totalJobValue / jobValueCount;
         if (avgValue > 50000) {
-          investorSignals.push(`Large renovation projects in ${zipCode} (avg $${Math.round(avgValue).toLocaleString()})`);
+          investorSignals.push(
+            `Large renovation projects in ${zipCode} (avg $${Math.round(avgValue).toLocaleString()})`
+          );
         }
       }
     } catch (error) {
@@ -153,7 +165,8 @@ const competitorActivityHandler: ToolHandler<CompetitorActivityInput, Competitor
     totalActivity,
     byZipCode,
     activityTrend,
-    investorSignals: investorSignals.length > 0 ? investorSignals : ['Standard market activity levels'],
+    investorSignals:
+      investorSignals.length > 0 ? investorSignals : ['Standard market activity levels'],
     confidence,
   };
 };
@@ -176,11 +189,13 @@ const marketSaturationOutput = z.object({
     pricePerSqft: z.number().optional(),
     yearOverYearChange: z.number().optional(),
   }),
-  permitActivity: z.object({
-    totalPermits: z.number(),
-    avgApprovalDuration: z.number().optional(),
-    activeContractors: z.number().optional(),
-  }).optional(),
+  permitActivity: z
+    .object({
+      totalPermits: z.number(),
+      avgApprovalDuration: z.number().optional(),
+      activeContractors: z.number().optional(),
+    })
+    .optional(),
   interpretation: z.string(),
   opportunities: z.array(z.string()),
   confidence: z.number(),
@@ -203,7 +218,9 @@ const marketSaturationDefinition: ToolDefinition<MarketSaturationInput, MarketSa
   tags: ['intelligence', 'market', 'saturation'],
 };
 
-const marketSaturationHandler: ToolHandler<MarketSaturationInput, MarketSaturationOutput> = async (input) => {
+const marketSaturationHandler: ToolHandler<MarketSaturationInput, MarketSaturationOutput> = async (
+  input
+) => {
   console.log('[Intelligence] Market saturation for:', input.zipCode);
 
   const rentcastClient = getRentCastClient();
@@ -289,13 +306,16 @@ const marketSaturationHandler: ToolHandler<MarketSaturationInput, MarketSaturati
   // Generate interpretation
   let interpretation: string;
   if (saturationScore >= 75) {
-    interpretation = 'Highly competitive market with strong investor presence. Off-market strategies recommended.';
+    interpretation =
+      'Highly competitive market with strong investor presence. Off-market strategies recommended.';
   } else if (saturationScore >= 50) {
-    interpretation = 'Moderately competitive market. Mix of on-market and off-market strategies viable.';
+    interpretation =
+      'Moderately competitive market. Mix of on-market and off-market strategies viable.';
   } else if (saturationScore >= 25) {
     interpretation = 'Less saturated market with opportunities. On-market deals may be viable.';
   } else {
-    interpretation = 'Undersaturated market. Potential for less competition but verify demand exists.';
+    interpretation =
+      'Undersaturated market. Potential for less competition but verify demand exists.';
   }
 
   // Generate opportunities based on data
@@ -388,7 +408,9 @@ const marketVelocityDefinition: ToolDefinition<MarketVelocityInput, MarketVeloci
   tags: ['intelligence', 'market', 'velocity', 'timing'],
 };
 
-const marketVelocityHandler: ToolHandler<MarketVelocityInput, MarketVelocityOutput> = async (input) => {
+const marketVelocityHandler: ToolHandler<MarketVelocityInput, MarketVelocityOutput> = async (
+  input
+) => {
   console.log('[Intelligence] Market velocity for:', input.zipCode);
 
   const rentcastClient = getRentCastClient();
@@ -459,7 +481,8 @@ const marketVelocityHandler: ToolHandler<MarketVelocityInput, MarketVelocityOutp
 
   switch (trend) {
     case 'hot':
-      recommendation = 'Fast-moving market. Must act quickly on deals. Pre-negotiated buyer lists essential.';
+      recommendation =
+        'Fast-moving market. Must act quickly on deals. Pre-negotiated buyer lists essential.';
       idealStrategy = 'Wholesale with pre-assigned buyers or quick flips';
       timeToAct = 'immediate';
       break;

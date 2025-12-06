@@ -41,7 +41,7 @@ export async function GET(
       return NextResponse.json(
         {
           error: 'Invalid timeframe. Must be 30d, 90d, 6m, or 1y.',
-          details: timeframeValidation.error.errors,
+          details: timeframeValidation.error.issues,
         },
         { status: 400 }
       );
@@ -49,9 +49,7 @@ export async function GET(
 
     const { timeframe } = timeframeValidation.data;
 
-    console.log(
-      `[Market Velocity API] Getting ${timeframe} trend for zip code: ${zipCode}`
-    );
+    console.log(`[Market Velocity API] Getting ${timeframe} trend for zip code: ${zipCode}`);
 
     // Get velocity trend
     const trend = await getVelocityTrend(zipCode, timeframe);
@@ -67,16 +65,16 @@ export async function GET(
   } catch (error) {
     console.error('[Market Velocity API] Trend error:', error);
 
-    if (error instanceof Error && (error.message.includes('not found') || error.message.includes('404'))) {
+    if (
+      error instanceof Error &&
+      (error.message.includes('not found') || error.message.includes('404'))
+    ) {
       return NextResponse.json(
         { error: 'Market data not found for this zip code' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to get velocity trend data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get velocity trend data' }, { status: 500 });
   }
 }

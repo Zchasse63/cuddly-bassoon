@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,11 +32,7 @@ export function CommunicationTab({ buyerId, buyerEmail, buyerPhone }: Communicat
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, [buyerId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const [msgsRes, statsRes] = await Promise.all([
         fetch(`/api/buyers/${buyerId}/messages`),
@@ -56,7 +52,11 @@ export function CommunicationTab({ buyerId, buyerEmail, buyerPhone }: Communicat
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [buyerId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleSend = async () => {
     if (!body.trim()) {
@@ -87,10 +87,14 @@ export function CommunicationTab({ buyerId, buyerEmail, buyerPhone }: Communicat
 
   const getChannelIcon = (ch: string) => {
     switch (ch) {
-      case 'email': return <Mail className="h-4 w-4" />;
-      case 'sms': return <MessageSquare className="h-4 w-4" />;
-      case 'phone': return <Phone className="h-4 w-4" />;
-      default: return <MessageSquare className="h-4 w-4" />;
+      case 'email':
+        return <Mail className="h-4 w-4" />;
+      case 'sms':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'phone':
+        return <Phone className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
@@ -229,9 +233,7 @@ export function CommunicationTab({ buyerId, buyerEmail, buyerPhone }: Communicat
                       {formatDate(msg.created_at)}
                     </span>
                   </div>
-                  {msg.subject && (
-                    <div className="font-medium text-sm">{msg.subject}</div>
-                  )}
+                  {msg.subject && <div className="font-medium text-sm">{msg.subject}</div>}
                   <div className="text-sm mt-1">{msg.body}</div>
                 </div>
               ))}
@@ -242,4 +244,3 @@ export function CommunicationTab({ buyerId, buyerEmail, buyerPhone }: Communicat
     </div>
   );
 }
-

@@ -40,7 +40,7 @@ const CONDITION_OPTIONS = [
 
 export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) {
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const form = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
@@ -65,7 +65,7 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
       });
       if (!res.ok) throw new Error('Failed to save');
       toast.success('Preferences saved');
-    } catch (error) {
+    } catch {
       toast.error('Failed to save preferences');
     } finally {
       setIsSaving(false);
@@ -94,7 +94,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="0"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -112,7 +114,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="500000"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -134,7 +138,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="1"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,7 +158,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="5"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -200,7 +208,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="50000"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -218,7 +228,9 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
                         type="number"
                         placeholder="15"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : undefined)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -236,4 +248,3 @@ export function PreferencesForm({ buyerId, preferences }: PreferencesFormProps) 
     </Card>
   );
 }
-

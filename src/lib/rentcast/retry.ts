@@ -37,7 +37,7 @@ export interface RetryResult<T> {
 
 /**
  * Execute a function with exponential backoff retry logic.
- * 
+ *
  * Retry behavior:
  * - Retries transient errors (network issues, 5xx errors)
  * - Special handling for rate limit (429) - waits for reset
@@ -55,7 +55,7 @@ export async function withRetry<T>(
 
   let lastError: Error | undefined;
   let attempts = 0;
-  let totalDelay = 0;
+  let _totalDelay = 0;
 
   while (attempts <= maxRetries) {
     try {
@@ -70,15 +70,9 @@ export async function withRetry<T>(
       }
 
       // Calculate delay
-      const delay = calculateDelay(
-        lastError,
-        attempts,
-        baseDelayMs,
-        maxDelayMs,
-        backoffMultiplier
-      );
+      const delay = calculateDelay(lastError, attempts, baseDelayMs, maxDelayMs, backoffMultiplier);
 
-      totalDelay += delay;
+      _totalDelay += delay;
 
       // Log retry attempt
       console.warn(
@@ -124,7 +118,7 @@ function shouldRetry(error: Error, attempt: number, maxRetries: number): boolean
   // Check HTTP status codes
   if (error instanceof RentCastApiError) {
     const status = error.statusCode;
-    
+
     // Retry 5xx errors (server errors)
     if (status >= 500 && status < 600) {
       return true;
@@ -211,4 +205,3 @@ export async function tryWithRetry<T>(
     };
   }
 }
-

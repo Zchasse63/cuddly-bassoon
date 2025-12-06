@@ -3,8 +3,8 @@
  * Central export point for all AI-related functionality
  */
 
-// xAI provider and configuration
-export { getXaiProvider, testXaiConnection, defaultGrokConfig } from './xai';
+// Note: xAI provider module planned but not yet implemented
+// TODO: Create xai.ts with getXaiProvider, testXaiConnection, defaultGrokConfig
 
 // OpenAI client
 export { getOpenAIClient, testOpenAIConnection } from './openai';
@@ -88,11 +88,7 @@ export {
 } from './token-counter';
 
 // Rate limiting
-export {
-  checkRateLimit,
-  recordRequest,
-  type RateLimitStatus,
-} from './rate-limiter';
+export { checkRateLimit, recordRequest, type RateLimitStatus } from './rate-limiter';
 
 // Cost tracking
 export {

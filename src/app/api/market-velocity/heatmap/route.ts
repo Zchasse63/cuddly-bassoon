@@ -20,9 +20,7 @@ const HeatMapParamsSchema = z.object({
 /**
  * Get the appropriate granularity based on zoom level
  */
-function getGranularityForZoom(
-  zoom: number
-): 'state' | 'metro' | 'county' | 'city' | 'zip' {
+function getGranularityForZoom(zoom: number): 'state' | 'metro' | 'county' | 'city' | 'zip' {
   if (zoom < 6) return 'state';
   if (zoom < 8) return 'metro';
   if (zoom < 10) return 'county';
@@ -49,7 +47,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid parameters',
-          details: validation.error.errors,
+          details: validation.error.issues,
         },
         { status: 400 }
       );
@@ -93,9 +91,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[Market Velocity API] Heatmap error:', error);
 
-    return NextResponse.json(
-      { error: 'Failed to get heat map data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get heat map data' }, { status: 500 });
   }
 }

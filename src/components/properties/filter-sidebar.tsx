@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { VerticalSelector } from '@/components/verticals/VerticalSelector';
 import { DataSourceBadge } from '@/components/ui/DataSourceBadge';
+import { FilterSuggestions } from './FilterSuggestions';
 import {
   STANDARD_FILTERS,
   ENHANCED_FILTERS,
@@ -16,7 +17,13 @@ import {
   COMBINED_FILTERS,
   HOME_SERVICES_FILTERS,
 } from '@/lib/filters/registry';
-import type { ActiveFilter, FilterId, FilterCombinationMode, FilterConfig, FilterDataSource } from '@/lib/filters/types';
+import type {
+  ActiveFilter,
+  FilterId,
+  FilterCombinationMode,
+  FilterConfig,
+  FilterDataSource,
+} from '@/lib/filters/types';
 
 interface FilterSidebarProps {
   activeFilters: ActiveFilter[];
@@ -58,9 +65,7 @@ function FilterCheckbox({
         <div className="ml-6 space-y-2">
           {filter.parameters.map((param) => (
             <div key={param.key} className="flex items-center gap-2">
-              <Label className="text-xs text-muted-foreground w-24">
-                {param.label}
-              </Label>
+              <Label className="text-xs text-muted-foreground w-24">{param.label}</Label>
               {param.type === 'number' && (
                 <Input
                   type="number"
@@ -76,10 +81,17 @@ function FilterCheckbox({
                 <div className="flex items-center gap-1">
                   <Input
                     type="number"
-                    value={(params?.[param.key] as [number, number])?.[0] ?? (param.defaultValue as [number, number])[0]}
+                    value={
+                      (params?.[param.key] as [number, number])?.[0] ??
+                      (param.defaultValue as [number, number])[0]
+                    }
                     onChange={(e) => {
-                      const current = (params?.[param.key] as [number, number]) ?? param.defaultValue;
-                      onParamChange(param.key, [Number(e.target.value), (current as [number, number])[1]]);
+                      const current =
+                        (params?.[param.key] as [number, number]) ?? param.defaultValue;
+                      onParamChange(param.key, [
+                        Number(e.target.value),
+                        (current as [number, number])[1],
+                      ]);
                     }}
                     min={param.min}
                     max={param.max}
@@ -88,10 +100,17 @@ function FilterCheckbox({
                   <span className="text-xs">-</span>
                   <Input
                     type="number"
-                    value={(params?.[param.key] as [number, number])?.[1] ?? (param.defaultValue as [number, number])[1]}
+                    value={
+                      (params?.[param.key] as [number, number])?.[1] ??
+                      (param.defaultValue as [number, number])[1]
+                    }
                     onChange={(e) => {
-                      const current = (params?.[param.key] as [number, number]) ?? param.defaultValue;
-                      onParamChange(param.key, [(current as [number, number])[0], Number(e.target.value)]);
+                      const current =
+                        (params?.[param.key] as [number, number]) ?? param.defaultValue;
+                      onParamChange(param.key, [
+                        (current as [number, number])[0],
+                        Number(e.target.value),
+                      ]);
                     }}
                     min={param.min}
                     max={param.max}
@@ -170,11 +189,17 @@ export function FilterSidebar({
   const handleParamChange = (filterId: FilterId, key: string, value: unknown) => {
     onFiltersChange(
       activeFilters.map((f) =>
-        f.filterId === filterId
-          ? { ...f, params: { ...f.params, [key]: value } }
-          : f
+        f.filterId === filterId ? { ...f, params: { ...f.params, [key]: value } } : f
       )
     );
+  };
+
+  const handleAddSuggestedFilter = (filterId: FilterId) => {
+    // Add the suggested filter if it's not already active
+    const existing = activeFilters.find((f) => f.filterId === filterId);
+    if (!existing) {
+      onFiltersChange([...activeFilters, { filterId }]);
+    }
   };
 
   return (
@@ -201,6 +226,19 @@ export function FilterSidebar({
       <CardContent className="p-0">
         <ScrollArea className="h-[calc(100vh-280px)]">
           <div className="px-6 pb-6 space-y-6">
+            {/* Smart Filter Suggestions */}
+            {activeFilters.length > 0 && (
+              <>
+                <div className="pt-6">
+                  <FilterSuggestions
+                    activeFilters={activeFilters}
+                    onAddFilter={handleAddSuggestedFilter}
+                  />
+                </div>
+                <Separator />
+              </>
+            )}
+
             {/* RentCast-based filters */}
             <FilterSection
               title="Standard Filters"
@@ -283,4 +321,3 @@ export function FilterSidebar({
     </Card>
   );
 }
-

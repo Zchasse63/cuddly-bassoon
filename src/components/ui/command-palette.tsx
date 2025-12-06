@@ -260,8 +260,17 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [open]);
 
   // Group results by type
-  const groupedResults = useMemo(() => {
-    const groups: Record<string, SearchResult[]> = {
+  interface GroupedResults {
+    recent: SearchResult[];
+    properties: SearchResult[];
+    deals: SearchResult[];
+    buyers: SearchResult[];
+    pages: SearchResult[];
+    actions: SearchResult[];
+  }
+
+  const groupedResults = useMemo((): GroupedResults => {
+    const groups: GroupedResults = {
       recent: [],
       properties: [],
       deals: [],
@@ -290,14 +299,21 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [displayResults, recentSearches, query]);
 
   // Calculate flat index for keyboard navigation
-  const getFlatIndex = (groupKey: string, itemIndex: number) => {
-    const groupOrder = ['recent', 'properties', 'deals', 'buyers', 'actions', 'pages'];
+  const getFlatIndex = (groupKey: keyof GroupedResults, itemIndex: number) => {
+    const groupOrder: (keyof GroupedResults)[] = [
+      'recent',
+      'properties',
+      'deals',
+      'buyers',
+      'actions',
+      'pages',
+    ];
     let index = 0;
     for (const key of groupOrder) {
       if (key === groupKey) {
         return index + itemIndex;
       }
-      index += groupedResults[key]?.length || 0;
+      index += groupedResults[key].length;
     }
     return index;
   };

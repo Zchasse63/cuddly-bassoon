@@ -9,15 +9,8 @@
 
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  Sparkles,
-} from 'lucide-react';
+import { Search, Calculator, Users, TrendingUp, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getFeaturedTools } from '@/lib/ai/tool-discovery';
 
 // Simplified quick action for empty state
 interface QuickStartAction {
@@ -41,21 +34,24 @@ const QUICK_START_ACTIONS: QuickStartAction[] = [
     label: 'Analyze Deals',
     icon: Calculator,
     prompt: 'Analyze this property for a potential wholesale deal',
-    color: 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400',
+    color:
+      'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400',
   },
   {
     id: 'find-buyers',
     label: 'Find Buyers',
     icon: Users,
     prompt: 'Find cash buyers for this property',
-    color: 'bg-purple-100 text-purple-600 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400',
+    color:
+      'bg-purple-100 text-purple-600 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400',
   },
   {
     id: 'market-intel',
     label: 'Market Intel',
     icon: TrendingUp,
-    prompt: 'How\'s the Tampa market doing?',
-    color: 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400',
+    prompt: "How's the Tampa market doing?",
+    color:
+      'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400',
   },
 ];
 
@@ -80,8 +76,8 @@ function FullEmptyState({ onActionClick, className }: EmptyChatStateProps) {
 
       <h2 className="text-lg font-semibold mb-1">What would you like to do?</h2>
       <p className="text-sm text-muted-foreground mb-6 max-w-md">
-        Ask Scout anything about properties, deals, buyers, or markets.
-        Try one of these to get started:
+        Ask Scout anything about properties, deals, buyers, or markets. Try one of these to get
+        started:
       </p>
 
       <div className="grid grid-cols-2 gap-3 w-full max-w-md">
@@ -97,7 +93,12 @@ function FullEmptyState({ onActionClick, className }: EmptyChatStateProps) {
               )}
               onClick={() => onActionClick(action.prompt)}
             >
-              <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center', action.color)}>
+              <div
+                className={cn(
+                  'w-10 h-10 rounded-lg flex items-center justify-center',
+                  action.color
+                )}
+              >
                 <Icon className="h-5 w-5" />
               </div>
               <span className="font-medium text-sm">{action.label}</span>
@@ -106,9 +107,7 @@ function FullEmptyState({ onActionClick, className }: EmptyChatStateProps) {
         })}
       </div>
 
-      <p className="text-xs text-muted-foreground mt-6">
-        Or just start typing what you need...
-      </p>
+      <p className="text-xs text-muted-foreground mt-6">Or just start typing what you need...</p>
     </div>
   );
 }
@@ -159,16 +158,18 @@ export function EmptyChatState({
 /**
  * Suggested prompts based on current context
  */
+type PromptContext = 'dashboard' | 'properties' | 'buyers' | 'deals' | 'map' | 'general';
+
 interface SuggestedPromptsProps {
   /** Current page/view context */
-  context?: 'dashboard' | 'properties' | 'buyers' | 'deals' | 'map' | 'general';
+  context?: PromptContext;
   /** Callback when user clicks a prompt */
   onPromptClick: (prompt: string) => void;
   /** Optional class name */
   className?: string;
 }
 
-const CONTEXT_PROMPTS: Record<string, string[]> = {
+const CONTEXT_PROMPTS: Record<PromptContext, string[]> = {
   dashboard: [
     'Show me my pipeline summary',
     'What deals need attention today?',
@@ -187,18 +188,14 @@ const CONTEXT_PROMPTS: Record<string, string[]> = {
   deals: [
     'Which deals are stalled?',
     'Analyze my conversion rates',
-    'What\'s my projected revenue?',
+    "What's my projected revenue?",
   ],
   map: [
     'Show distress indicators on the map',
     'Find properties in this area',
-    'What\'s the market velocity here?',
+    "What's the market velocity here?",
   ],
-  general: [
-    'Help me find motivated sellers',
-    'Analyze a deal for me',
-    'Search for cash buyers',
-  ],
+  general: ['Help me find motivated sellers', 'Analyze a deal for me', 'Search for cash buyers'],
 };
 
 export function SuggestedPrompts({

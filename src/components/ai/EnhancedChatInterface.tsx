@@ -12,9 +12,20 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { Send, Square, RotateCcw, Loader2, Sparkles, Zap } from 'lucide-react';
+import {
+  Send,
+  Square,
+  RotateCcw,
+  Loader2,
+  Sparkles,
+  Zap,
+  Mic,
+  MicOff,
+  Workflow,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useRagChat } from '@/hooks/use-rag-chat';
 import { useOnboardingState } from '@/hooks/useInsertPrompt';
@@ -25,6 +36,10 @@ import { OnboardingModal } from './OnboardingModal';
 import { AIToolPalette, useAIToolPalette } from './AIToolPalette';
 import { EmptyChatState } from './EmptyChatState';
 import { ToolTransparency, useToolTransparency } from './ToolTransparency';
+import { ToolWorkflows } from './ToolWorkflows';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { usePromptEnhancement } from '@/hooks/usePromptEnhancement';
+import type { ToolWorkflow } from '@/types/tool-preferences';
 
 interface EnhancedChatInterfaceProps {
   className?: string;
@@ -44,8 +59,8 @@ export function EnhancedChatInterface({
 }: EnhancedChatInterfaceProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputValueRef = useRef<string>(''); // Track current input for voice callback
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [showSlashPalette, setShowSlashPalette] = useState(false);
 
   // Get view context for AI awareness
   const viewContext = useViewContextSafe();
@@ -57,8 +72,26 @@ export function EnhancedChatInterface({
   // Tool palette state
   const toolPalette = useAIToolPalette();
 
+  // Workflows state
+  const [showWorkflows, setShowWorkflows] = useState(false);
+
   // Tool transparency tracking
   const toolTransparency = useToolTransparency();
+
+  // Voice input
+  const voice = useVoiceInput({
+    onTranscript: (text) => {
+      // Use ref to get current input value since setInput only accepts string
+      const currentInput = inputValueRef.current;
+      setInput(currentInput ? `${currentInput} ${text}` : text);
+    },
+    onError: (error) => {
+      console.error('Voice input error:', error);
+    },
+  });
+
+  // Prompt enhancement
+  const enhancement = usePromptEnhancement();
 
   const {
     messages,
@@ -86,6 +119,7 @@ export function EnhancedChatInterface({
       }, 500);
       return () => clearTimeout(timer);
     }
+    return undefined; // Explicit return for all code paths
   }, [showOnboarding, shouldShowOnboarding, messages.length]);
 
   // Auto-scroll to bottom on new messages
@@ -95,8 +129,9 @@ export function EnhancedChatInterface({
     }
   }, [messages]);
 
-  // Auto-resize textarea
+  // Auto-resize textarea and keep inputValueRef in sync
   useEffect(() => {
+    inputValueRef.current = input; // Keep ref in sync for voice callback
     if (inputRef.current) {
       inputRef.current.style.height = 'auto';
       inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 150)}px`;
@@ -106,7 +141,6 @@ export function EnhancedChatInterface({
   // Handle slash command trigger
   useEffect(() => {
     if (input === '/') {
-      setShowSlashPalette(true);
       toolPalette.open();
       setInput('');
     }
@@ -153,15 +187,56 @@ export function EnhancedChatInterface({
     markOnboardingSeen();
   }, [markOnboardingSeen]);
 
+  const handleVoiceToggle = useCallback(() => {
+    if (voice.isListening) {
+      voice.stopListening();
+    } else {
+      voice.startListening();
+    }
+  }, [voice]);
+
+  const handleEnhance = useCallback(async () => {
+    if (input.trim()) {
+      const result = await enhancement.enhancePrompt(input);
+      if (result) {
+        setInput(result); // enhancePrompt returns the enhanced string directly
+      }
+    }
+  }, [input, enhancement, setInput]);
+
+  const handleRevert = useCallback(() => {
+    if (enhancement.originalPrompt) {
+      setInput(enhancement.originalPrompt);
+      enhancement.revertToOriginal();
+    }
+  }, [enhancement, setInput]);
+
+  const handleExecuteWorkflow = useCallback(
+    async (workflow: ToolWorkflow) => {
+      // Execute workflow by sending messages for each step
+      const stepPrompts = workflow.step_prompts as Record<string, string> | null;
+      for (const toolSlug of workflow.tool_slugs) {
+        const stepPrompt = stepPrompts?.[toolSlug];
+
+        // Use custom step prompt if provided, otherwise use a default
+        const prompt = stepPrompt || `Execute ${toolSlug}`;
+
+        // Send message and wait for completion
+        await sendMessage(prompt);
+
+        // Small delay between steps to ensure proper sequencing
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    },
+    [sendMessage]
+  );
+
   return (
     <div className={cn('flex flex-col h-full', className)}>
       {/* Messages area */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {messages.length === 0 ? (
-          <EmptyChatState
-            onActionClick={handleSendPrompt}
-            variant="full"
-          />
+          <EmptyChatState onActionClick={handleSendPrompt} variant="full" />
         ) : (
           <div className="flex flex-col gap-4">
             {messages.map((message, idx) => (
@@ -210,12 +285,33 @@ export function EnhancedChatInterface({
               type="button"
               size="icon"
               variant="ghost"
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-primary"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-primary z-10"
               onClick={() => toolPalette.open()}
               title="Browse AI tools (⌘K)"
             >
               <Zap className="h-4 w-4" />
             </Button>
+
+            {/* Microphone button */}
+            {voice.isSupported && (
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  'absolute left-11 top-1/2 -translate-y-1/2 h-8 w-8 z-10',
+                  voice.isListening
+                    ? 'text-red-500 animate-pulse'
+                    : 'text-muted-foreground hover:text-primary'
+                )}
+                onClick={handleVoiceToggle}
+                disabled={isLoading}
+                title={voice.isListening ? 'Stop listening' : 'Voice input'}
+              >
+                {voice.isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+            )}
+
             <textarea
               ref={inputRef}
               value={input}
@@ -225,14 +321,53 @@ export function EnhancedChatInterface({
               disabled={isLoading}
               rows={1}
               className={cn(
-                'w-full resize-none rounded-lg border bg-background pl-11 pr-4 py-3',
+                'w-full resize-none rounded-lg border bg-background pr-4 py-3',
+                voice.isSupported ? 'pl-20' : 'pl-11',
                 'placeholder:text-muted-foreground',
                 'focus:outline-none focus:ring-2 focus:ring-ring',
                 'disabled:opacity-50 disabled:cursor-not-allowed'
               )}
             />
+
+            {/* Enhanced indicator */}
+            {enhancement.enhancedPrompt && input === enhancement.enhancedPrompt && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  <Sparkles className="h-2.5 w-2.5 mr-0.5" />
+                  Enhanced
+                </Badge>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 text-[10px] px-2"
+                  onClick={handleRevert}
+                >
+                  Revert
+                </Button>
+              </div>
+            )}
           </div>
+
           <div className="flex flex-col gap-1">
+            {/* Enhance button */}
+            {!isLoading && input.trim() && !enhancement.enhancedPrompt && (
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={handleEnhance}
+                disabled={enhancement.isEnhancing}
+                title="Enhance prompt with AI"
+              >
+                {enhancement.isEnhancing ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Sparkles className="size-4" />
+                )}
+              </Button>
+            )}
+
             {isLoading ? (
               <Button type="button" size="icon" variant="destructive" onClick={cancel}>
                 <Square className="size-4" />
@@ -242,6 +377,7 @@ export function EnhancedChatInterface({
                 <Send className="size-4" />
               </Button>
             )}
+
             {messages.length > 0 && (
               <Button type="button" size="icon" variant="ghost" onClick={reset} title="Clear chat">
                 <RotateCcw className="size-4" />
@@ -249,10 +385,35 @@ export function EnhancedChatInterface({
             )}
           </div>
         </form>
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Type <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">/</kbd> to browse tools or{' '}
-          <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">⌘K</kbd> anytime
-        </p>
+
+        {/* Voice listening indicator */}
+        {voice.isListening && (
+          <div className="flex items-center justify-center gap-2 text-sm text-red-500 mt-2">
+            <Mic className="h-4 w-4 animate-pulse" />
+            <span>Listening...</span>
+          </div>
+        )}
+
+        {/* Voice error display */}
+        {voice.error && (
+          <div className="text-xs text-destructive text-center mt-2">{voice.error}</div>
+        )}
+
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-muted-foreground">
+            Type <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">/</kbd> to browse tools
+            or <kbd className="px-1 py-0.5 bg-muted rounded text-[10px]">⌘K</kbd> anytime
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowWorkflows(true)}
+            className="h-6 text-xs gap-1"
+          >
+            <Workflow className="h-3 w-3" />
+            Workflows
+          </Button>
+        </div>
       </div>
 
       {/* Onboarding Modal */}
@@ -272,6 +433,13 @@ export function EnhancedChatInterface({
         onClose={toolPalette.close}
         onInsertPrompt={handleInsertPrompt}
         initialQuery={toolPalette.initialQuery}
+      />
+
+      {/* Tool Workflows */}
+      <ToolWorkflows
+        isOpen={showWorkflows}
+        onClose={() => setShowWorkflows(false)}
+        onExecuteWorkflow={handleExecuteWorkflow}
       />
     </div>
   );

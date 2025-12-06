@@ -13,14 +13,8 @@ import { z } from 'zod';
 import { toolRegistry } from '../registry';
 import { ToolDefinition, ToolHandler } from '../types';
 import { getRentCastClient } from '@/lib/rentcast';
-import { getPermitsForAddress, searchAddresses, getCityMetrics } from '@/lib/shovels/client';
+import { getPermitsForAddress, searchAddresses } from '@/lib/shovels/client';
 import { createClient } from '@/lib/supabase/server';
-import {
-  buildDealPredictionContext,
-  getHistoricalDealCount,
-  type DealType,
-  type SellerType,
-} from '@/lib/deals-rag';
 import {
   calculateSellerMotivation,
   batchCalculateMotivation,
@@ -41,35 +35,43 @@ const sellerMotivationInput = z.object({
 const sellerMotivationOutput = z.object({
   score: z.number().min(0).max(100),
   confidence: z.number().min(0).max(1),
-  factors: z.array(z.object({
-    name: z.string(),
-    impact: z.enum(['positive', 'negative', 'neutral']),
-    weight: z.number(),
-    description: z.string(),
-  })),
+  factors: z.array(
+    z.object({
+      name: z.string(),
+      impact: z.enum(['positive', 'negative', 'neutral']),
+      weight: z.number(),
+      description: z.string(),
+    })
+  ),
   recommendation: z.string(),
   // Owner classification (new stratified system)
-  ownerClassification: z.object({
-    primaryClass: z.enum(['individual', 'investor_entity', 'institutional_distressed']),
-    subClass: z.string(),
-    confidence: z.number(),
-  }).optional(),
+  ownerClassification: z
+    .object({
+      primaryClass: z.enum(['individual', 'investor_entity', 'institutional_distressed']),
+      subClass: z.string(),
+      confidence: z.number(),
+    })
+    .optional(),
   modelUsed: z.string().optional(),
   riskFactors: z.array(z.string()).optional(),
   // DealFlow IQ fields (when scoreType includes dealflow_iq)
-  dealFlowIQ: z.object({
-    iqScore: z.number(),
-    aiAdjustments: z.array(z.object({
-      factor: z.string(),
-      adjustment: z.number(),
-      reasoning: z.string(),
-    })),
-    predictions: z.object({
-      timeToDecision: z.string(),
-      bestApproachTiming: z.string(),
-      optimalOfferRange: z.object({ min: z.number(), max: z.number() }),
-    }),
-  }).optional(),
+  dealFlowIQ: z
+    .object({
+      iqScore: z.number(),
+      aiAdjustments: z.array(
+        z.object({
+          factor: z.string(),
+          adjustment: z.number(),
+          reasoning: z.string(),
+        })
+      ),
+      predictions: z.object({
+        timeToDecision: z.string(),
+        bestApproachTiming: z.string(),
+        optimalOfferRange: z.object({ min: z.number(), max: z.number() }),
+      }),
+    })
+    .optional(),
 });
 
 type SellerMotivationInput = z.infer<typeof sellerMotivationInput>;
@@ -78,7 +80,8 @@ type SellerMotivationOutput = z.infer<typeof sellerMotivationOutput>;
 const sellerMotivationDefinition: ToolDefinition<SellerMotivationInput, SellerMotivationOutput> = {
   id: 'predict.seller_motivation',
   name: 'Predict Seller Motivation',
-  description: 'Analyze property and owner data using stratified scoring models. Uses different scoring logic based on owner type: Individual (long ownership = HIGH motivation), Investor/Entity (long ownership = LOW motivation), Institutional (process-focused). Optionally includes AI-enhanced DealFlow IQ score.',
+  description:
+    'Analyze property and owner data using stratified scoring models. Uses different scoring logic based on owner type: Individual (long ownership = HIGH motivation), Investor/Entity (long ownership = LOW motivation), Institutional (process-focused). Optionally includes AI-enhanced DealFlow IQ score.',
   category: 'predictive',
   requiredPermission: 'read',
   inputSchema: sellerMotivationInput,
@@ -97,7 +100,9 @@ const sellerMotivationDefinition: ToolDefinition<SellerMotivationInput, SellerMo
  * - Investor/Entity: Long ownership = LOW motivation (stable investment)
  * - Institutional: Process-focused scoring (bureaucratic factors)
  */
-const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivationOutput> = async (input) => {
+const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivationOutput> = async (
+  input
+) => {
   console.log('[Predictive] Seller motivation for:', input.propertyId || input.address);
 
   if (!input.propertyId && !input.address) {
@@ -116,7 +121,7 @@ const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivati
 
     // Transform factors to the expected output format
     const factors = input.includeFactors
-      ? result.standardScore.factors.map(f => ({
+      ? result.standardScore.factors.map((f) => ({
           name: f.name,
           impact: f.impact,
           weight: f.weight,
@@ -149,12 +154,16 @@ const sellerMotivationHandler: ToolHandler<SellerMotivationInput, SellerMotivati
     }
 
     // Log timing for performance monitoring
-    console.log(`[Predictive] Scoring completed in ${result.timing.totalMs}ms (fetch: ${result.timing.fetchMs}ms, classify: ${result.timing.classifyMs}ms, score: ${result.timing.scoreMs}ms)`);
+    console.log(
+      `[Predictive] Scoring completed in ${result.timing.totalMs}ms (fetch: ${result.timing.fetchMs}ms, classify: ${result.timing.classifyMs}ms, score: ${result.timing.scoreMs}ms)`
+    );
 
     return response;
   } catch (error) {
     console.error('[Predictive] Seller motivation error:', error);
-    throw new Error(`Failed to calculate seller motivation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to calculate seller motivation: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 
@@ -173,19 +182,24 @@ const dealCloseProbabilityInput = z.object({
 const dealCloseProbabilityOutput = z.object({
   probability: z.number().min(0).max(100),
   confidence: z.number().min(0).max(1),
-  risks: z.array(z.object({
-    category: z.string(),
-    severity: z.enum(['low', 'medium', 'high']),
-    description: z.string(),
-    mitigation: z.string(),
-  })),
+  risks: z.array(
+    z.object({
+      category: z.string(),
+      severity: z.enum(['low', 'medium', 'high']),
+      description: z.string(),
+      mitigation: z.string(),
+    })
+  ),
   estimatedCloseDate: z.string().optional(),
 });
 
 type DealCloseProbabilityInput = z.infer<typeof dealCloseProbabilityInput>;
 type DealCloseProbabilityOutput = z.infer<typeof dealCloseProbabilityOutput>;
 
-const dealCloseProbabilityDefinition: ToolDefinition<DealCloseProbabilityInput, DealCloseProbabilityOutput> = {
+const dealCloseProbabilityDefinition: ToolDefinition<
+  DealCloseProbabilityInput,
+  DealCloseProbabilityOutput
+> = {
   id: 'predict.deal_close_probability',
   name: 'Predict Deal Close Probability',
   description: 'Predict the likelihood of a deal closing using market velocity and property data.',
@@ -207,8 +221,14 @@ interface DealRisk {
   probabilityImpact: number; // negative impact on probability
 }
 
-const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCloseProbabilityOutput> = async (input) => {
-  console.log('[Predictive] Deal close probability for:', input.dealId || input.propertyId || input.address);
+const dealCloseProbabilityHandler: ToolHandler<
+  DealCloseProbabilityInput,
+  DealCloseProbabilityOutput
+> = async (input) => {
+  console.log(
+    '[Predictive] Deal close probability for:',
+    input.dealId || input.propertyId || input.address
+  );
 
   if (!input.dealId && !input.propertyId && !input.address) {
     throw new Error('Either dealId, propertyId, or address is required');
@@ -233,8 +253,8 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
         .single();
 
       if (shovelsData) {
-        address = shovelsData.formatted_address;
-        zipCode = shovelsData.zip_code;
+        address = shovelsData.formatted_address || undefined;
+        zipCode = shovelsData.zip_code || undefined;
       }
     }
 
@@ -264,7 +284,6 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
     // Factor 1: Market Velocity
     if (marketData) {
       const dom = marketData.daysOnMarket || 30;
-      const inventory = marketData.inventory || 0;
       const saleToList = marketData.saleToListRatio || 0.98;
 
       // Fast market = higher close probability
@@ -330,9 +349,10 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
     if (address) {
       try {
         const addresses = await searchAddresses(address);
-        if (addresses.length > 0) {
+        const firstAddress = addresses[0];
+        if (firstAddress) {
           dataPointsAvailable++;
-          const addressId = addresses[0].address_id;
+          const addressId = firstAddress.address_id;
           const oneYearAgo = new Date();
           oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
@@ -340,7 +360,9 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
             from: oneYearAgo.toISOString().split('T')[0],
           });
 
-          const hasOpenPermits = permits.some(p => p.status === 'active' || p.status === 'in_review');
+          const hasOpenPermits = permits.some(
+            (p) => p.status === 'active' || p.status === 'in_review'
+          );
 
           if (hasOpenPermits) {
             baseProbability -= 10;
@@ -348,14 +370,15 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
               category: 'Title/Permits',
               severity: 'medium',
               description: 'Open permits found on property',
-              mitigation: 'Request permit status from seller; may need to close permits before sale',
+              mitigation:
+                'Request permit status from seller; may need to close permits before sale',
               probabilityImpact: -10,
             });
           }
 
           // Check for major work that might affect title
           const majorTags = ['new_construction', 'addition', 'adu'];
-          const hasMajorWork = permits.some(p => p.tags?.some(tag => majorTags.includes(tag)));
+          const hasMajorWork = permits.some((p) => p.tags?.some((tag) => majorTags.includes(tag)));
 
           if (hasMajorWork && hasOpenPermits) {
             risks.push({
@@ -419,17 +442,21 @@ const dealCloseProbabilityHandler: ToolHandler<DealCloseProbabilityInput, DealCl
     return {
       probability: finalProbability,
       confidence,
-      risks: input.includeRisks ? risks.map(({ category, severity, description, mitigation }) => ({
-        category,
-        severity,
-        description,
-        mitigation,
-      })) : [],
+      risks: input.includeRisks
+        ? risks.map(({ category, severity, description, mitigation }) => ({
+            category,
+            severity,
+            description,
+            mitigation,
+          }))
+        : [],
       estimatedCloseDate: estimatedCloseDate.toISOString(),
     };
   } catch (error) {
     console.error('[Predictive] Deal close probability error:', error);
-    throw new Error(`Failed to calculate deal probability: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to calculate deal probability: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 
@@ -457,21 +484,25 @@ const optimalOfferPriceOutput = z.object({
 type OptimalOfferPriceInput = z.infer<typeof optimalOfferPriceInput>;
 type OptimalOfferPriceOutput = z.infer<typeof optimalOfferPriceOutput>;
 
-const optimalOfferPriceDefinition: ToolDefinition<OptimalOfferPriceInput, OptimalOfferPriceOutput> = {
-  id: 'predict.optimal_offer_price',
-  name: 'Calculate Optimal Offer Price',
-  description: 'Calculate optimal offer price using real ARV from RentCast and market data.',
-  category: 'predictive',
-  requiredPermission: 'read',
-  inputSchema: optimalOfferPriceInput,
-  outputSchema: optimalOfferPriceOutput,
-  requiresConfirmation: false,
-  estimatedDuration: 5000,
-  rateLimit: 15,
-  tags: ['predictive', 'pricing', 'offer', 'analysis'],
-};
+const optimalOfferPriceDefinition: ToolDefinition<OptimalOfferPriceInput, OptimalOfferPriceOutput> =
+  {
+    id: 'predict.optimal_offer_price',
+    name: 'Calculate Optimal Offer Price',
+    description: 'Calculate optimal offer price using real ARV from RentCast and market data.',
+    category: 'predictive',
+    requiredPermission: 'read',
+    inputSchema: optimalOfferPriceInput,
+    outputSchema: optimalOfferPriceOutput,
+    requiresConfirmation: false,
+    estimatedDuration: 5000,
+    rateLimit: 15,
+    tags: ['predictive', 'pricing', 'offer', 'analysis'],
+  };
 
-const optimalOfferPriceHandler: ToolHandler<OptimalOfferPriceInput, OptimalOfferPriceOutput> = async (input) => {
+const optimalOfferPriceHandler: ToolHandler<
+  OptimalOfferPriceInput,
+  OptimalOfferPriceOutput
+> = async (input) => {
   console.log('[Predictive] Optimal offer for:', input.propertyId || input.address);
 
   if (!input.propertyId && !input.address) {
@@ -524,8 +555,9 @@ const optimalOfferPriceHandler: ToolHandler<OptimalOfferPriceInput, OptimalOffer
       // Try to estimate from permits/property condition
       try {
         const addresses = await searchAddresses(address);
-        if (addresses.length > 0) {
-          const addressId = addresses[0].address_id;
+        const firstAddr = addresses[0];
+        if (firstAddr) {
+          const addressId = firstAddr.address_id;
           const twoYearsAgo = new Date();
           twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
 
@@ -534,22 +566,23 @@ const optimalOfferPriceHandler: ToolHandler<OptimalOfferPriceInput, OptimalOffer
           });
 
           // If recent major repairs, assume property in better condition
-          const recentMajorWork = permits.filter(p =>
-            p.status === 'final' &&
-            p.tags?.some(tag => ['roofing', 'hvac', 'plumbing', 'electrical'].includes(tag))
+          const recentMajorWork = permits.filter(
+            (p) =>
+              p.status === 'final' &&
+              p.tags?.some((tag) => ['roofing', 'hvac', 'plumbing', 'electrical'].includes(tag))
           );
 
           if (recentMajorWork.length >= 2) {
             repairs = Math.round(arv * 0.05); // Light repairs
           } else if (recentMajorWork.length === 1) {
-            repairs = Math.round(arv * 0.10); // Moderate repairs
+            repairs = Math.round(arv * 0.1); // Moderate repairs
           } else {
             repairs = Math.round(arv * 0.15); // Assume standard repairs for wholesale
           }
         } else {
           repairs = Math.round(arv * 0.15); // Default 15% of ARV
         }
-      } catch (e) {
+      } catch {
         repairs = Math.round(arv * 0.15); // Default
       }
     }
@@ -564,18 +597,20 @@ const optimalOfferPriceHandler: ToolHandler<OptimalOfferPriceInput, OptimalOffer
     switch (input.strategy) {
       case 'aggressive':
         investorMargin = 0.65; // 65% of ARV rule
-        methodology = 'Aggressive: 65% ARV rule for maximum profit margin, suitable for distressed properties or motivated sellers';
+        methodology =
+          'Aggressive: 65% ARV rule for maximum profit margin, suitable for distressed properties or motivated sellers';
         break;
       case 'conservative':
         investorMargin = 0.75; // 75% of ARV rule
-        methodology = 'Conservative: 75% ARV rule for safer margin, better for competitive markets or newer investors';
+        methodology =
+          'Conservative: 75% ARV rule for safer margin, better for competitive markets or newer investors';
         break;
       default:
-        investorMargin = 0.70; // Standard 70% rule
+        investorMargin = 0.7; // Standard 70% rule
         methodology = 'Balanced: Standard 70% ARV rule, industry-standard for wholesale deals';
     }
 
-    const mao = (arv * investorMargin) - repairs - assignmentFee;
+    const mao = arv * investorMargin - repairs - assignmentFee;
 
     // Calculate price range based on ARV confidence
     const confidenceRange = 1 - arvConfidence;
@@ -603,7 +638,9 @@ const optimalOfferPriceHandler: ToolHandler<OptimalOfferPriceInput, OptimalOffer
     };
   } catch (error) {
     console.error('[Predictive] Optimal offer error:', error);
-    throw new Error(`Failed to calculate optimal offer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to calculate optimal offer: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 
@@ -622,17 +659,21 @@ const timeToCloseInput = z.object({
 const timeToCloseOutput = z.object({
   estimatedDays: z.number(),
   confidence: z.number(),
-  breakdown: z.array(z.object({
-    phase: z.string(),
-    estimatedDays: z.number(),
-    status: z.enum(['completed', 'in_progress', 'pending']),
-  })),
+  breakdown: z.array(
+    z.object({
+      phase: z.string(),
+      estimatedDays: z.number(),
+      status: z.enum(['completed', 'in_progress', 'pending']),
+    })
+  ),
   bottlenecks: z.array(z.string()),
-  marketVelocity: z.object({
-    avgDaysOnMarket: z.number(),
-    saleToListRatio: z.number(),
-    marketTrend: z.enum(['hot', 'warm', 'neutral', 'cooling', 'cold']),
-  }).optional(),
+  marketVelocity: z
+    .object({
+      avgDaysOnMarket: z.number(),
+      saleToListRatio: z.number(),
+      marketTrend: z.enum(['hot', 'warm', 'neutral', 'cooling', 'cold']),
+    })
+    .optional(),
 });
 
 type TimeToCloseInput = z.infer<typeof timeToCloseInput>;
@@ -664,7 +705,10 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
     // Resolve zip code if not provided
     if (!zipCode && input.address) {
       try {
-        const properties = await rentcastClient.searchProperties({ address: input.address, limit: 1 });
+        const properties = await rentcastClient.searchProperties({
+          address: input.address,
+          limit: 1,
+        });
         zipCode = properties[0]?.zipCode || undefined;
       } catch (e) {
         console.warn('[Predictive] Address resolution error:', e);
@@ -679,7 +723,7 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
         .eq('address_id', input.propertyId)
         .single();
 
-      zipCode = shovelsData?.zip_code;
+      zipCode = shovelsData?.zip_code || undefined;
     }
 
     // Get market velocity data
@@ -694,7 +738,11 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
 
     // Base timeline by deal type
     let baseDays: number;
-    const breakdown: Array<{ phase: string; estimatedDays: number; status: 'completed' | 'in_progress' | 'pending' }> = [];
+    const breakdown: Array<{
+      phase: string;
+      estimatedDays: number;
+      status: 'completed' | 'in_progress' | 'pending';
+    }> = [];
     const bottlenecks: string[] = [];
 
     switch (input.dealType) {
@@ -704,7 +752,7 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
           { phase: 'Contract Negotiation', estimatedDays: 3, status: 'pending' },
           { phase: 'Due Diligence', estimatedDays: 7, status: 'pending' },
           { phase: 'Buyer Assignment', estimatedDays: 5, status: 'pending' },
-          { phase: 'Closing Coordination', estimatedDays: 6, status: 'pending' },
+          { phase: 'Closing Coordination', estimatedDays: 6, status: 'pending' }
         );
         break;
       case 'fix_flip':
@@ -713,7 +761,7 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
           { phase: 'Contract & Inspection', estimatedDays: 10, status: 'pending' },
           { phase: 'Financing Approval', estimatedDays: 14, status: 'pending' },
           { phase: 'Title & Escrow', estimatedDays: 14, status: 'pending' },
-          { phase: 'Closing', estimatedDays: 7, status: 'pending' },
+          { phase: 'Closing', estimatedDays: 7, status: 'pending' }
         );
         bottlenecks.push('Financing approval may extend timeline');
         break;
@@ -723,7 +771,7 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
           { phase: 'Offer & Acceptance', estimatedDays: 5, status: 'pending' },
           { phase: 'Inspection & Appraisal', estimatedDays: 10, status: 'pending' },
           { phase: 'Loan Processing', estimatedDays: 14, status: 'pending' },
-          { phase: 'Closing', estimatedDays: 6, status: 'pending' },
+          { phase: 'Closing', estimatedDays: 6, status: 'pending' }
         );
         break;
       default:
@@ -731,12 +779,18 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
         breakdown.push(
           { phase: 'Negotiation', estimatedDays: 7, status: 'pending' },
           { phase: 'Due Diligence', estimatedDays: 10, status: 'pending' },
-          { phase: 'Closing Process', estimatedDays: 13, status: 'pending' },
+          { phase: 'Closing Process', estimatedDays: 13, status: 'pending' }
         );
     }
 
     // Adjust based on market velocity
-    let marketVelocity: { avgDaysOnMarket: number; saleToListRatio: number; marketTrend: 'hot' | 'warm' | 'neutral' | 'cooling' | 'cold' } | undefined;
+    let marketVelocity:
+      | {
+          avgDaysOnMarket: number;
+          saleToListRatio: number;
+          marketTrend: 'hot' | 'warm' | 'neutral' | 'cooling' | 'cold';
+        }
+      | undefined;
 
     if (marketData) {
       const dom = marketData.daysOnMarket || 30;
@@ -778,7 +832,9 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
 
         if (addressId) {
           const permits = await getPermitsForAddress(addressId);
-          const openPermits = permits.filter(p => p.status === 'active' || p.status === 'in_review');
+          const openPermits = permits.filter(
+            (p) => p.status === 'active' || p.status === 'in_review'
+          );
 
           if (openPermits.length > 0) {
             baseDays += 14; // Add 2 weeks for permit resolution
@@ -793,7 +849,7 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
     // Recalculate breakdown proportionally
     const totalBreakdownDays = breakdown.reduce((sum, b) => sum + b.estimatedDays, 0);
     const scaleFactor = baseDays / totalBreakdownDays;
-    breakdown.forEach(b => {
+    breakdown.forEach((b) => {
       b.estimatedDays = Math.round(b.estimatedDays * scaleFactor);
     });
 
@@ -810,7 +866,9 @@ const timeToCloseHandler: ToolHandler<TimeToCloseInput, TimeToCloseOutput> = asy
     };
   } catch (error) {
     console.error('[Predictive] Time to close error:', error);
-    throw new Error(`Failed to predict time to close: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to predict time to close: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 };
 
@@ -839,7 +897,8 @@ type ClassifyOwnerOutput = z.infer<typeof classifyOwnerOutput>;
 const classifyOwnerDefinition: ToolDefinition<ClassifyOwnerInput, ClassifyOwnerOutput> = {
   id: 'predict.classify_owner',
   name: 'Classify Owner Type',
-  description: 'Classify a property owner into categories: Individual (owner-occupied/absentee), Investor/Entity (LLC, corporation, trust), or Institutional (bank REO, government, estate). Uses pattern matching on owner name and optional signals.',
+  description:
+    'Classify a property owner into categories: Individual (owner-occupied/absentee), Investor/Entity (LLC, corporation, trust), or Institutional (bank REO, government, estate). Uses pattern matching on owner name and optional signals.',
   category: 'predictive',
   requiredPermission: 'read',
   inputSchema: classifyOwnerInput,
@@ -850,7 +909,9 @@ const classifyOwnerDefinition: ToolDefinition<ClassifyOwnerInput, ClassifyOwnerO
   tags: ['predictive', 'owner', 'classification', 'entity-detection'],
 };
 
-const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput> = async (input) => {
+const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput> = async (
+  input
+) => {
   console.log('[Predictive] Classifying owner:', input.ownerName);
 
   const classification = classifyOwner(input.ownerName, {
@@ -862,14 +923,17 @@ const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput>
 
   // Generate interpretation
   const interpretations: Record<string, string> = {
-    individual: 'Individual owners respond to personal approaches. Focus on their life situation and timeline.',
-    investor_entity: 'Investor/entities are numbers-driven. Focus on ROI, quick closes, and professional terms.',
-    institutional_distressed: 'Institutional owners have strict processes. Follow protocols and expect longer timelines.',
+    individual:
+      'Individual owners respond to personal approaches. Focus on their life situation and timeline.',
+    investor_entity:
+      'Investor/entities are numbers-driven. Focus on ROI, quick closes, and professional terms.',
+    institutional_distressed:
+      'Institutional owners have strict processes. Follow protocols and expect longer timelines.',
   };
 
   const subClassDetails: Record<string, string> = {
     owner_occupied: 'Lives in property - emotional attachment, life events drive decisions.',
-    absentee: 'Doesn\'t live there - may be tired landlord or inherited property.',
+    absentee: "Doesn't live there - may be tired landlord or inherited property.",
     out_of_state: 'Lives far away - management burden increases motivation.',
     inherited: 'Likely inherited - beneficiaries often want quick liquidation.',
     small_investor: 'Small portfolio (1-4 properties) - may be approachable.',
@@ -893,7 +957,8 @@ const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput>
     subClass: classification.subClass,
     confidence: classification.confidence,
     matchedPatterns: classification.matchedPatterns,
-    interpretation: `${interpretations[classification.primaryClass]} ${subClassDetails[classification.subClass] || ''}`.trim(),
+    interpretation:
+      `${interpretations[classification.primaryClass]} ${subClassDetails[classification.subClass] || ''}`.trim(),
   };
 };
 
@@ -901,23 +966,30 @@ const classifyOwnerHandler: ToolHandler<ClassifyOwnerInput, ClassifyOwnerOutput>
 // Batch Motivation Scoring Tool
 // ============================================================================
 const batchMotivationInput = z.object({
-  properties: z.array(z.object({
-    propertyId: z.string().optional(),
-    address: z.string(),
-  })).max(20).describe('List of properties to score (max 20)'),
+  properties: z
+    .array(
+      z.object({
+        propertyId: z.string().optional(),
+        address: z.string(),
+      })
+    )
+    .max(20)
+    .describe('List of properties to score (max 20)'),
   scoreType: z.enum(['standard', 'dealflow_iq']).default('standard'),
 });
 
 const batchMotivationOutput = z.object({
-  results: z.array(z.object({
-    address: z.string(),
-    propertyId: z.string().optional(),
-    score: z.number().nullable(),
-    confidence: z.number().nullable(),
-    ownerClass: z.string().nullable(),
-    recommendation: z.string().nullable(),
-    error: z.string().optional(),
-  })),
+  results: z.array(
+    z.object({
+      address: z.string(),
+      propertyId: z.string().optional(),
+      score: z.number().nullable(),
+      confidence: z.number().nullable(),
+      ownerClass: z.string().nullable(),
+      recommendation: z.string().nullable(),
+      error: z.string().optional(),
+    })
+  ),
   summary: z.object({
     total: z.number(),
     successful: z.number(),
@@ -933,7 +1005,8 @@ type BatchMotivationOutput = z.infer<typeof batchMotivationOutput>;
 const batchMotivationDefinition: ToolDefinition<BatchMotivationInput, BatchMotivationOutput> = {
   id: 'predict.batch_motivation',
   name: 'Batch Score Seller Motivation',
-  description: 'Calculate seller motivation scores for multiple properties at once. Returns scores, owner classifications, and recommendations for up to 20 properties. Useful for prioritizing lead lists.',
+  description:
+    'Calculate seller motivation scores for multiple properties at once. Returns scores, owner classifications, and recommendations for up to 20 properties. Useful for prioritizing lead lists.',
   category: 'predictive',
   requiredPermission: 'read',
   inputSchema: batchMotivationInput,
@@ -944,29 +1017,34 @@ const batchMotivationDefinition: ToolDefinition<BatchMotivationInput, BatchMotiv
   tags: ['predictive', 'motivation', 'batch', 'lead-scoring'],
 };
 
-const batchMotivationHandler: ToolHandler<BatchMotivationInput, BatchMotivationOutput> = async (input) => {
+const batchMotivationHandler: ToolHandler<BatchMotivationInput, BatchMotivationOutput> = async (
+  input
+) => {
   console.log('[Predictive] Batch scoring', input.properties.length, 'properties');
 
-  const batchResults = await batchCalculateMotivation(
-    input.properties,
-    { scoreType: input.scoreType, concurrency: 5 }
-  );
+  const batchResults = await batchCalculateMotivation(input.properties, {
+    scoreType: input.scoreType,
+    concurrency: 5,
+  });
 
   const results = batchResults.map(({ input: prop, result, error }) => ({
     address: prop.address,
     propertyId: prop.propertyId,
     score: result?.standardScore.score ?? null,
     confidence: result?.standardScore.confidence ?? null,
-    ownerClass: result ? `${result.classification.primaryClass}/${result.classification.subClass}` : null,
+    ownerClass: result
+      ? `${result.classification.primaryClass}/${result.classification.subClass}`
+      : null,
     recommendation: result?.standardScore.recommendation ?? null,
     error,
   }));
 
-  const successful = results.filter(r => r.score !== null);
-  const avgScore = successful.length > 0
-    ? successful.reduce((sum, r) => sum + (r.score || 0), 0) / successful.length
-    : 0;
-  const highMotivationCount = successful.filter(r => (r.score || 0) >= 65).length;
+  const successful = results.filter((r) => r.score !== null);
+  const avgScore =
+    successful.length > 0
+      ? successful.reduce((sum, r) => sum + (r.score || 0), 0) / successful.length
+      : 0;
+  const highMotivationCount = successful.filter((r) => (r.score || 0) >= 65).length;
 
   return {
     results,
@@ -983,21 +1061,25 @@ const batchMotivationHandler: ToolHandler<BatchMotivationInput, BatchMotivationO
 // ============================================================================
 // Compare Motivation Scores Tool
 // ============================================================================
-const compareMotivationInput = z.object({
-  propertyIds: z.array(z.string()).min(2).max(10).optional(),
-  addresses: z.array(z.string()).min(2).max(10).optional(),
-}).refine(data => data.propertyIds || data.addresses, {
-  message: 'Either propertyIds or addresses must be provided',
-});
+const compareMotivationInput = z
+  .object({
+    propertyIds: z.array(z.string()).min(2).max(10).optional(),
+    addresses: z.array(z.string()).min(2).max(10).optional(),
+  })
+  .refine((data) => data.propertyIds || data.addresses, {
+    message: 'Either propertyIds or addresses must be provided',
+  });
 
 const compareMotivationOutput = z.object({
-  comparisons: z.array(z.object({
-    address: z.string(),
-    score: z.number(),
-    ownerClass: z.string(),
-    keyFactor: z.string(),
-    rank: z.number(),
-  })),
+  comparisons: z.array(
+    z.object({
+      address: z.string(),
+      score: z.number(),
+      ownerClass: z.string(),
+      keyFactor: z.string(),
+      rank: z.number(),
+    })
+  ),
   analysis: z.object({
     highestScore: z.object({ address: z.string(), score: z.number() }),
     lowestScore: z.object({ address: z.string(), score: z.number() }),
@@ -1009,25 +1091,30 @@ const compareMotivationOutput = z.object({
 type CompareMotivationInput = z.infer<typeof compareMotivationInput>;
 type CompareMotivationOutput = z.infer<typeof compareMotivationOutput>;
 
-const compareMotivationDefinition: ToolDefinition<CompareMotivationInput, CompareMotivationOutput> = {
-  id: 'predict.compare_motivation',
-  name: 'Compare Motivation Scores',
-  description: 'Compare seller motivation scores across multiple properties to prioritize outreach. Ranks properties and provides analysis of which to contact first.',
-  category: 'predictive',
-  requiredPermission: 'read',
-  inputSchema: compareMotivationInput,
-  outputSchema: compareMotivationOutput,
-  requiresConfirmation: false,
-  estimatedDuration: 15000,
-  rateLimit: 10,
-  tags: ['predictive', 'motivation', 'comparison', 'prioritization'],
-};
+const compareMotivationDefinition: ToolDefinition<CompareMotivationInput, CompareMotivationOutput> =
+  {
+    id: 'predict.compare_motivation',
+    name: 'Compare Motivation Scores',
+    description:
+      'Compare seller motivation scores across multiple properties to prioritize outreach. Ranks properties and provides analysis of which to contact first.',
+    category: 'predictive',
+    requiredPermission: 'read',
+    inputSchema: compareMotivationInput,
+    outputSchema: compareMotivationOutput,
+    requiresConfirmation: false,
+    estimatedDuration: 15000,
+    rateLimit: 10,
+    tags: ['predictive', 'motivation', 'comparison', 'prioritization'],
+  };
 
-const compareMotivationHandler: ToolHandler<CompareMotivationInput, CompareMotivationOutput> = async (input) => {
+const compareMotivationHandler: ToolHandler<
+  CompareMotivationInput,
+  CompareMotivationOutput
+> = async (input) => {
   // Build property list
   const properties = input.addresses
-    ? input.addresses.map(addr => ({ address: addr }))
-    : input.propertyIds!.map(id => ({ propertyId: id, address: '' }));
+    ? input.addresses.map((addr) => ({ address: addr }))
+    : input.propertyIds!.map((id) => ({ propertyId: id, address: '' }));
 
   console.log('[Predictive] Comparing motivation for', properties.length, 'properties');
 
@@ -1035,14 +1122,15 @@ const compareMotivationHandler: ToolHandler<CompareMotivationInput, CompareMotiv
 
   // Filter successful results and sort by score
   const successfulResults = batchResults
-    .filter(r => r.result !== null)
-    .map(r => ({
+    .filter((r) => r.result !== null)
+    .map((r) => ({
       address: r.input.address || r.result!.signals.ownerMailingAddress || 'Unknown',
       score: r.result!.standardScore.score,
       ownerClass: `${r.result!.classification.primaryClass}/${r.result!.classification.subClass}`,
-      keyFactor: r.result!.standardScore.factors
-        .filter(f => f.impact === 'positive')
-        .sort((a, b) => b.weight - a.weight)[0]?.name || 'No positive factors',
+      keyFactor:
+        r
+          .result!.standardScore.factors.filter((f) => f.impact === 'positive')
+          .sort((a, b) => b.weight - a.weight)[0]?.name || 'No positive factors',
     }))
     .sort((a, b) => b.score - a.score);
 
@@ -1061,13 +1149,15 @@ const compareMotivationHandler: ToolHandler<CompareMotivationInput, CompareMotiv
   const scoreDiff = highest.score - lowest.score;
 
   if (scoreDiff < 10) {
-    recommendation = 'Scores are similar across properties. Consider other factors like property value or location for prioritization.';
+    recommendation =
+      'Scores are similar across properties. Consider other factors like property value or location for prioritization.';
   } else if (highest.score >= 70) {
     recommendation = `Prioritize ${highest.address} with a score of ${highest.score}. This property shows strong motivation signals.`;
   } else if (highest.score >= 50) {
     recommendation = `${highest.address} has the highest score (${highest.score}) but motivation is moderate. Consider investigating for additional signals before outreach.`;
   } else {
-    recommendation = 'All properties show low motivation scores. Consider waiting for circumstances to change or focusing on other lead sources.';
+    recommendation =
+      'All properties show low motivation scores. Consider waiting for circumstances to change or focusing on other lead sources.';
   }
 
   return {
@@ -1076,7 +1166,7 @@ const compareMotivationHandler: ToolHandler<CompareMotivationInput, CompareMotiv
       highestScore: { address: highest.address, score: highest.score },
       lowestScore: { address: lowest.address, score: lowest.score },
       recommendation,
-      priorityOrder: comparisons.map(c => c.address),
+      priorityOrder: comparisons.map((c) => c.address),
     },
   };
 };

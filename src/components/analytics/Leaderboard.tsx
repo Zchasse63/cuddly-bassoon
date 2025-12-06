@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface LeaderboardEntry {
@@ -83,7 +84,15 @@ export function Leaderboard({
                 )}
               </div>
               <div className="leaderboard__name">
-                {entry.avatar && <img src={entry.avatar} alt="" className="leaderboard__avatar" />}
+                {entry.avatar && (
+                  <Image
+                    src={entry.avatar}
+                    alt={entry.name}
+                    width={32}
+                    height={32}
+                    className="leaderboard__avatar"
+                  />
+                )}
                 <span>{entry.name}</span>
               </div>
               <div className="leaderboard__value">

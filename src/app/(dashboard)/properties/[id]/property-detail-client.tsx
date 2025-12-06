@@ -51,7 +51,7 @@ import {
   CheckCircle2,
   Brain,
 } from 'lucide-react';
-import { MotivationScoreCard, MotivationScoreBadge } from '@/components/motivation';
+import { MotivationScoreCard } from '@/components/motivation';
 import { useMotivationScore } from '@/hooks/useMotivationScore';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -60,8 +60,8 @@ interface PropertyDetailClientProps {
   property: PropertyWithDetails;
   relatedDeals: Array<{
     id: string;
-    stage: string;
-    status: string;
+    stage: string | null;
+    status: string | null;
     createdAt: string;
   }>;
 }
@@ -85,14 +85,16 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
 
   // Set page context for AI awareness
   usePageContext('property-detail', {
-    type: 'property',
-    id: property.id,
-    name: property.address,
-    data: {
-      city: property.city,
-      state: property.state,
-      value: property.estimatedValue,
-      equity: property.equityPercent,
+    entity: {
+      type: 'property',
+      id: property.id,
+      name: property.address,
+      metadata: {
+        city: property.city,
+        state: property.state,
+        value: property.estimatedValue,
+        equity: property.equityPercent,
+      },
     },
   });
 

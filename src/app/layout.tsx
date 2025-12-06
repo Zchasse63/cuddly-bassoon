@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { DM_Sans, Fira_Code } from 'next/font/google';
 
-import { Toaster } from '@/components/ui/sonner';
+import { ClientToaster } from '@/components/providers/client-toaster';
 
 import './globals.css';
+
+// Force dynamic rendering for the entire app to prevent Next.js 16 prerendering issues
+export const dynamic = 'force-dynamic';
 
 /**
  * DM Sans - Primary font (per UI_UX_DESIGN_SYSTEM_v1.md)
@@ -54,7 +57,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${firaCode.variable} font-sans antialiased`}>
         {children}
-        <Toaster position="top-right" richColors closeButton />
+        <ClientToaster />
       </body>
     </html>
   );

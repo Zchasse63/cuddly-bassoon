@@ -18,26 +18,23 @@ export async function getUserVertical(userId: string): Promise<BusinessVertical>
 
   const { data } = await supabase
     .from('user_verticals')
-    .select('active_vertical')
+    .select('primary_vertical')
     .eq('user_id', userId)
     .single();
 
-  return (data?.active_vertical as BusinessVertical) || 'wholesaling';
+  return (data?.primary_vertical as BusinessVertical) || 'wholesaling';
 }
 
 /**
  * Set the user's active vertical.
  */
-export async function setUserVertical(
-  userId: string,
-  vertical: BusinessVertical
-): Promise<void> {
+export async function setUserVertical(userId: string, vertical: BusinessVertical): Promise<void> {
   const supabase = await createClient();
 
   await supabase.from('user_verticals').upsert(
     {
       user_id: userId,
-      active_vertical: vertical,
+      primary_vertical: vertical,
       updated_at: new Date().toISOString(),
     },
     {
@@ -145,4 +142,3 @@ export function getFiltersForVertical(vertical: BusinessVertical): string[] {
   // Home services verticals get their specific filters
   return config.defaultFilters;
 }
-

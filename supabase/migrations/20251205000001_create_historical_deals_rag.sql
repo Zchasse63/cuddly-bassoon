@@ -372,46 +372,54 @@ ALTER TABLE historical_deal_embeddings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE deal_outcome_patterns ENABLE ROW LEVEL SECURITY;
 
 -- Allow authenticated users to read historical deals (anonymized data)
+DROP POLICY IF EXISTS "Allow authenticated read on historical_deals" ON historical_deals;
 CREATE POLICY "Allow authenticated read on historical_deals"
     ON historical_deals FOR SELECT
     TO authenticated
     USING (true);
 
 -- Allow users to insert their own deals
+DROP POLICY IF EXISTS "Allow authenticated insert on historical_deals" ON historical_deals;
 CREATE POLICY "Allow authenticated insert on historical_deals"
     ON historical_deals FOR INSERT
     TO authenticated
     WITH CHECK (auth.uid() = created_by);
 
 -- Allow users to update their own deals
+DROP POLICY IF EXISTS "Allow authenticated update own historical_deals" ON historical_deals;
 CREATE POLICY "Allow authenticated update own historical_deals"
     ON historical_deals FOR UPDATE
     TO authenticated
     USING (auth.uid() = created_by);
 
 -- Allow service role full access
+DROP POLICY IF EXISTS "Allow service role full access on historical_deals" ON historical_deals;
 CREATE POLICY "Allow service role full access on historical_deals"
     ON historical_deals FOR ALL
     TO service_role
     USING (true);
 
 -- Embedding policies (follow deal access)
+DROP POLICY IF EXISTS "Allow authenticated read on historical_deal_embeddings" ON historical_deal_embeddings;
 CREATE POLICY "Allow authenticated read on historical_deal_embeddings"
     ON historical_deal_embeddings FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Allow service role full access on historical_deal_embeddings" ON historical_deal_embeddings;
 CREATE POLICY "Allow service role full access on historical_deal_embeddings"
     ON historical_deal_embeddings FOR ALL
     TO service_role
     USING (true);
 
 -- Pattern policies (read-only for users)
+DROP POLICY IF EXISTS "Allow authenticated read on deal_outcome_patterns" ON deal_outcome_patterns;
 CREATE POLICY "Allow authenticated read on deal_outcome_patterns"
     ON deal_outcome_patterns FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Allow service role full access on deal_outcome_patterns" ON deal_outcome_patterns;
 CREATE POLICY "Allow service role full access on deal_outcome_patterns"
     ON deal_outcome_patterns FOR ALL
     TO service_role

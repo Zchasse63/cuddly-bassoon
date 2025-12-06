@@ -46,7 +46,12 @@ export function useInsertPrompt(options: UseInsertPromptOptions = {}): UseInsert
 
   const insertPrompt = useCallback(
     (insertOptions: InsertPromptOptions) => {
-      const { prompt, shouldFocus = true } = insertOptions;
+      const {
+        prompt,
+        shouldFocus = true,
+        shouldReplace = true,
+        cursorPosition = 'end',
+      } = insertOptions;
 
       // Clear any existing timeout
       if (timeoutRef.current) {
@@ -59,12 +64,43 @@ export function useInsertPrompt(options: UseInsertPromptOptions = {}): UseInsert
         lastPrompt: prompt,
       });
 
-      // Call the onInsert callback with the prompt
-      onInsert?.(prompt);
+      // Handle prompt insertion with shouldReplace option
+      if (inputRef?.current) {
+        const input = inputRef.current;
+        const currentValue = input.value;
 
-      // Focus the input if requested
-      if (shouldFocus && inputRef?.current) {
-        inputRef.current.focus();
+        if (shouldReplace) {
+          // Replace all content with the new prompt
+          onInsert?.(prompt);
+        } else {
+          // Insert at cursor position without replacing
+          const selectionStart = input.selectionStart ?? currentValue.length;
+          const selectionEnd = input.selectionEnd ?? currentValue.length;
+          const newValue =
+            currentValue.substring(0, selectionStart) +
+            prompt +
+            currentValue.substring(selectionEnd);
+          onInsert?.(newValue);
+        }
+
+        // Focus if requested
+        if (shouldFocus) {
+          input.focus();
+
+          // Set cursor position after a microtask to ensure value is updated
+          queueMicrotask(() => {
+            if (cursorPosition === 'select-all') {
+              input.setSelectionRange(0, input.value.length);
+            } else {
+              // Default: cursor at end
+              const endPos = input.value.length;
+              input.setSelectionRange(endPos, endPos);
+            }
+          });
+        }
+      } else {
+        // No input ref, just call the callback
+        onInsert?.(prompt);
       }
 
       // Reset the inserted state after animation completes

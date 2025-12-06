@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { OnboardingWizard } from './OnboardingWizard';
 
+// Force dynamic rendering - this page uses auth and cookies
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Welcome - Get Started',
   description: 'Complete your profile and set up your account',

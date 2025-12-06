@@ -11,7 +11,10 @@ import type { VelocityCompareResponse } from '@/types/velocity';
 
 // Validate request body
 const CompareBodySchema = z.object({
-  zipCodes: z.array(z.string().regex(/^\d{5}$/)).min(2).max(10),
+  zipCodes: z
+    .array(z.string().regex(/^\d{5}$/))
+    .min(2)
+    .max(10),
 });
 
 export async function POST(request: NextRequest) {
@@ -25,7 +28,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid request body',
-          details: validation.error.errors,
+          details: validation.error.issues,
         },
         { status: 400 }
       );
@@ -33,12 +36,12 @@ export async function POST(request: NextRequest) {
 
     const { zipCodes } = validation.data;
 
-    console.log(`[Market Velocity API] Comparing ${zipCodes.length} markets: ${zipCodes.join(', ')}`);
+    console.log(
+      `[Market Velocity API] Comparing ${zipCodes.length} markets: ${zipCodes.join(', ')}`
+    );
 
     // Compare markets
-    const comparison = await compareMarketVelocity(
-      zipCodes.map((zipCode) => ({ zipCode }))
-    );
+    const comparison = await compareMarketVelocity(zipCodes.map((zipCode) => ({ zipCode })));
 
     // Transform to response format
     const rankings = comparison.rankings.map((market, index) => ({
@@ -67,15 +70,9 @@ export async function POST(request: NextRequest) {
     console.error('[Market Velocity API] Compare error:', error);
 
     if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        { error: 'Invalid JSON in request body' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: 'Failed to compare markets' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to compare markets' }, { status: 500 });
   }
 }

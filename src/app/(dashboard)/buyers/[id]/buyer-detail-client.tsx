@@ -6,12 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ArrowLeft, Phone, Mail, Building2, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 import { BuyerForm } from '@/components/buyers';
@@ -47,7 +42,7 @@ export function BuyerDetailClient({ initialBuyer }: BuyerDetailClientProps) {
       setBuyer({ ...buyer, ...updated });
       toast.success('Buyer updated');
       setIsEditOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update buyer');
     } finally {
       setIsSaving(false);
@@ -67,9 +62,7 @@ export function BuyerDetailClient({ initialBuyer }: BuyerDetailClientProps) {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{buyer.name}</h1>
-              {buyer.tier && (
-                <Badge className={TIER_COLORS[buyer.tier]}>Tier {buyer.tier}</Badge>
-              )}
+              {buyer.tier && <Badge className={TIER_COLORS[buyer.tier]}>Tier {buyer.tier}</Badge>}
             </div>
             {buyer.company_name && (
               <p className="text-muted-foreground flex items-center gap-1">
@@ -106,13 +99,17 @@ export function BuyerDetailClient({ initialBuyer }: BuyerDetailClientProps) {
                 {buyer.phone && (
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <a href={`tel:${buyer.phone}`} className="hover:underline">{buyer.phone}</a>
+                    <a href={`tel:${buyer.phone}`} className="hover:underline">
+                      {buyer.phone}
+                    </a>
                   </div>
                 )}
                 {buyer.email && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <a href={`mailto:${buyer.email}`} className="hover:underline">{buyer.email}</a>
+                    <a href={`mailto:${buyer.email}`} className="hover:underline">
+                      {buyer.email}
+                    </a>
                   </div>
                 )}
                 {!buyer.phone && !buyer.email && (
@@ -235,7 +232,7 @@ function TransactionsTab({ transactions }: { transactions: BuyerWithDetails['tra
               </div>
               <div className="text-right">
                 <p className="font-medium">
-                  ${((tx.purchase_price || tx.sale_price) || 0).toLocaleString()}
+                  ${(tx.purchase_price || tx.sale_price || 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -245,4 +242,3 @@ function TransactionsTab({ transactions }: { transactions: BuyerWithDetails['tra
     </Card>
   );
 }
-

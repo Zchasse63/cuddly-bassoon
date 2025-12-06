@@ -8,7 +8,6 @@ import { z } from 'zod';
 import { toolRegistry } from '../registry';
 import type { ToolDefinition, ToolHandler } from '../types';
 import {
-  getVelocityForZipCode,
   getVelocityForLocation,
   findHotMarkets,
   findColdMarkets,
@@ -56,25 +55,29 @@ const getMarketVelocityOutput = z.object({
 type GetMarketVelocityInput = z.infer<typeof getMarketVelocityInput>;
 type GetMarketVelocityOutput = z.infer<typeof getMarketVelocityOutput>;
 
-const getMarketVelocityDefinition: ToolDefinition<GetMarketVelocityInput, GetMarketVelocityOutput> = {
-  id: 'market_velocity.get_velocity',
-  name: 'Get Market Velocity',
-  description: `Get the Market Velocity Index for a specific location. The velocity index
+const getMarketVelocityDefinition: ToolDefinition<GetMarketVelocityInput, GetMarketVelocityOutput> =
+  {
+    id: 'market_velocity.get_velocity',
+    name: 'Get Market Velocity',
+    description: `Get the Market Velocity Index for a specific location. The velocity index
     measures buyer demand intensity on a 0-100 scale. Higher scores mean properties sell
     faster and wholesalers can assign contracts more confidently. Use this when users ask
     about market heat, buyer demand, how fast things are selling, or whether an area is
     good for wholesaling.`,
-  category: 'market_analysis',
-  requiredPermission: 'read',
-  inputSchema: getMarketVelocityInput,
-  outputSchema: getMarketVelocityOutput,
-  requiresConfirmation: false,
-  estimatedDuration: 3000,
-  rateLimit: 30,
-  tags: ['velocity', 'market', 'demand', 'wholesaling', 'heat'],
-};
+    category: 'market_analysis',
+    requiredPermission: 'read',
+    inputSchema: getMarketVelocityInput,
+    outputSchema: getMarketVelocityOutput,
+    requiresConfirmation: false,
+    estimatedDuration: 3000,
+    rateLimit: 30,
+    tags: ['velocity', 'market', 'demand', 'wholesaling', 'heat'],
+  };
 
-const getMarketVelocityHandler: ToolHandler<GetMarketVelocityInput, GetMarketVelocityOutput> = async (input) => {
+const getMarketVelocityHandler: ToolHandler<
+  GetMarketVelocityInput,
+  GetMarketVelocityOutput
+> = async (input) => {
   console.log('[Market Velocity] Getting velocity for:', input);
 
   try {
@@ -119,7 +122,9 @@ const getMarketVelocityHandler: ToolHandler<GetMarketVelocityInput, GetMarketVel
 
 const findHotMarketsInput = z.object({
   state: z.string().optional().describe('Filter to specific state (2-letter code)'),
-  region: z.enum(['northeast', 'southeast', 'midwest', 'southwest', 'west']).optional()
+  region: z
+    .enum(['northeast', 'southeast', 'midwest', 'southwest', 'west'])
+    .optional()
     .describe('Filter to region'),
   minVelocity: z.number().default(70).describe('Minimum velocity score (default 70 = Hot)'),
   limit: z.number().default(20).describe('Number of results to return'),
@@ -128,13 +133,15 @@ const findHotMarketsInput = z.object({
 const findHotMarketsOutput = z.object({
   success: z.boolean(),
   count: z.number(),
-  markets: z.array(z.object({
-    zipCode: z.string(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-  })),
+  markets: z.array(
+    z.object({
+      zipCode: z.string(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+    })
+  ),
   summary: z.string(),
 });
 
@@ -158,7 +165,9 @@ const findHotMarketsDefinition: ToolDefinition<FindHotMarketsInput, FindHotMarke
   tags: ['velocity', 'hot', 'markets', 'demand', 'wholesaling'],
 };
 
-const findHotMarketsHandler: ToolHandler<FindHotMarketsInput, FindHotMarketsOutput> = async (input) => {
+const findHotMarketsHandler: ToolHandler<FindHotMarketsInput, FindHotMarketsOutput> = async (
+  input
+) => {
   console.log('[Market Velocity] Finding hot markets:', input);
 
   try {
@@ -200,13 +209,15 @@ const findColdMarketsInput = z.object({
 const findColdMarketsOutput = z.object({
   success: z.boolean(),
   count: z.number(),
-  markets: z.array(z.object({
-    zipCode: z.string(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-  })),
+  markets: z.array(
+    z.object({
+      zipCode: z.string(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+    })
+  ),
   warning: z.string(),
 });
 
@@ -229,7 +240,9 @@ const findColdMarketsDefinition: ToolDefinition<FindColdMarketsInput, FindColdMa
   tags: ['velocity', 'cold', 'markets', 'slow', 'avoid'],
 };
 
-const findColdMarketsHandler: ToolHandler<FindColdMarketsInput, FindColdMarketsOutput> = async (input) => {
+const findColdMarketsHandler: ToolHandler<FindColdMarketsInput, FindColdMarketsOutput> = async (
+  input
+) => {
   console.log('[Market Velocity] Finding cold markets:', input);
 
   try {
@@ -262,21 +275,29 @@ const findColdMarketsHandler: ToolHandler<FindColdMarketsInput, FindColdMarketsO
 // =============================================
 
 const compareMarketVelocityInput = z.object({
-  locations: z.array(z.object({
-    zipCode: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-  })).min(2).max(10).describe('List of locations to compare'),
+  locations: z
+    .array(
+      z.object({
+        zipCode: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+      })
+    )
+    .min(2)
+    .max(10)
+    .describe('List of locations to compare'),
 });
 
 const compareMarketVelocityOutput = z.object({
   success: z.boolean(),
-  rankings: z.array(z.object({
-    rank: z.number(),
-    location: z.string(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-  })),
+  rankings: z.array(
+    z.object({
+      rank: z.number(),
+      location: z.string(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+    })
+  ),
   winner: z.object({
     zipCode: z.string(),
     city: z.string().optional(),
@@ -289,7 +310,10 @@ const compareMarketVelocityOutput = z.object({
 type CompareMarketVelocityInput = z.infer<typeof compareMarketVelocityInput>;
 type CompareMarketVelocityOutput = z.infer<typeof compareMarketVelocityOutput>;
 
-const compareMarketVelocityDefinition: ToolDefinition<CompareMarketVelocityInput, CompareMarketVelocityOutput> = {
+const compareMarketVelocityDefinition: ToolDefinition<
+  CompareMarketVelocityInput,
+  CompareMarketVelocityOutput
+> = {
   id: 'market_velocity.compare_markets',
   name: 'Compare Market Velocity',
   description: `Compare market velocity between multiple locations. Use when users want
@@ -306,7 +330,10 @@ const compareMarketVelocityDefinition: ToolDefinition<CompareMarketVelocityInput
   tags: ['velocity', 'compare', 'markets', 'rank'],
 };
 
-const compareMarketVelocityHandler: ToolHandler<CompareMarketVelocityInput, CompareMarketVelocityOutput> = async (input) => {
+const compareMarketVelocityHandler: ToolHandler<
+  CompareMarketVelocityInput,
+  CompareMarketVelocityOutput
+> = async (input) => {
   console.log('[Market Velocity] Comparing markets:', input.locations);
 
   try {
@@ -387,7 +414,10 @@ const explainVelocityScoreOutput = z.object({
 type ExplainVelocityScoreInput = z.infer<typeof explainVelocityScoreInput>;
 type ExplainVelocityScoreOutput = z.infer<typeof explainVelocityScoreOutput>;
 
-const explainVelocityScoreDefinition: ToolDefinition<ExplainVelocityScoreInput, ExplainVelocityScoreOutput> = {
+const explainVelocityScoreDefinition: ToolDefinition<
+  ExplainVelocityScoreInput,
+  ExplainVelocityScoreOutput
+> = {
   id: 'market_velocity.explain_score',
   name: 'Explain Velocity Score',
   description: `Explain why a specific area has its velocity score. Breaks down the
@@ -403,7 +433,10 @@ const explainVelocityScoreDefinition: ToolDefinition<ExplainVelocityScoreInput, 
   tags: ['velocity', 'explain', 'breakdown', 'analysis'],
 };
 
-const explainVelocityScoreHandler: ToolHandler<ExplainVelocityScoreInput, ExplainVelocityScoreOutput> = async (input) => {
+const explainVelocityScoreHandler: ToolHandler<
+  ExplainVelocityScoreInput,
+  ExplainVelocityScoreOutput
+> = async (input) => {
   console.log('[Market Velocity] Explaining score for:', input);
 
   try {
@@ -480,15 +513,19 @@ const getVelocityTrendOutput = z.object({
   change: z.number(),
   trend: z.enum(['Rising', 'Stable', 'Falling']),
   trendStrength: z.enum(['Strong', 'Moderate', 'Weak']),
-  history: z.array(z.object({
-    date: z.string(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-  })),
-  forecast: z.object({
-    predictedVelocity: z.number(),
-    confidence: z.number(),
-  }).optional(),
+  history: z.array(
+    z.object({
+      date: z.string(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+    })
+  ),
+  forecast: z
+    .object({
+      predictedVelocity: z.number(),
+      confidence: z.number(),
+    })
+    .optional(),
 });
 
 type GetVelocityTrendInput = z.infer<typeof getVelocityTrendInput>;
@@ -510,7 +547,9 @@ const getVelocityTrendDefinition: ToolDefinition<GetVelocityTrendInput, GetVeloc
   tags: ['velocity', 'trend', 'history', 'forecast'],
 };
 
-const getVelocityTrendHandler: ToolHandler<GetVelocityTrendInput, GetVelocityTrendOutput> = async (input) => {
+const getVelocityTrendHandler: ToolHandler<GetVelocityTrendInput, GetVelocityTrendOutput> = async (
+  input
+) => {
   console.log('[Market Velocity] Getting trend for:', input.zipCode);
 
   try {
@@ -545,20 +584,25 @@ const getVelocityRankingsInput = z.object({
 
 const getVelocityRankingsOutput = z.object({
   success: z.boolean(),
-  rankings: z.array(z.object({
-    rank: z.number(),
-    zipCode: z.string(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-  })),
+  rankings: z.array(
+    z.object({
+      rank: z.number(),
+      zipCode: z.string(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+    })
+  ),
 });
 
 type GetVelocityRankingsInput = z.infer<typeof getVelocityRankingsInput>;
 type GetVelocityRankingsOutput = z.infer<typeof getVelocityRankingsOutput>;
 
-const getVelocityRankingsDefinition: ToolDefinition<GetVelocityRankingsInput, GetVelocityRankingsOutput> = {
+const getVelocityRankingsDefinition: ToolDefinition<
+  GetVelocityRankingsInput,
+  GetVelocityRankingsOutput
+> = {
   id: 'market_velocity.get_rankings',
   name: 'Get Velocity Rankings',
   description: `Get ranked list of markets by velocity. Use when users want to see
@@ -573,7 +617,10 @@ const getVelocityRankingsDefinition: ToolDefinition<GetVelocityRankingsInput, Ge
   tags: ['velocity', 'rankings', 'top', 'bottom'],
 };
 
-const getVelocityRankingsHandler: ToolHandler<GetVelocityRankingsInput, GetVelocityRankingsOutput> = async (input) => {
+const getVelocityRankingsHandler: ToolHandler<
+  GetVelocityRankingsInput,
+  GetVelocityRankingsOutput
+> = async (input) => {
   console.log('[Market Velocity] Getting rankings:', input);
 
   try {
@@ -609,20 +656,25 @@ const getVelocityForBoundsInput = z.object({
 
 const getVelocityForBoundsOutput = z.object({
   success: z.boolean(),
-  dataPoints: z.array(z.object({
-    zipCode: z.string(),
-    velocityIndex: z.number(),
-    classification: z.string(),
-    centerLat: z.number(),
-    centerLng: z.number(),
-  })),
+  dataPoints: z.array(
+    z.object({
+      zipCode: z.string(),
+      velocityIndex: z.number(),
+      classification: z.string(),
+      centerLat: z.number(),
+      centerLng: z.number(),
+    })
+  ),
   count: z.number(),
 });
 
 type GetVelocityForBoundsInput = z.infer<typeof getVelocityForBoundsInput>;
 type GetVelocityForBoundsOutput = z.infer<typeof getVelocityForBoundsOutput>;
 
-const getVelocityForBoundsDefinition: ToolDefinition<GetVelocityForBoundsInput, GetVelocityForBoundsOutput> = {
+const getVelocityForBoundsDefinition: ToolDefinition<
+  GetVelocityForBoundsInput,
+  GetVelocityForBoundsOutput
+> = {
   id: 'market_velocity.get_for_bounds',
   name: 'Get Velocity for Map Bounds',
   description: `Get velocity data for a geographic bounding box. Used internally for
@@ -637,7 +689,10 @@ const getVelocityForBoundsDefinition: ToolDefinition<GetVelocityForBoundsInput, 
   tags: ['velocity', 'bounds', 'heatmap', 'map'],
 };
 
-const getVelocityForBoundsHandler: ToolHandler<GetVelocityForBoundsInput, GetVelocityForBoundsOutput> = async (input) => {
+const getVelocityForBoundsHandler: ToolHandler<
+  GetVelocityForBoundsInput,
+  GetVelocityForBoundsOutput
+> = async (input) => {
   console.log('[Market Velocity] Getting velocity for bounds');
 
   try {

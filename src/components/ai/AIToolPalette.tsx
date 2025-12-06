@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 /**
@@ -15,92 +16,25 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  GitBranch,
-  Phone,
-  FileText,
-  Settings,
-  HelpCircle,
-  List,
   Zap,
   ChevronRight,
   ChevronDown,
   ArrowLeft,
   CornerDownLeft,
   Sparkles,
-  Home,
   Star,
-  Scale,
-  Mail,
-  Target,
-  UserCheck,
-  MapPin,
-  Bell,
-  Bookmark,
-  StickyNote,
-  Hammer,
-  Gauge,
-  GitCompare,
-  BarChart3,
-  FileSpreadsheet,
-  UserSearch,
-  Wrench,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
-import {
-  getSortedCategories,
-  getToolsByCategory,
-  searchTools,
-} from '@/lib/ai/tool-discovery';
+import { useToolPreferences } from '@/hooks/useToolPreferences';
+import { getSortedCategories, getToolsByCategory, searchTools } from '@/lib/ai/tool-discovery';
+import { renderIcon } from '@/lib/ai/icon-map';
 import type {
   DiscoveryCategory,
   DiscoveryToolDefinition,
   CategoryDefinition,
 } from '@/lib/ai/tool-discovery/types';
-
-// Icon mapping for dynamic icon rendering
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  GitBranch,
-  Phone,
-  FileText,
-  Settings,
-  HelpCircle,
-  List,
-  Zap,
-  Sparkles,
-  Home,
-  Star,
-  Scale,
-  Mail,
-  Target,
-  UserCheck,
-  MapPin,
-  Bell,
-  Bookmark,
-  StickyNote,
-  Hammer,
-  Gauge,
-  GitCompare,
-  BarChart3,
-  FileSpreadsheet,
-  UserSearch,
-  Wrench,
-};
-
-function getIcon(iconName: string): React.ComponentType<{ className?: string }> {
-  return iconMap[iconName] || Wrench;
-}
 
 interface AIToolPaletteProps {
   /** Whether the palette is open */
@@ -119,6 +53,8 @@ interface ToolListItemProps {
   onSelect: () => void;
   onExpand: () => void;
   showCategory?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 interface ToolDetailViewProps {
@@ -136,6 +72,8 @@ interface CategoryGroupProps {
   startIndex: number;
   onSelectTool: (tool: DiscoveryToolDefinition) => void;
   onExpandTool: (tool: DiscoveryToolDefinition) => void;
+  isFavorite: (toolSlug: string) => boolean;
+  onToggleFavorite: (toolSlug: string) => void;
 }
 
 function ToolListItem({
@@ -144,8 +82,9 @@ function ToolListItem({
   onSelect,
   onExpand,
   showCategory,
+  isFavorite,
+  onToggleFavorite,
 }: ToolListItemProps) {
-  const Icon = getIcon(tool.icon);
   const firstExample = tool.examples[0];
 
   return (
@@ -162,7 +101,7 @@ function ToolListItem({
           isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
         )}
       >
-        <Icon className="h-4 w-4" />
+        {renderIcon(tool.icon, 'h-4 w-4')}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -172,6 +111,7 @@ function ToolListItem({
               Popular
             </Badge>
           )}
+          {isFavorite && <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
         </div>
         <p className="text-xs text-muted-foreground truncate mt-0.5">
           &ldquo;{firstExample?.prompt}&rdquo;
@@ -180,18 +120,36 @@ function ToolListItem({
           <p className="text-[10px] text-muted-foreground/70 mt-1">{tool.category}</p>
         )}
       </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onExpand();
-        }}
-        className={cn(
-          'p-1 rounded hover:bg-muted flex-shrink-0',
-          isSelected && 'hover:bg-background/50'
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {onToggleFavorite && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite();
+            }}
+            className={cn('p-1 rounded hover:bg-muted', isSelected && 'hover:bg-background/50')}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={cn(
+                'h-3.5 w-3.5 transition-colors',
+                isFavorite
+                  ? 'fill-yellow-400 text-yellow-400'
+                  : 'text-muted-foreground hover:text-yellow-400'
+              )}
+            />
+          </button>
         )}
-      >
-        <ChevronRight className="h-4 w-4 text-muted-foreground" />
-      </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onExpand();
+          }}
+          className={cn('p-1 rounded hover:bg-muted', isSelected && 'hover:bg-background/50')}
+        >
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
     </button>
   );
 }
@@ -205,9 +163,9 @@ function CategoryGroup({
   startIndex,
   onSelectTool,
   onExpandTool,
+  isFavorite,
+  onToggleFavorite,
 }: CategoryGroupProps) {
-  const Icon = getIcon(category.icon);
-
   if (tools.length === 0) return null;
 
   return (
@@ -216,7 +174,7 @@ function CategoryGroup({
         onClick={onToggle}
         className="w-full flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide hover:text-foreground transition-colors"
       >
-        <Icon className="h-3.5 w-3.5" />
+        {renderIcon(category.icon, 'h-3.5 w-3.5')}
         <span className="flex-1 text-left">{category.displayName}</span>
         <Badge variant="outline" className="text-[10px] px-1">
           {tools.length}
@@ -237,6 +195,8 @@ function CategoryGroup({
               isSelected={selectedIndex === startIndex + idx}
               onSelect={() => onSelectTool(tool)}
               onExpand={() => onExpandTool(tool)}
+              isFavorite={isFavorite(tool.slug)}
+              onToggleFavorite={() => onToggleFavorite(tool.slug)}
             />
           ))}
         </div>
@@ -246,8 +206,6 @@ function CategoryGroup({
 }
 
 function ToolDetailView({ tool, onBack, onInsertExample }: ToolDetailViewProps) {
-  const Icon = getIcon(tool.icon);
-
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -263,7 +221,7 @@ function ToolDetailView({ tool, onBack, onInsertExample }: ToolDetailViewProps) 
           {/* Tool Header */}
           <div className="flex items-start gap-3 mb-4">
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Icon className="h-6 w-6 text-primary" />
+              {renderIcon(tool.icon, 'h-6 w-6 text-primary')}
             </div>
             <div>
               <h2 className="font-semibold text-lg">{tool.displayName}</h2>
@@ -290,9 +248,7 @@ function ToolDetailView({ tool, onBack, onInsertExample }: ToolDetailViewProps) 
                     <div className="flex-1">
                       <p className="text-sm font-mono">&ldquo;{example.prompt}&rdquo;</p>
                       {example.description && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {example.description}
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">{example.description}</p>
                       )}
                     </div>
                     <Button
@@ -349,6 +305,9 @@ export function AIToolPalette({
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Tool preferences
+  const preferences = useToolPreferences();
+
   const debouncedQuery = useDebounce(query, 100);
 
   // Get categories and tools
@@ -357,6 +316,32 @@ export function AIToolPalette({
     () => (debouncedQuery.trim() ? searchTools(debouncedQuery) : []),
     [debouncedQuery]
   );
+
+  // Helper to get tool by slug
+  const getToolBySlug = useCallback(
+    (slug: string): DiscoveryToolDefinition | null => {
+      for (const category of categories) {
+        const tools = getToolsByCategory(category.id);
+        const tool = tools.find((t) => t.slug === slug);
+        if (tool) return tool;
+      }
+      return null;
+    },
+    [categories]
+  );
+
+  // Get favorite and recent tools
+  const favoriteTools = useMemo(() => {
+    return preferences.favorites
+      .map((fav) => getToolBySlug(fav.tool_slug))
+      .filter((tool): tool is DiscoveryToolDefinition => tool !== null);
+  }, [preferences.favorites, getToolBySlug]);
+
+  const recentTools = useMemo(() => {
+    return preferences.recentTools
+      .map((recent) => getToolBySlug(recent.tool_slug))
+      .filter((tool): tool is DiscoveryToolDefinition => tool !== null);
+  }, [preferences.recentTools, getToolBySlug]);
 
   // Calculate flat list for keyboard navigation
   const flatTools = useMemo(() => {
@@ -387,6 +372,20 @@ export function AIToolPalette({
   useEffect(() => {
     setSelectedIndex(0);
   }, [flatTools.length]);
+
+  // Handle tool selection
+  const handleSelectTool = useCallback(
+    (tool: DiscoveryToolDefinition) => {
+      const firstExample = tool.examples[0];
+      if (firstExample) {
+        // Track tool usage
+        preferences.trackToolUsage(tool.slug);
+        onInsertPrompt(firstExample.prompt);
+        onClose();
+      }
+    },
+    [onInsertPrompt, onClose, preferences]
+  );
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback(
@@ -428,18 +427,14 @@ export function AIToolPalette({
           break;
       }
     },
-    [expandedTool, flatTools, selectedIndex, onClose]
+    [expandedTool, flatTools, selectedIndex, onClose, handleSelectTool]
   );
 
-  const handleSelectTool = useCallback(
-    (tool: DiscoveryToolDefinition) => {
-      const firstExample = tool.examples[0];
-      if (firstExample) {
-        onInsertPrompt(firstExample.prompt);
-        onClose();
-      }
+  const handleToggleFavorite = useCallback(
+    (toolSlug: string) => {
+      preferences.toggleFavorite(toolSlug);
     },
-    [onInsertPrompt, onClose]
+    [preferences]
   );
 
   const handleInsertExample = useCallback(
@@ -468,7 +463,7 @@ export function AIToolPalette({
       let index = 0;
       for (let i = 0; i < categoryIndex; i++) {
         const cat = categories[i];
-        if (expandedCategories.has(cat.id)) {
+        if (cat && expandedCategories.has(cat.id)) {
           index += getToolsByCategory(cat.id).length;
         }
       }
@@ -531,6 +526,8 @@ export function AIToolPalette({
                             onSelect={() => handleSelectTool(tool)}
                             onExpand={() => setExpandedTool(tool)}
                             showCategory
+                            isFavorite={preferences.isFavorite(tool.slug)}
+                            onToggleFavorite={() => handleToggleFavorite(tool.slug)}
                           />
                         ))}
                       </div>
@@ -539,6 +536,59 @@ export function AIToolPalette({
                 ) : (
                   // Category Browse
                   <>
+                    {/* Favorites Section */}
+                    {favoriteTools.length > 0 && (
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                          <span className="flex-1 text-left">Favorites</span>
+                          <Badge variant="outline" className="text-[10px] px-1">
+                            {favoriteTools.length}
+                          </Badge>
+                        </div>
+                        <div className="space-y-0.5 mt-1">
+                          {favoriteTools.map((tool) => (
+                            <ToolListItem
+                              key={tool.slug}
+                              tool={tool}
+                              isSelected={false}
+                              onSelect={() => handleSelectTool(tool)}
+                              onExpand={() => setExpandedTool(tool)}
+                              isFavorite={true}
+                              onToggleFavorite={() => handleToggleFavorite(tool.slug)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Recent Tools Section */}
+                    {recentTools.length > 0 && (
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          <Clock className="h-3.5 w-3.5" />
+                          <span className="flex-1 text-left">Recently Used</span>
+                          <Badge variant="outline" className="text-[10px] px-1">
+                            {recentTools.length}
+                          </Badge>
+                        </div>
+                        <div className="space-y-0.5 mt-1">
+                          {recentTools.map((tool) => (
+                            <ToolListItem
+                              key={tool.slug}
+                              tool={tool}
+                              isSelected={false}
+                              onSelect={() => handleSelectTool(tool)}
+                              onExpand={() => setExpandedTool(tool)}
+                              isFavorite={preferences.isFavorite(tool.slug)}
+                              onToggleFavorite={() => handleToggleFavorite(tool.slug)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Categories */}
                     {categories.map((category, catIdx) => {
                       const tools = getToolsByCategory(category.id);
                       return (
@@ -552,6 +602,8 @@ export function AIToolPalette({
                           startIndex={getCategoryStartIndex(catIdx)}
                           onSelectTool={handleSelectTool}
                           onExpandTool={setExpandedTool}
+                          isFavorite={preferences.isFavorite}
+                          onToggleFavorite={handleToggleFavorite}
                         />
                       );
                     })}

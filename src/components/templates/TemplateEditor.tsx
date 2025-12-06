@@ -90,26 +90,32 @@ export function TemplateEditor({ template, onSave, onCancel, className }: Templa
   }, [bodyTemplate, subjectTemplate]);
 
   // Sample data for preview
-  const sampleData: Record<string, string> = {
-    owner_name: 'John Smith',
-    property_address: '123 Main St',
-    property_city: 'Austin',
-    property_state: 'TX',
-    offer_amount: '$150,000',
-    buyer_name: 'Jane Investor',
-    deal_arv: '$250,000',
-    deal_profit: '$35,000',
-    user_name: 'Your Name',
-    user_phone: '(555) 123-4567',
-    user_company: 'Your Company',
-  };
+  const sampleData = useMemo(
+    () => ({
+      owner_name: 'John Smith',
+      property_address: '123 Main St',
+      property_city: 'Austin',
+      property_state: 'TX',
+      offer_amount: '$150,000',
+      buyer_name: 'Jane Investor',
+      deal_arv: '$250,000',
+      deal_profit: '$35,000',
+      user_name: 'Your Name',
+      user_phone: '(555) 123-4567',
+      user_company: 'Your Company',
+    }),
+    []
+  );
 
   // Render preview with sample data
-  const renderPreview = useCallback((text: string) => {
-    return text.replace(/\{\{(\w+)\}\}/g, (_, varName) => {
-      return sampleData[varName] || `{{${varName}}}`;
-    });
-  }, []);
+  const renderPreview = useCallback(
+    (text: string) => {
+      return text.replace(/\{\{(\w+)\}\}/g, (_, varName) => {
+        return sampleData[varName] || `{{${varName}}}`;
+      });
+    },
+    [sampleData]
+  );
 
   const insertVariable = (varName: string) => {
     const insertion = `{{${varName}}}`;

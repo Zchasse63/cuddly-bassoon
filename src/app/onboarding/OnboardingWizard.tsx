@@ -87,7 +87,7 @@ export function OnboardingWizard({ initialData }: OnboardingWizardProps) {
       if (!response.ok) throw new Error('Failed to save profile');
       toast({ title: 'Welcome!', description: 'Your account is ready to use.' });
       router.push('/dashboard');
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
         description: 'Failed to complete onboarding',

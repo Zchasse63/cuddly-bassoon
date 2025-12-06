@@ -35,7 +35,10 @@ const performanceSummaryOutput = z.object({
 type PerformanceSummaryInput = z.infer<typeof performanceSummaryInput>;
 type PerformanceSummaryOutput = z.infer<typeof performanceSummaryOutput>;
 
-const performanceSummaryDefinition: ToolDefinition<PerformanceSummaryInput, PerformanceSummaryOutput> = {
+const performanceSummaryDefinition: ToolDefinition<
+  PerformanceSummaryInput,
+  PerformanceSummaryOutput
+> = {
   id: 'portfolio.performance_summary',
   name: 'Portfolio Performance Summary',
   description: 'Get a comprehensive summary of portfolio performance from actual deal data.',
@@ -49,7 +52,10 @@ const performanceSummaryDefinition: ToolDefinition<PerformanceSummaryInput, Perf
   tags: ['portfolio', 'performance', 'summary', 'analytics'],
 };
 
-const performanceSummaryHandler: ToolHandler<PerformanceSummaryInput, PerformanceSummaryOutput> = async (input) => {
+const performanceSummaryHandler: ToolHandler<
+  PerformanceSummaryInput,
+  PerformanceSummaryOutput
+> = async (input) => {
   console.log('[Portfolio] Performance summary:', input.timeframe);
 
   const supabase = await createClient();
@@ -77,10 +83,12 @@ const performanceSummaryHandler: ToolHandler<PerformanceSummaryInput, Performanc
   }
 
   try {
-    // Query deals from database
+    // Query deals from database - use actual columns that exist
     const { data: deals, error } = await supabase
       .from('deals')
-      .select('id, status, close_date, profit, roi, days_in_pipeline, city, state, assignment_fee, purchase_price')
+      .select(
+        'id, status, stage, assignment_fee, offer_price, contract_price, property_address, created_at, updated_at'
+      )
       .gte('created_at', fromDate.toISOString());
 
     if (error) {
@@ -109,10 +117,13 @@ const performanceSummaryHandler: ToolHandler<PerformanceSummaryInput, Performanc
     }
 
     const totalDeals = deals.length;
-    const closedDeals = deals.filter(d => d.status === 'closed' || d.status === 'won').length;
+    // Check both status='completed' and stage='closed'
+    const closedDeals = deals.filter(
+      (d) => d.status === 'completed' || d.stage === 'closed'
+    ).length;
 
     // Calculate metrics from closed deals
-    const closedDealData = deals.filter(d => d.status === 'closed' || d.status === 'won');
+    const closedDealData = deals.filter((d) => d.status === 'completed' || d.stage === 'closed');
 
     let totalRevenue = 0;
     let totalProfit = 0;
@@ -121,31 +132,40 @@ const performanceSummaryHandler: ToolHandler<PerformanceSummaryInput, Performanc
     let daysSum = 0;
     let daysCount = 0;
 
-    // Track profit by market
+    // Track profit by market (extract city/state from address)
     const marketProfits: Record<string, number> = {};
 
     for (const deal of closedDealData) {
-      // Revenue = assignment fee or profit
-      const revenue = deal.assignment_fee || deal.profit || 0;
+      // Revenue = assignment fee
+      const revenue = deal.assignment_fee || 0;
       totalRevenue += revenue;
 
-      if (deal.profit) {
-        totalProfit += deal.profit;
-      }
+      // Profit is the assignment fee (in wholesale, assignment fee IS the profit)
+      const profit = deal.assignment_fee || 0;
+      totalProfit += profit;
 
-      if (deal.roi) {
-        roiSum += deal.roi;
+      // Calculate ROI if we have offer_price (investment)
+      if (deal.offer_price && profit > 0) {
+        const roi = (profit / deal.offer_price) * 100;
+        roiSum += roi;
         roiCount++;
       }
 
-      if (deal.days_in_pipeline) {
-        daysSum += deal.days_in_pipeline;
-        daysCount++;
+      // Calculate days in pipeline from created_at to updated_at
+      if (deal.created_at && deal.updated_at) {
+        const days = Math.floor(
+          (new Date(deal.updated_at).getTime() - new Date(deal.created_at).getTime()) /
+            (24 * 60 * 60 * 1000)
+        );
+        if (days >= 0) {
+          daysSum += days;
+          daysCount++;
+        }
       }
 
-      // Track by market
-      const market = deal.city && deal.state ? `${deal.city}, ${deal.state}` : 'Unknown';
-      marketProfits[market] = (marketProfits[market] || 0) + (deal.profit || 0);
+      // Extract market from address (simplified: just use "Unknown" for now)
+      const market = 'Unknown';
+      marketProfits[market] = (marketProfits[market] || 0) + profit;
     }
 
     const avgRoi = roiCount > 0 ? Math.round((roiSum / roiCount) * 100) / 100 : 0;
@@ -205,14 +225,16 @@ const roiByStrategyInput = z.object({
 });
 
 const roiByStrategyOutput = z.object({
-  strategies: z.array(z.object({
-    name: z.string(),
-    dealCount: z.number(),
-    avgRoi: z.number(),
-    totalProfit: z.number(),
-    avgHoldTime: z.number(),
-    successRate: z.number(),
-  })),
+  strategies: z.array(
+    z.object({
+      name: z.string(),
+      dealCount: z.number(),
+      avgRoi: z.number(),
+      totalProfit: z.number(),
+      avgHoldTime: z.number(),
+      successRate: z.number(),
+    })
+  ),
   bestStrategy: z.object({ name: z.string(), reason: z.string() }).optional(),
   dataAvailable: z.boolean(),
 });
@@ -234,7 +256,9 @@ const roiByStrategyDefinition: ToolDefinition<RoiByStrategyInput, RoiByStrategyO
   tags: ['portfolio', 'roi', 'strategy', 'analytics'],
 };
 
-const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput> = async (input) => {
+const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput> = async (
+  input
+) => {
   console.log('[Portfolio] ROI by strategy:', input.timeframe);
 
   const supabase = await createClient();
@@ -264,7 +288,7 @@ const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput>
   try {
     const { data: deals, error } = await supabase
       .from('deals')
-      .select('id, status, deal_type, profit, roi, days_in_pipeline')
+      .select('id, status, stage, assignment_fee, offer_price, created_at, updated_at')
       .gte('created_at', fromDate.toISOString());
 
     if (error || !deals || deals.length === 0) {
@@ -274,19 +298,23 @@ const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput>
       };
     }
 
-    // Group by strategy/deal_type
-    const strategyData: Record<string, {
-      deals: number;
-      closed: number;
-      roiSum: number;
-      roiCount: number;
-      profitSum: number;
-      holdTimeSum: number;
-      holdTimeCount: number;
-    }> = {};
+    // Group by stage (use as strategy proxy)
+    const strategyData: Record<
+      string,
+      {
+        deals: number;
+        closed: number;
+        roiSum: number;
+        roiCount: number;
+        profitSum: number;
+        holdTimeSum: number;
+        holdTimeCount: number;
+      }
+    > = {};
 
     for (const deal of deals) {
-      const strategy = deal.deal_type || 'Unknown';
+      // Use stage as a strategy proxy (wholesale is the main strategy)
+      const strategy = 'Wholesale'; // Default strategy since we don't have deal_type
 
       if (!strategyData[strategy]) {
         strategyData[strategy] = {
@@ -303,16 +331,24 @@ const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput>
       const data = strategyData[strategy]!;
       data.deals++;
 
-      if (deal.status === 'closed' || deal.status === 'won') {
+      if (deal.status === 'completed' || deal.stage === 'closed') {
         data.closed++;
-        if (deal.profit) data.profitSum += deal.profit;
-        if (deal.roi) {
-          data.roiSum += deal.roi;
+        const profit = deal.assignment_fee || 0;
+        if (profit) data.profitSum += profit;
+        if (deal.offer_price && profit > 0) {
+          const roi = (profit / deal.offer_price) * 100;
+          data.roiSum += roi;
           data.roiCount++;
         }
-        if (deal.days_in_pipeline) {
-          data.holdTimeSum += deal.days_in_pipeline;
-          data.holdTimeCount++;
+        if (deal.created_at && deal.updated_at) {
+          const days = Math.floor(
+            (new Date(deal.updated_at).getTime() - new Date(deal.created_at).getTime()) /
+              (24 * 60 * 60 * 1000)
+          );
+          if (days >= 0) {
+            data.holdTimeSum += days;
+            data.holdTimeCount++;
+          }
         }
       }
     }
@@ -329,12 +365,13 @@ const roiByStrategyHandler: ToolHandler<RoiByStrategyInput, RoiByStrategyOutput>
 
     // Sort by ROI to find best strategy
     const sortedByRoi = [...strategies].sort((a, b) => b.avgRoi - a.avgRoi);
-    const bestStrategy = sortedByRoi[0] && sortedByRoi[0].dealCount >= 2
-      ? {
-          name: sortedByRoi[0].name,
-          reason: `Highest average ROI (${sortedByRoi[0].avgRoi}%) with ${sortedByRoi[0].successRate}% success rate`,
-        }
-      : undefined;
+    const bestStrategy =
+      sortedByRoi[0] && sortedByRoi[0].dealCount >= 2
+        ? {
+            name: sortedByRoi[0].name,
+            reason: `Highest average ROI (${sortedByRoi[0].avgRoi}%) with ${sortedByRoi[0].successRate}% success rate`,
+          }
+        : undefined;
 
     return {
       strategies,
@@ -359,14 +396,16 @@ const geographicConcentrationInput = z.object({
 });
 
 const geographicConcentrationOutput = z.object({
-  locations: z.array(z.object({
-    name: z.string(),
-    dealCount: z.number(),
-    totalInvested: z.number(),
-    totalProfit: z.number(),
-    avgRoi: z.number(),
-    riskScore: z.number(),
-  })),
+  locations: z.array(
+    z.object({
+      name: z.string(),
+      dealCount: z.number(),
+      totalInvested: z.number(),
+      totalProfit: z.number(),
+      avgRoi: z.number(),
+      riskScore: z.number(),
+    })
+  ),
   diversificationScore: z.number(),
   recommendation: z.string(),
   dataAvailable: z.boolean(),
@@ -375,7 +414,10 @@ const geographicConcentrationOutput = z.object({
 type GeographicConcentrationInput = z.infer<typeof geographicConcentrationInput>;
 type GeographicConcentrationOutput = z.infer<typeof geographicConcentrationOutput>;
 
-const geographicConcentrationDefinition: ToolDefinition<GeographicConcentrationInput, GeographicConcentrationOutput> = {
+const geographicConcentrationDefinition: ToolDefinition<
+  GeographicConcentrationInput,
+  GeographicConcentrationOutput
+> = {
   id: 'portfolio.geographic_concentration',
   name: 'Geographic Concentration Analysis',
   description: 'Analyze portfolio geographic concentration and diversification from actual data.',
@@ -389,7 +431,10 @@ const geographicConcentrationDefinition: ToolDefinition<GeographicConcentrationI
   tags: ['portfolio', 'geographic', 'diversification', 'risk'],
 };
 
-const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, GeographicConcentrationOutput> = async (input) => {
+const geographicConcentrationHandler: ToolHandler<
+  GeographicConcentrationInput,
+  GeographicConcentrationOutput
+> = async (input) => {
   console.log('[Portfolio] Geographic concentration by:', input.groupBy);
 
   const supabase = await createClient();
@@ -397,39 +442,56 @@ const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, 
   try {
     const { data: deals, error } = await supabase
       .from('deals')
-      .select('id, city, state, zip_code, purchase_price, profit, roi, status');
+      .select('id, property_address, offer_price, assignment_fee, status, stage');
 
     if (error || !deals || deals.length === 0) {
       return {
         locations: [],
         diversificationScore: 0,
-        recommendation: 'No deal data available. Start tracking deals to analyze geographic concentration.',
+        recommendation:
+          'No deal data available. Start tracking deals to analyze geographic concentration.',
         dataAvailable: !!deals,
       };
     }
 
-    // Group by location
-    const locationData: Record<string, {
-      dealCount: number;
-      totalInvested: number;
-      totalProfit: number;
-      roiSum: number;
-      roiCount: number;
-    }> = {};
+    // Group by location (extract from property_address)
+    const locationData: Record<
+      string,
+      {
+        dealCount: number;
+        totalInvested: number;
+        totalProfit: number;
+        roiSum: number;
+        roiCount: number;
+      }
+    > = {};
 
     for (const deal of deals) {
-      let locationKey: string;
+      // Try to extract location from property_address
+      // Address format is typically: "123 Main St, City, ST 12345"
+      let locationKey = 'Unknown';
+      if (deal.property_address) {
+        const parts = deal.property_address.split(',').map((p) => p.trim());
+        if (parts.length >= 2) {
+          // Try to extract state from last part (e.g., "ST 12345" -> "ST")
+          const lastPart = parts[parts.length - 1] || '';
+          const stateMatch = lastPart.match(/([A-Z]{2})\s*\d*/);
+          const state = stateMatch ? stateMatch[1] : '';
+          const city = parts.length >= 3 ? parts[parts.length - 2] : parts[1];
 
-      switch (input.groupBy) {
-        case 'state':
-          locationKey = deal.state || 'Unknown';
-          break;
-        case 'zip':
-          locationKey = deal.zip_code || 'Unknown';
-          break;
-        case 'city':
-        default:
-          locationKey = deal.city && deal.state ? `${deal.city}, ${deal.state}` : 'Unknown';
+          switch (input.groupBy) {
+            case 'state':
+              locationKey = state || 'Unknown';
+              break;
+            case 'zip':
+              const zipMatch = lastPart.match(/\d{5}/);
+              locationKey = zipMatch ? zipMatch[0] : 'Unknown';
+              break;
+            case 'city':
+            default:
+              locationKey = city && state ? `${city}, ${state}` : city || 'Unknown';
+          }
+        }
       }
 
       if (!locationData[locationKey]) {
@@ -445,16 +507,18 @@ const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, 
       const data = locationData[locationKey]!;
       data.dealCount++;
 
-      if (deal.purchase_price) {
-        data.totalInvested += deal.purchase_price;
+      if (deal.offer_price) {
+        data.totalInvested += deal.offer_price;
       }
 
-      if (deal.profit && (deal.status === 'closed' || deal.status === 'won')) {
-        data.totalProfit += deal.profit;
+      const profit = deal.assignment_fee || 0;
+      if (profit && (deal.status === 'completed' || deal.stage === 'closed')) {
+        data.totalProfit += profit;
       }
 
-      if (deal.roi) {
-        data.roiSum += deal.roi;
+      if (deal.offer_price && profit > 0) {
+        const roi = (profit / deal.offer_price) * 100;
+        data.roiSum += roi;
         data.roiCount++;
       }
     }
@@ -484,7 +548,7 @@ const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, 
     const uniqueLocations = Object.keys(locationData).length;
     const concentrationIndex = Object.values(locationData).reduce((sum, data) => {
       const share = data.dealCount / totalDeals;
-      return sum + (share * share);
+      return sum + share * share;
     }, 0);
 
     // Diversification = 1 - HHI, scaled to 0-100
@@ -493,13 +557,16 @@ const geographicConcentrationHandler: ToolHandler<GeographicConcentrationInput, 
     // Generate recommendation
     let recommendation: string;
     if (diversificationScore >= 70) {
-      recommendation = 'Well-diversified portfolio across multiple markets. Continue balanced approach.';
+      recommendation =
+        'Well-diversified portfolio across multiple markets. Continue balanced approach.';
     } else if (diversificationScore >= 40) {
       recommendation = `Moderate concentration. Consider expanding to ${Math.max(1, 3 - uniqueLocations)} additional markets.`;
     } else if (diversificationScore >= 20) {
-      recommendation = 'High geographic concentration increases market-specific risk. Strongly recommend diversification.';
+      recommendation =
+        'High geographic concentration increases market-specific risk. Strongly recommend diversification.';
     } else {
-      recommendation = 'Portfolio highly concentrated in a single market. Diversification critical for risk management.';
+      recommendation =
+        'Portfolio highly concentrated in a single market. Diversification critical for risk management.';
     }
 
     return {

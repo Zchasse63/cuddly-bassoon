@@ -8,8 +8,9 @@
  */
 
 import { getRentCastClient } from '@/lib/rentcast';
-import { getPermitsForAddress, searchAddresses, getCityMetrics } from '@/lib/shovels/client';
+import { getPermitsForAddress, searchAddresses } from '@/lib/shovels/client';
 import { createClient } from '@/lib/supabase/server';
+import type { Json } from '@/lib/supabase/database.types';
 import type { RawPropertySignals } from './types';
 
 /**
@@ -82,11 +83,11 @@ export async function fetchPropertySignals(
         .single();
 
       if (shovelsData) {
-        resolvedAddress = shovelsData.formatted_address;
+        resolvedAddress = shovelsData.formatted_address || undefined;
         resolvedZipCode = shovelsData.zip_code || resolvedZipCode;
         sourcesUsed.supabase = true;
       }
-    } catch (e) {
+    } catch {
       errors.push({ source: 'supabase', error: 'Failed to resolve address from propertyId' });
     }
   }
@@ -108,7 +109,11 @@ export async function fetchPropertySignals(
   // Fetch from Shovels
   if (sourcesToFetch.shovels && resolvedAddress) {
     try {
-      const shovelsSignals = await fetchShovelsSignals(resolvedAddress, options.city, options.state);
+      const shovelsSignals = await fetchShovelsSignals(
+        resolvedAddress,
+        options.city,
+        options.state
+      );
       Object.assign(signals, shovelsSignals);
       sourcesUsed.shovels = true;
     } catch (e) {
@@ -157,33 +162,33 @@ async function fetchRentCastSignals(
     const property = properties[0];
 
     if (property) {
-      // Owner signals
-      signals.ownerName = property.owner?.name;
-      signals.ownerType = property.owner?.ownerType;
-      signals.ownerOccupied = property.ownerOccupied;
-      signals.ownerMailingAddress = property.owner?.address?.address;
-      signals.ownerMailingCity = property.owner?.address?.city;
-      signals.ownerMailingState = property.owner?.address?.state;
-      signals.ownerMailingZip = property.owner?.address?.zipCode;
+      // Owner signals - names is an array, use first name
+      signals.ownerName = property.owner?.names?.[0] || undefined;
+      signals.ownerType = property.owner?.ownerType || undefined;
+      signals.ownerOccupied = property.ownerOccupied ?? undefined;
+      signals.ownerMailingAddress = property.owner?.mailingAddress?.addressLine1 || undefined;
+      signals.ownerMailingCity = property.owner?.mailingAddress?.city || undefined;
+      signals.ownerMailingState = property.owner?.mailingAddress?.state || undefined;
+      signals.ownerMailingZip = property.owner?.mailingAddress?.zipCode || undefined;
 
       // Sale history
-      signals.lastSaleDate = property.lastSaleDate;
-      signals.lastSalePrice = property.lastSalePrice;
+      signals.lastSaleDate = property.lastSaleDate || undefined;
+      signals.lastSalePrice = property.lastSalePrice ?? undefined;
 
       // Property characteristics
-      signals.propertyType = property.propertyType;
-      signals.bedrooms = property.bedrooms;
-      signals.bathrooms = property.bathrooms;
-      signals.squareFootage = property.squareFootage;
-      signals.yearBuilt = property.yearBuilt;
-      signals.lotSize = property.lotSize;
+      signals.propertyType = property.propertyType || undefined;
+      signals.bedrooms = property.bedrooms ?? undefined;
+      signals.bathrooms = property.bathrooms ?? undefined;
+      signals.squareFootage = property.squareFootage ?? undefined;
+      signals.yearBuilt = property.yearBuilt ?? undefined;
+      signals.lotSize = property.lotSize ?? undefined;
 
-      // Value estimate
-      signals.estimatedValue = property.price || property.estimatedValue;
-      signals.assessedValue = property.assessedValue;
+      // Value estimate - use taxAssessment values from RentCast
+      signals.estimatedValue = property.taxAssessment?.marketValue ?? undefined;
+      signals.assessedValue = property.taxAssessment?.assessedValue ?? undefined;
 
       // Use property's zip if not provided
-      zipCode = zipCode || property.zipCode;
+      zipCode = zipCode || property.zipCode || undefined;
     }
   } catch (e) {
     console.warn('[SignalFetcher] Property fetch error:', e);
@@ -195,7 +200,7 @@ async function fetchRentCastSignals(
     if (valuation.price) {
       signals.estimatedValue = valuation.price;
     }
-  } catch (e) {
+  } catch {
     // Valuation is optional, don't fail
   }
 
@@ -203,11 +208,11 @@ async function fetchRentCastSignals(
   if (zipCode) {
     try {
       const marketData = await rentcast.getMarketData(zipCode);
-      signals.daysOnMarket = marketData.daysOnMarket;
-      signals.saleToListRatio = marketData.saleToListRatio;
-      signals.inventory = marketData.inventory;
-      signals.medianPrice = marketData.medianPrice;
-      signals.priceChangeYoY = marketData.priceChange;
+      signals.daysOnMarket = marketData.daysOnMarket ?? undefined;
+      signals.saleToListRatio = marketData.saleToListRatio ?? undefined;
+      signals.inventory = marketData.inventory ?? undefined;
+      signals.medianPrice = marketData.medianSalePrice ?? undefined;
+      signals.priceChangeYoY = marketData.yearOverYearChange ?? undefined;
     } catch (e) {
       console.warn('[SignalFetcher] Market data error:', e);
     }
@@ -221,19 +226,20 @@ async function fetchRentCastSignals(
  */
 async function fetchShovelsSignals(
   address: string,
-  city?: string,
-  state?: string
+  _city?: string,
+  _state?: string
 ): Promise<Partial<RawPropertySignals>> {
   const signals: Partial<RawPropertySignals> = {};
 
   try {
     // Find address ID
     const addresses = await searchAddresses(address);
-    if (addresses.length === 0) {
+    const firstAddress = addresses[0];
+    if (!firstAddress) {
       return signals;
     }
 
-    const addressId = addresses[0].address_id;
+    const addressId = firstAddress.address_id;
 
     // Get permits from last 3 years
     const threeYearsAgo = new Date();
@@ -244,23 +250,16 @@ async function fetchShovelsSignals(
     });
 
     if (permits.length > 0) {
-      signals.recentPermits = permits.map(p => ({
-        type: p.type || 'unknown',
+      signals.recentPermits = permits.map((p) => ({
+        type: p.tags?.[0] || 'unknown', // Use first tag as type
         status: (p.status as 'active' | 'final' | 'inactive' | 'in_review') || 'active',
         filedDate: p.issue_date,
         tags: p.tags,
       }));
     }
 
-    // Get city metrics if we have city/state
-    if (city && state) {
-      try {
-        const metrics = await getCityMetrics(city, state);
-        // Add any relevant city-level metrics here
-      } catch (e) {
-        // City metrics are optional
-      }
-    }
+    // Note: City metrics from getCityMetrics could be added here when
+    // RawPropertySignals type is extended to support them
   } catch (e) {
     console.warn('[SignalFetcher] Shovels error:', e);
   }
@@ -270,66 +269,24 @@ async function fetchShovelsSignals(
 
 /**
  * Fetch distress indicators from Supabase
+ *
+ * Note: Distress columns (pre_foreclosure, tax_delinquent, vacant, code_liens)
+ * would need to be added to the properties table or a separate distress_indicators
+ * table before this functionality can be enabled.
  */
 async function fetchDistressSignals(
-  propertyId?: string,
-  address?: string
+  _propertyId?: string,
+  _address?: string
 ): Promise<Partial<RawPropertySignals>> {
-  const signals: Partial<RawPropertySignals> = {};
-  const supabase = await createClient();
-
-  // Try to get property from various tables
-
-  // Check for pre-foreclosure indicators
-  if (propertyId) {
-    try {
-      const { data: propertyData } = await supabase
-        .from('properties')
-        .select('pre_foreclosure, tax_delinquent, vacant, code_liens')
-        .eq('id', propertyId)
-        .single();
-
-      if (propertyData) {
-        signals.preForeclosure = propertyData.pre_foreclosure || false;
-        signals.taxDelinquent = propertyData.tax_delinquent || false;
-        signals.vacantIndicator = propertyData.vacant || false;
-        signals.codeLiens = propertyData.code_liens || 0;
-      }
-    } catch (e) {
-      // Table might not exist or property not found
-    }
-  }
-
-  // Check for address-based distress data
-  if (address) {
-    try {
-      const { data: distressData } = await supabase
-        .from('distress_indicators')
-        .select('*')
-        .ilike('address', `%${address}%`)
-        .limit(1)
-        .single();
-
-      if (distressData) {
-        signals.preForeclosure = distressData.pre_foreclosure || signals.preForeclosure;
-        signals.taxDelinquent = distressData.tax_delinquent || signals.taxDelinquent;
-        signals.vacantIndicator = distressData.vacant || signals.vacantIndicator;
-        signals.codeLiens = distressData.code_liens || signals.codeLiens;
-      }
-    } catch (e) {
-      // Table might not exist or address not found
-    }
-  }
-
-  return signals;
+  // TODO: Enable when distress_indicators table or columns are available
+  // Currently the properties table doesn't have these columns
+  return {};
 }
 
 /**
  * Check cached signals before fetching
  */
-export async function getCachedSignals(
-  propertyId: string
-): Promise<RawPropertySignals | null> {
+export async function getCachedSignals(propertyId: string): Promise<RawPropertySignals | null> {
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -341,7 +298,7 @@ export async function getCachedSignals(
     if (data && new Date(data.expires_at) > new Date()) {
       return data.signal_data as RawPropertySignals;
     }
-  } catch (e) {
+  } catch {
     // Cache miss
   }
   return null;
@@ -369,16 +326,14 @@ export async function cacheSignals(
       .eq('property_id', propertyId)
       .eq('signal_source', 'combined');
 
-    await supabase
-      .from('property_signals')
-      .insert({
-        property_id: propertyId,
-        address: address || null,
-        signal_data: signals,
-        signal_source: 'combined',
-        fetched_at: new Date().toISOString(),
-        expires_at: expiresAt.toISOString(),
-      });
+    await supabase.from('property_signals').insert({
+      property_id: propertyId,
+      address: address || null,
+      signal_data: signals as unknown as Json,
+      signal_source: 'combined',
+      fetched_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),
+    });
   } catch (e) {
     console.warn('[SignalFetcher] Cache write error:', e);
   }

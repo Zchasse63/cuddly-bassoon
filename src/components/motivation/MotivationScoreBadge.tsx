@@ -8,12 +8,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
 
 interface MotivationScoreBadgeProps {
@@ -94,7 +89,7 @@ export function MotivationScoreBadge({
   variant = 'standard',
   className,
 }: MotivationScoreBadgeProps) {
-  const { level, label, color, bgColor } = getScoreLevel(score);
+  const { label, color, bgColor } = getScoreLevel(score);
 
   const sizeClasses = {
     sm: 'text-xs px-1.5 py-0.5 gap-0.5',
@@ -120,9 +115,7 @@ export function MotivationScoreBadge({
         className
       )}
     >
-      {variant === 'dealflow_iq' && (
-        <Zap className={cn(iconSizes[size], 'text-brand-500')} />
-      )}
+      {variant === 'dealflow_iq' && <Zap className={cn(iconSizes[size], 'text-brand-500')} />}
       <span className="font-bold">{Math.round(score)}</span>
       <TrendIcon className={iconSizes[size]} />
     </div>

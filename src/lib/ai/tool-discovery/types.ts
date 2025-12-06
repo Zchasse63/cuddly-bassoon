@@ -10,29 +10,29 @@
  * User-facing tool categories organized by what users want to accomplish
  */
 export type DiscoveryCategory =
-  | 'property-search'      // Finding properties
-  | 'deal-analysis'        // Analyzing deals and properties
-  | 'buyer-intelligence'   // Buyer discovery and matching
-  | 'market-research'      // Market data and trends
-  | 'valuation'            // ARV, comps, pricing
-  | 'outreach'             // Communication and follow-up
-  | 'list-management'      // Managing property lists
-  | 'pipeline'             // Deal pipeline operations
-  | 'skip-tracing'         // Contact information lookup
-  | 'documents'            // Document generation and management
-  | 'automation'           // Workflow automation
-  | 'settings'             // User preferences and configuration
-  | 'help';                // Platform help and guidance
+  | 'property-search' // Finding properties
+  | 'deal-analysis' // Analyzing deals and properties
+  | 'buyer-intelligence' // Buyer discovery and matching
+  | 'market-research' // Market data and trends
+  | 'valuation' // ARV, comps, pricing
+  | 'outreach' // Communication and follow-up
+  | 'list-management' // Managing property lists
+  | 'pipeline' // Deal pipeline operations
+  | 'skip-tracing' // Contact information lookup
+  | 'documents' // Document generation and management
+  | 'automation' // Workflow automation
+  | 'settings' // User preferences and configuration
+  | 'help'; // Platform help and guidance
 
 /**
  * Context types that tools may require
  */
 export type ContextType =
-  | 'property'             // Requires a property in context
-  | 'deal'                 // Requires a deal in context
-  | 'buyer'                // Requires a buyer in context
-  | 'list'                 // Requires a list in context
-  | 'none';                // No context required
+  | 'property' // Requires a property in context
+  | 'deal' // Requires a deal in context
+  | 'buyer' // Requires a buyer in context
+  | 'list' // Requires a list in context
+  | 'none'; // No context required
 
 /**
  * Example prompt for a tool
@@ -174,6 +174,6 @@ export interface InsertPromptOptions {
   shouldFocus?: boolean;
   /** Whether to replace existing content (default: true) */
   shouldReplace?: boolean;
-  /** Cursor position after insertion (default: 'end') */
+  /** Where to place cursor after insertion: 'end' or 'select-all' (default: 'end') */
   cursorPosition?: 'end' | 'select-all';
 }

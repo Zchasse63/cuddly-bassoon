@@ -217,35 +217,43 @@ ALTER TABLE market_velocity_aggregates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tracked_zip_codes ENABLE ROW LEVEL SECURITY;
 
 -- Public read access for market velocity data (it's aggregated market data, not user-specific)
+DROP POLICY IF EXISTS "Market velocity index is publicly readable" ON market_velocity_index;
 CREATE POLICY "Market velocity index is publicly readable"
   ON market_velocity_index FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Market velocity history is publicly readable" ON market_velocity_history;
 CREATE POLICY "Market velocity history is publicly readable"
   ON market_velocity_history FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Market velocity aggregates are publicly readable" ON market_velocity_aggregates;
 CREATE POLICY "Market velocity aggregates are publicly readable"
   ON market_velocity_aggregates FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Tracked zip codes are publicly readable" ON tracked_zip_codes;
 CREATE POLICY "Tracked zip codes are publicly readable"
   ON tracked_zip_codes FOR SELECT
   USING (true);
 
 -- Only service role can insert/update/delete (these are system-managed tables)
+DROP POLICY IF EXISTS "Service role can manage market velocity index" ON market_velocity_index;
 CREATE POLICY "Service role can manage market velocity index"
   ON market_velocity_index FOR ALL
   USING (auth.jwt() ->> 'role' = 'service_role');
 
+DROP POLICY IF EXISTS "Service role can manage market velocity history" ON market_velocity_history;
 CREATE POLICY "Service role can manage market velocity history"
   ON market_velocity_history FOR ALL
   USING (auth.jwt() ->> 'role' = 'service_role');
 
+DROP POLICY IF EXISTS "Service role can manage market velocity aggregates" ON market_velocity_aggregates;
 CREATE POLICY "Service role can manage market velocity aggregates"
   ON market_velocity_aggregates FOR ALL
   USING (auth.jwt() ->> 'role' = 'service_role');
 
+DROP POLICY IF EXISTS "Service role can manage tracked zip codes" ON tracked_zip_codes;
 CREATE POLICY "Service role can manage tracked zip codes"
   ON tracked_zip_codes FOR ALL
   USING (auth.jwt() ->> 'role' = 'service_role');

@@ -98,7 +98,7 @@ export async function withRetryAndFallback<T>(
     console.log('[AI Retry] Primary failed, attempting fallback');
     try {
       return await fallbackFn();
-    } catch (fallbackError) {
+    } catch {
       // If fallback also fails, throw the original error
       throw parseAIError(error);
     }

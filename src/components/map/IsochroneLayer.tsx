@@ -5,17 +5,13 @@
  * Renders travel time polygons on the map
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Source, Layer } from 'react-map-gl/mapbox';
 import { Clock, Car, Footprints, Bike } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useMap } from './MapProvider';
 import { fetchIsochrone, type TravelProfile, type IsochroneResult } from '@/lib/map/isochrone';
 import { cn } from '@/lib/utils';
@@ -25,7 +21,11 @@ interface IsochroneLayerProps {
   className?: string;
 }
 
-const PROFILE_OPTIONS: { id: TravelProfile; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const PROFILE_OPTIONS: {
+  id: TravelProfile;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { id: 'driving', label: 'Drive', icon: Car },
   { id: 'walking', label: 'Walk', icon: Footprints },
   { id: 'cycling', label: 'Bike', icon: Bike },
@@ -40,10 +40,14 @@ export function IsochroneLayer({ center, className }: IsochroneLayerProps) {
   const [minutes, setMinutes] = useState(15);
   const [isOpen, setIsOpen] = useState(false);
 
-  const queryCenter = center ?? {
-    lng: state.viewport.longitude,
-    lat: state.viewport.latitude,
-  };
+  const queryCenter = useMemo(
+    () =>
+      center ?? {
+        lng: state.viewport.longitude,
+        lat: state.viewport.latitude,
+      },
+    [center, state.viewport.longitude, state.viewport.latitude]
+  );
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -55,7 +59,7 @@ export function IsochroneLayer({ center, className }: IsochroneLayerProps) {
         profile,
       });
       setGeojson(result);
-      
+
       // Add to map state
       if (result.features.length > 0) {
         const feature = result.features[0];
@@ -165,4 +169,3 @@ export function IsochroneLayer({ center, className }: IsochroneLayerProps) {
     </>
   );
 }
-

@@ -42,7 +42,7 @@ export function AccountActions({ action, email }: AccountActionsProps) {
         description:
           "Your data export is being prepared. You will receive an email when it's ready.",
       });
-    } catch (error) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to start export', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -68,7 +68,7 @@ export function AccountActions({ action, email }: AccountActionsProps) {
         description: 'Your account will be deleted within 30 days.',
       });
       router.push('/');
-    } catch (error) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to delete account', variant: 'destructive' });
     } finally {
       setLoading(false);

@@ -8,87 +8,11 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import {
-  Zap,
-  ChevronDown,
-  ChevronRight,
-  Check,
-  X,
-  Loader2,
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  GitBranch,
-  Phone,
-  FileText,
-  Settings,
-  HelpCircle,
-  List,
-  Sparkles,
-  Home,
-  Star,
-  Scale,
-  Mail,
-  Target,
-  UserCheck,
-  MapPin,
-  Bell,
-  Bookmark,
-  StickyNote,
-  Hammer,
-  Gauge,
-  GitCompare,
-  BarChart3,
-  FileSpreadsheet,
-  UserSearch,
-  Wrench,
-} from 'lucide-react';
+import { Zap, ChevronDown, ChevronRight, Check, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getToolDisplayName, getToolIcon } from '@/lib/ai/tool-discovery';
+import { renderIcon } from '@/lib/ai/icon-map';
 import type { ToolCallRecord } from '@/lib/ai/tool-discovery/types';
-
-// Icon mapping for dynamic icon rendering
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Search,
-  Calculator,
-  Users,
-  TrendingUp,
-  DollarSign,
-  MessageSquare,
-  GitBranch,
-  Phone,
-  FileText,
-  Settings,
-  HelpCircle,
-  List,
-  Zap,
-  Sparkles,
-  Home,
-  Star,
-  Scale,
-  Mail,
-  Target,
-  UserCheck,
-  MapPin,
-  Bell,
-  Bookmark,
-  StickyNote,
-  Hammer,
-  Gauge,
-  GitCompare,
-  BarChart3,
-  FileSpreadsheet,
-  UserSearch,
-  Wrench,
-};
-
-function getIcon(iconName: string): React.ComponentType<{ className?: string }> {
-  return iconMap[iconName] || Wrench;
-}
 
 interface ToolTransparencyProps {
   /** Tool calls made during the response */
@@ -128,7 +52,6 @@ function StatusIndicator({ status }: { status: ToolCallRecord['status'] }) {
 function ToolCallItem({ call, showDuration = true }: ToolCallItemProps) {
   const displayName = call.displayName || getToolDisplayName(call.toolSlug);
   const iconName = call.icon || getToolIcon(call.toolSlug);
-  const Icon = getIcon(iconName);
 
   return (
     <div className="flex items-start gap-2 py-1.5">
@@ -139,7 +62,7 @@ function ToolCallItem({ call, showDuration = true }: ToolCallItemProps) {
           call.status === 'error' ? 'bg-red-100 text-red-600' : 'bg-muted text-muted-foreground'
         )}
       >
-        <Icon className="h-3 w-3" />
+        {renderIcon(iconName, 'h-3 w-3')}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -273,9 +196,7 @@ export function createToolCallRecord(
 ): ToolCallRecord {
   const startedAt = options?.startedAt || new Date();
   const completedAt = options?.completedAt;
-  const durationMs = completedAt
-    ? completedAt.getTime() - startedAt.getTime()
-    : undefined;
+  const durationMs = completedAt ? completedAt.getTime() - startedAt.getTime() : undefined;
 
   return {
     id,
@@ -304,36 +225,53 @@ export function useToolTransparency() {
   }, []);
 
   const updateToolCall = useCallback((id: string, updates: Partial<ToolCallRecord>) => {
-    setToolCalls((prev) =>
-      prev.map((call) => (call.id === id ? { ...call, ...updates } : call))
-    );
+    setToolCalls((prev) => prev.map((call) => (call.id === id ? { ...call, ...updates } : call)));
   }, []);
 
   const clearToolCalls = useCallback(() => {
     setToolCalls([]);
   }, []);
 
-  const startToolCall = useCallback((id: string, toolSlug: string, inputSummary?: string) => {
-    addToolCall(
-      createToolCallRecord(id, toolSlug, 'pending', {
-        startedAt: new Date(),
-        inputSummary,
-      })
-    );
-  }, [addToolCall]);
+  const startToolCall = useCallback(
+    (id: string, toolSlug: string, inputSummary?: string) => {
+      addToolCall(
+        createToolCallRecord(id, toolSlug, 'pending', {
+          startedAt: new Date(),
+          inputSummary,
+        })
+      );
+    },
+    [addToolCall]
+  );
 
   const completeToolCall = useCallback(
-    (id: string, success: boolean, options?: { outputSummary?: string; resultCount?: number; errorMessage?: string }) => {
+    (
+      id: string,
+      success: boolean,
+      options?: { outputSummary?: string; resultCount?: number; errorMessage?: string }
+    ) => {
       const completedAt = new Date();
-      updateToolCall(id, {
-        status: success ? 'success' : 'error',
-        completedAt: completedAt.toISOString(),
-        outputSummary: options?.outputSummary,
-        resultCount: options?.resultCount,
-        errorMessage: options?.errorMessage,
-      });
+      setToolCalls((prev) =>
+        prev.map((call) => {
+          if (call.id !== id) return call;
+          // Compute duration from startedAt
+          const startedAtTime = call.startedAt
+            ? new Date(call.startedAt).getTime()
+            : completedAt.getTime();
+          const durationMs = completedAt.getTime() - startedAtTime;
+          return {
+            ...call,
+            status: success ? 'success' : 'error',
+            completedAt: completedAt.toISOString(),
+            durationMs,
+            outputSummary: options?.outputSummary,
+            resultCount: options?.resultCount,
+            errorMessage: options?.errorMessage,
+          };
+        })
+      );
     },
-    [updateToolCall]
+    []
   );
 
   return {

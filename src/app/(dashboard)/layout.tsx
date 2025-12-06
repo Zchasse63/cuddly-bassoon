@@ -7,6 +7,9 @@ import { ViewContextProvider } from '@/contexts/ViewContext';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
 import { AIChatSidebarWrapper } from './ai-chat-wrapper';
 
+// Force dynamic rendering - this layout uses auth
+export const dynamic = 'force-dynamic';
+
 /**
  * Dashboard Layout
  *

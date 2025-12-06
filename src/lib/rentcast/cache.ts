@@ -177,7 +177,7 @@ export class RentCastCache {
   private async recordHit(): Promise<void> {
     try {
       await redis.hincrby(CACHE_STATS_KEY, 'hits', 1);
-    } catch (error) {
+    } catch {
       // Silently fail for stats
     }
   }
@@ -185,7 +185,7 @@ export class RentCastCache {
   private async recordMiss(): Promise<void> {
     try {
       await redis.hincrby(CACHE_STATS_KEY, 'misses', 1);
-    } catch (error) {
+    } catch {
       // Silently fail for stats
     }
   }
@@ -223,4 +223,3 @@ export function getRentCastCache(): RentCastCache {
   }
   return cacheInstance;
 }
-

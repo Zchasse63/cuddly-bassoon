@@ -539,6 +539,90 @@ export type Database = {
           },
         ];
       };
+      comp_analyses: {
+        Row: {
+          analysis_date: string;
+          arv_confidence: number | null;
+          block_group_polygon: Json | null;
+          comps: Json;
+          created_at: string | null;
+          data_source: string | null;
+          estimated_arv: number | null;
+          id: string;
+          scoring_config: Json;
+          subject_address: string | null;
+          subject_block_group_geoid: string | null;
+          subject_latitude: number | null;
+          subject_longitude: number | null;
+          subject_property_id: string | null;
+          subject_subdivision: string | null;
+          subject_tract_geoid: string | null;
+          summary: Json;
+          tract_polygon: Json | null;
+          updated_at: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          analysis_date?: string;
+          arv_confidence?: number | null;
+          block_group_polygon?: Json | null;
+          comps?: Json;
+          created_at?: string | null;
+          data_source?: string | null;
+          estimated_arv?: number | null;
+          id?: string;
+          scoring_config?: Json;
+          subject_address?: string | null;
+          subject_block_group_geoid?: string | null;
+          subject_latitude?: number | null;
+          subject_longitude?: number | null;
+          subject_property_id?: string | null;
+          subject_subdivision?: string | null;
+          subject_tract_geoid?: string | null;
+          summary?: Json;
+          tract_polygon?: Json | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          analysis_date?: string;
+          arv_confidence?: number | null;
+          block_group_polygon?: Json | null;
+          comps?: Json;
+          created_at?: string | null;
+          data_source?: string | null;
+          estimated_arv?: number | null;
+          id?: string;
+          scoring_config?: Json;
+          subject_address?: string | null;
+          subject_block_group_geoid?: string | null;
+          subject_latitude?: number | null;
+          subject_longitude?: number | null;
+          subject_property_id?: string | null;
+          subject_subdivision?: string | null;
+          subject_tract_geoid?: string | null;
+          summary?: Json;
+          tract_polygon?: Json | null;
+          updated_at?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'comp_analyses_subject_property_id_fkey';
+            columns: ['subject_property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'comp_analyses_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       deal_activities: {
         Row: {
           activity_type: string;
@@ -583,6 +667,72 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      deal_outcome_patterns: {
+        Row: {
+          avg_days_to_close: number | null;
+          avg_discount_from_arv: number | null;
+          avg_profit: number | null;
+          avg_roi: number | null;
+          city: string | null;
+          created_at: string | null;
+          deal_type: string | null;
+          failure_rate: number | null;
+          id: string;
+          last_calculated_at: string | null;
+          market_condition: string | null;
+          most_common_failure_reason: string | null;
+          pattern_key: string;
+          sample_size: number | null;
+          seller_type: string | null;
+          state: string | null;
+          success_rate: number | null;
+          successful_deals: number | null;
+          total_deals: number | null;
+        };
+        Insert: {
+          avg_days_to_close?: number | null;
+          avg_discount_from_arv?: number | null;
+          avg_profit?: number | null;
+          avg_roi?: number | null;
+          city?: string | null;
+          created_at?: string | null;
+          deal_type?: string | null;
+          failure_rate?: number | null;
+          id?: string;
+          last_calculated_at?: string | null;
+          market_condition?: string | null;
+          most_common_failure_reason?: string | null;
+          pattern_key: string;
+          sample_size?: number | null;
+          seller_type?: string | null;
+          state?: string | null;
+          success_rate?: number | null;
+          successful_deals?: number | null;
+          total_deals?: number | null;
+        };
+        Update: {
+          avg_days_to_close?: number | null;
+          avg_discount_from_arv?: number | null;
+          avg_profit?: number | null;
+          avg_roi?: number | null;
+          city?: string | null;
+          created_at?: string | null;
+          deal_type?: string | null;
+          failure_rate?: number | null;
+          id?: string;
+          last_calculated_at?: string | null;
+          market_condition?: string | null;
+          most_common_failure_reason?: string | null;
+          pattern_key?: string;
+          sample_size?: number | null;
+          seller_type?: string | null;
+          state?: string | null;
+          success_rate?: number | null;
+          successful_deals?: number | null;
+          total_deals?: number | null;
+        };
+        Relationships: [];
       };
       deals: {
         Row: {
@@ -678,6 +828,71 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      distress_indicators: {
+        Row: {
+          address: string;
+          code_liens: number | null;
+          created_at: string;
+          data_source: string | null;
+          expires_at: string;
+          fetched_at: string;
+          id: string;
+          pre_foreclosure: boolean | null;
+          pre_foreclosure_date: string | null;
+          property_id: string | null;
+          tax_delinquent: boolean | null;
+          tax_delinquent_amount: number | null;
+          tax_delinquent_years: number | null;
+          updated_at: string;
+          vacancy_duration_months: number | null;
+          vacant: boolean | null;
+        };
+        Insert: {
+          address: string;
+          code_liens?: number | null;
+          created_at?: string;
+          data_source?: string | null;
+          expires_at?: string;
+          fetched_at?: string;
+          id?: string;
+          pre_foreclosure?: boolean | null;
+          pre_foreclosure_date?: string | null;
+          property_id?: string | null;
+          tax_delinquent?: boolean | null;
+          tax_delinquent_amount?: number | null;
+          tax_delinquent_years?: number | null;
+          updated_at?: string;
+          vacancy_duration_months?: number | null;
+          vacant?: boolean | null;
+        };
+        Update: {
+          address?: string;
+          code_liens?: number | null;
+          created_at?: string;
+          data_source?: string | null;
+          expires_at?: string;
+          fetched_at?: string;
+          id?: string;
+          pre_foreclosure?: boolean | null;
+          pre_foreclosure_date?: string | null;
+          property_id?: string | null;
+          tax_delinquent?: boolean | null;
+          tax_delinquent_amount?: number | null;
+          tax_delinquent_years?: number | null;
+          updated_at?: string;
+          vacancy_duration_months?: number | null;
+          vacant?: boolean | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'distress_indicators_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
             referencedColumns: ['id'];
           },
         ];
@@ -799,6 +1014,420 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      experiment_assignments: {
+        Row: {
+          address: string | null;
+          assigned_at: string;
+          experiment_id: string;
+          id: string;
+          property_id: string | null;
+          score_at_assignment: number | null;
+          variant: string;
+        };
+        Insert: {
+          address?: string | null;
+          assigned_at?: string;
+          experiment_id: string;
+          id?: string;
+          property_id?: string | null;
+          score_at_assignment?: number | null;
+          variant: string;
+        };
+        Update: {
+          address?: string | null;
+          assigned_at?: string;
+          experiment_id?: string;
+          id?: string;
+          property_id?: string | null;
+          score_at_assignment?: number | null;
+          variant?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'experiment_assignments_experiment_id_fkey';
+            columns: ['experiment_id'];
+            isOneToOne: false;
+            referencedRelation: 'scoring_experiments';
+            referencedColumns: ['experiment_id'];
+          },
+          {
+            foreignKeyName: 'experiment_assignments_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      experiment_outcomes: {
+        Row: {
+          assignment_id: string;
+          contacted: boolean | null;
+          contacted_at: string | null;
+          created_at: string;
+          deal_closed: boolean | null;
+          deal_created: boolean | null;
+          deal_id: string | null;
+          deal_profit: number | null;
+          experiment_id: string;
+          id: string;
+          responded: boolean | null;
+          responded_at: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          assignment_id: string;
+          contacted?: boolean | null;
+          contacted_at?: string | null;
+          created_at?: string;
+          deal_closed?: boolean | null;
+          deal_created?: boolean | null;
+          deal_id?: string | null;
+          deal_profit?: number | null;
+          experiment_id: string;
+          id?: string;
+          responded?: boolean | null;
+          responded_at?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          assignment_id?: string;
+          contacted?: boolean | null;
+          contacted_at?: string | null;
+          created_at?: string;
+          deal_closed?: boolean | null;
+          deal_created?: boolean | null;
+          deal_id?: string | null;
+          deal_profit?: number | null;
+          experiment_id?: string;
+          id?: string;
+          responded?: boolean | null;
+          responded_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'experiment_outcomes_assignment_id_fkey';
+            columns: ['assignment_id'];
+            isOneToOne: false;
+            referencedRelation: 'experiment_assignments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'experiment_outcomes_deal_id_fkey';
+            columns: ['deal_id'];
+            isOneToOne: false;
+            referencedRelation: 'deals';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'experiment_outcomes_experiment_id_fkey';
+            columns: ['experiment_id'];
+            isOneToOne: false;
+            referencedRelation: 'scoring_experiments';
+            referencedColumns: ['experiment_id'];
+          },
+        ];
+      };
+      geo_vitality_scores: {
+        Row: {
+          avg_inspection_pass_rate: number | null;
+          avg_job_value: number | null;
+          calculated_at: string | null;
+          city: string | null;
+          county: string | null;
+          created_at: string | null;
+          geo_id: string | null;
+          geo_key: string;
+          geo_type: string | null;
+          high_value_permit_count: number | null;
+          high_value_ratio_score: number | null;
+          id: string;
+          improvement_permit_count: number | null;
+          improvement_ratio_score: number | null;
+          inspection_pass_score: number | null;
+          permit_volume_score: number | null;
+          permits_last_12_months: number | null;
+          permits_prior_12_months: number | null;
+          property_count: number | null;
+          state: string;
+          total_permits: number | null;
+          updated_at: string | null;
+          vertical_scores: Json | null;
+          vitality_score: number | null;
+          yoy_growth_rate: number | null;
+          yoy_growth_score: number | null;
+          zip_code: string | null;
+        };
+        Insert: {
+          avg_inspection_pass_rate?: number | null;
+          avg_job_value?: number | null;
+          calculated_at?: string | null;
+          city?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          geo_id?: string | null;
+          geo_key: string;
+          geo_type?: string | null;
+          high_value_permit_count?: number | null;
+          high_value_ratio_score?: number | null;
+          id?: string;
+          improvement_permit_count?: number | null;
+          improvement_ratio_score?: number | null;
+          inspection_pass_score?: number | null;
+          permit_volume_score?: number | null;
+          permits_last_12_months?: number | null;
+          permits_prior_12_months?: number | null;
+          property_count?: number | null;
+          state: string;
+          total_permits?: number | null;
+          updated_at?: string | null;
+          vertical_scores?: Json | null;
+          vitality_score?: number | null;
+          yoy_growth_rate?: number | null;
+          yoy_growth_score?: number | null;
+          zip_code?: string | null;
+        };
+        Update: {
+          avg_inspection_pass_rate?: number | null;
+          avg_job_value?: number | null;
+          calculated_at?: string | null;
+          city?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          geo_id?: string | null;
+          geo_key?: string;
+          geo_type?: string | null;
+          high_value_permit_count?: number | null;
+          high_value_ratio_score?: number | null;
+          id?: string;
+          improvement_permit_count?: number | null;
+          improvement_ratio_score?: number | null;
+          inspection_pass_score?: number | null;
+          permit_volume_score?: number | null;
+          permits_last_12_months?: number | null;
+          permits_prior_12_months?: number | null;
+          property_count?: number | null;
+          state?: string;
+          total_permits?: number | null;
+          updated_at?: string | null;
+          vertical_scores?: Json | null;
+          vitality_score?: number | null;
+          yoy_growth_rate?: number | null;
+          yoy_growth_score?: number | null;
+          zip_code?: string | null;
+        };
+        Relationships: [];
+      };
+      heat_map_cache: {
+        Row: {
+          created_at: string | null;
+          data: Json;
+          expires_at: string;
+          generated_at: string | null;
+          geographic_bounds: Json;
+          id: string;
+          layer_type: string;
+          updated_at: string | null;
+          zoom_level: number | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          data: Json;
+          expires_at: string;
+          generated_at?: string | null;
+          geographic_bounds: Json;
+          id?: string;
+          layer_type: string;
+          updated_at?: string | null;
+          zoom_level?: number | null;
+        };
+        Update: {
+          created_at?: string | null;
+          data?: Json;
+          expires_at?: string;
+          generated_at?: string | null;
+          geographic_bounds?: Json;
+          id?: string;
+          layer_type?: string;
+          updated_at?: string | null;
+          zoom_level?: number | null;
+        };
+        Relationships: [];
+      };
+      historical_deal_embeddings: {
+        Row: {
+          content_hash: string | null;
+          created_at: string | null;
+          deal_id: string;
+          embedding: string;
+          id: string;
+          model_version: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          content_hash?: string | null;
+          created_at?: string | null;
+          deal_id: string;
+          embedding: string;
+          id?: string;
+          model_version?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          content_hash?: string | null;
+          created_at?: string | null;
+          deal_id?: string;
+          embedding?: string;
+          id?: string;
+          model_version?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'historical_deal_embeddings_deal_id_fkey';
+            columns: ['deal_id'];
+            isOneToOne: true;
+            referencedRelation: 'historical_deals';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      historical_deals: {
+        Row: {
+          acquisition_source: string | null;
+          address: string;
+          arv: number | null;
+          assignment_fee: number | null;
+          bathrooms: number | null;
+          bedrooms: number | null;
+          city: string | null;
+          close_date: string | null;
+          closing_cost: number | null;
+          contract_date: string | null;
+          county: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          data_source: string | null;
+          days_to_close: number | null;
+          deal_type: string | null;
+          exit_strategy: string | null;
+          external_id: string | null;
+          holding_cost: number | null;
+          id: string;
+          lessons_learned: string | null;
+          lot_size: number | null;
+          market_dom_at_deal: number | null;
+          market_inventory_at_deal: number | null;
+          market_sale_to_list_ratio: number | null;
+          outcome: string | null;
+          outcome_notes: string | null;
+          ownership_duration_months: number | null;
+          profit: number | null;
+          property_type: string | null;
+          purchase_price: number;
+          repair_cost: number | null;
+          roi: number | null;
+          sale_price: number | null;
+          seller_motivation_score: number | null;
+          seller_type: string | null;
+          square_footage: number | null;
+          state: string | null;
+          updated_at: string | null;
+          was_absentee_owner: boolean | null;
+          year_built: number | null;
+          zip_code: string | null;
+        };
+        Insert: {
+          acquisition_source?: string | null;
+          address: string;
+          arv?: number | null;
+          assignment_fee?: number | null;
+          bathrooms?: number | null;
+          bedrooms?: number | null;
+          city?: string | null;
+          close_date?: string | null;
+          closing_cost?: number | null;
+          contract_date?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          data_source?: string | null;
+          days_to_close?: number | null;
+          deal_type?: string | null;
+          exit_strategy?: string | null;
+          external_id?: string | null;
+          holding_cost?: number | null;
+          id?: string;
+          lessons_learned?: string | null;
+          lot_size?: number | null;
+          market_dom_at_deal?: number | null;
+          market_inventory_at_deal?: number | null;
+          market_sale_to_list_ratio?: number | null;
+          outcome?: string | null;
+          outcome_notes?: string | null;
+          ownership_duration_months?: number | null;
+          profit?: number | null;
+          property_type?: string | null;
+          purchase_price: number;
+          repair_cost?: number | null;
+          roi?: number | null;
+          sale_price?: number | null;
+          seller_motivation_score?: number | null;
+          seller_type?: string | null;
+          square_footage?: number | null;
+          state?: string | null;
+          updated_at?: string | null;
+          was_absentee_owner?: boolean | null;
+          year_built?: number | null;
+          zip_code?: string | null;
+        };
+        Update: {
+          acquisition_source?: string | null;
+          address?: string;
+          arv?: number | null;
+          assignment_fee?: number | null;
+          bathrooms?: number | null;
+          bedrooms?: number | null;
+          city?: string | null;
+          close_date?: string | null;
+          closing_cost?: number | null;
+          contract_date?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          data_source?: string | null;
+          days_to_close?: number | null;
+          deal_type?: string | null;
+          exit_strategy?: string | null;
+          external_id?: string | null;
+          holding_cost?: number | null;
+          id?: string;
+          lessons_learned?: string | null;
+          lot_size?: number | null;
+          market_dom_at_deal?: number | null;
+          market_inventory_at_deal?: number | null;
+          market_sale_to_list_ratio?: number | null;
+          outcome?: string | null;
+          outcome_notes?: string | null;
+          ownership_duration_months?: number | null;
+          profit?: number | null;
+          property_type?: string | null;
+          purchase_price?: number;
+          repair_cost?: number | null;
+          roi?: number | null;
+          sale_price?: number | null;
+          seller_motivation_score?: number | null;
+          seller_type?: string | null;
+          square_footage?: number | null;
+          state?: string | null;
+          updated_at?: string | null;
+          was_absentee_owner?: boolean | null;
+          year_built?: number | null;
+          zip_code?: string | null;
+        };
+        Relationships: [];
       };
       lead_contact_history: {
         Row: {
@@ -1184,6 +1813,219 @@ export type Database = {
         };
         Relationships: [];
       };
+      market_velocity_aggregates: {
+        Row: {
+          avg_velocity_index: number | null;
+          bounds_east: number | null;
+          bounds_north: number | null;
+          bounds_south: number | null;
+          bounds_west: number | null;
+          calculated_at: string | null;
+          center_lat: number | null;
+          center_lng: number | null;
+          cold_zip_count: number | null;
+          created_at: string | null;
+          dominant_classification: string | null;
+          expires_at: string | null;
+          geo_id: string | null;
+          geo_name: string;
+          geo_type: string;
+          hot_zip_count: number | null;
+          id: string;
+          max_velocity_index: number | null;
+          median_velocity_index: number | null;
+          min_velocity_index: number | null;
+          state: string;
+          updated_at: string | null;
+          velocity_trend: string | null;
+          zip_count: number | null;
+        };
+        Insert: {
+          avg_velocity_index?: number | null;
+          bounds_east?: number | null;
+          bounds_north?: number | null;
+          bounds_south?: number | null;
+          bounds_west?: number | null;
+          calculated_at?: string | null;
+          center_lat?: number | null;
+          center_lng?: number | null;
+          cold_zip_count?: number | null;
+          created_at?: string | null;
+          dominant_classification?: string | null;
+          expires_at?: string | null;
+          geo_id?: string | null;
+          geo_name: string;
+          geo_type: string;
+          hot_zip_count?: number | null;
+          id?: string;
+          max_velocity_index?: number | null;
+          median_velocity_index?: number | null;
+          min_velocity_index?: number | null;
+          state: string;
+          updated_at?: string | null;
+          velocity_trend?: string | null;
+          zip_count?: number | null;
+        };
+        Update: {
+          avg_velocity_index?: number | null;
+          bounds_east?: number | null;
+          bounds_north?: number | null;
+          bounds_south?: number | null;
+          bounds_west?: number | null;
+          calculated_at?: string | null;
+          center_lat?: number | null;
+          center_lng?: number | null;
+          cold_zip_count?: number | null;
+          created_at?: string | null;
+          dominant_classification?: string | null;
+          expires_at?: string | null;
+          geo_id?: string | null;
+          geo_name?: string;
+          geo_type?: string;
+          hot_zip_count?: number | null;
+          id?: string;
+          max_velocity_index?: number | null;
+          median_velocity_index?: number | null;
+          min_velocity_index?: number | null;
+          state?: string;
+          updated_at?: string | null;
+          velocity_trend?: string | null;
+          zip_count?: number | null;
+        };
+        Relationships: [];
+      };
+      market_velocity_history: {
+        Row: {
+          calculated_at: string | null;
+          classification: string;
+          component_scores: Json | null;
+          created_at: string | null;
+          id: string;
+          raw_metrics: Json | null;
+          velocity_index: number;
+          zip_code: string;
+        };
+        Insert: {
+          calculated_at?: string | null;
+          classification: string;
+          component_scores?: Json | null;
+          created_at?: string | null;
+          id?: string;
+          raw_metrics?: Json | null;
+          velocity_index: number;
+          zip_code: string;
+        };
+        Update: {
+          calculated_at?: string | null;
+          classification?: string;
+          component_scores?: Json | null;
+          created_at?: string | null;
+          id?: string;
+          raw_metrics?: Json | null;
+          velocity_index?: number;
+          zip_code?: string;
+        };
+        Relationships: [];
+      };
+      market_velocity_index: {
+        Row: {
+          absorption_rate: number | null;
+          absorption_score: number | null;
+          avg_days_on_market: number | null;
+          calculated_at: string | null;
+          center_lat: number | null;
+          center_lng: number | null;
+          city: string | null;
+          classification: string;
+          county: string | null;
+          created_at: string | null;
+          days_on_market_score: number | null;
+          expires_at: string | null;
+          geo_id: string | null;
+          id: string;
+          inventory_score: number | null;
+          investment_conviction_score: number | null;
+          median_days_on_market: number | null;
+          months_of_inventory: number | null;
+          permit_activity_score: number | null;
+          permit_value_total: number | null;
+          permit_volume: number | null;
+          rentcast_data_date: string | null;
+          shovels_data_date: string | null;
+          state: string | null;
+          total_listings: number | null;
+          updated_at: string | null;
+          velocity_change: number | null;
+          velocity_index: number;
+          velocity_trend: string | null;
+          zip_code: string;
+        };
+        Insert: {
+          absorption_rate?: number | null;
+          absorption_score?: number | null;
+          avg_days_on_market?: number | null;
+          calculated_at?: string | null;
+          center_lat?: number | null;
+          center_lng?: number | null;
+          city?: string | null;
+          classification: string;
+          county?: string | null;
+          created_at?: string | null;
+          days_on_market_score?: number | null;
+          expires_at?: string | null;
+          geo_id?: string | null;
+          id?: string;
+          inventory_score?: number | null;
+          investment_conviction_score?: number | null;
+          median_days_on_market?: number | null;
+          months_of_inventory?: number | null;
+          permit_activity_score?: number | null;
+          permit_value_total?: number | null;
+          permit_volume?: number | null;
+          rentcast_data_date?: string | null;
+          shovels_data_date?: string | null;
+          state?: string | null;
+          total_listings?: number | null;
+          updated_at?: string | null;
+          velocity_change?: number | null;
+          velocity_index: number;
+          velocity_trend?: string | null;
+          zip_code: string;
+        };
+        Update: {
+          absorption_rate?: number | null;
+          absorption_score?: number | null;
+          avg_days_on_market?: number | null;
+          calculated_at?: string | null;
+          center_lat?: number | null;
+          center_lng?: number | null;
+          city?: string | null;
+          classification?: string;
+          county?: string | null;
+          created_at?: string | null;
+          days_on_market_score?: number | null;
+          expires_at?: string | null;
+          geo_id?: string | null;
+          id?: string;
+          inventory_score?: number | null;
+          investment_conviction_score?: number | null;
+          median_days_on_market?: number | null;
+          months_of_inventory?: number | null;
+          permit_activity_score?: number | null;
+          permit_value_total?: number | null;
+          permit_volume?: number | null;
+          rentcast_data_date?: string | null;
+          shovels_data_date?: string | null;
+          state?: string | null;
+          total_listings?: number | null;
+          updated_at?: string | null;
+          velocity_change?: number | null;
+          velocity_index?: number;
+          velocity_trend?: string | null;
+          zip_code?: string;
+        };
+        Relationships: [];
+      };
       messages: {
         Row: {
           body: string;
@@ -1281,6 +2123,72 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      motivation_scores: {
+        Row: {
+          address: string | null;
+          ai_adjustments: Json | null;
+          confidence: number;
+          created_at: string;
+          created_by: string | null;
+          factors: Json;
+          id: string;
+          model_used: string;
+          owner_classification_id: string | null;
+          property_id: string | null;
+          recommendation: string | null;
+          risk_factors: string[] | null;
+          score: number;
+          score_type: string;
+        };
+        Insert: {
+          address?: string | null;
+          ai_adjustments?: Json | null;
+          confidence: number;
+          created_at?: string;
+          created_by?: string | null;
+          factors?: Json;
+          id?: string;
+          model_used: string;
+          owner_classification_id?: string | null;
+          property_id?: string | null;
+          recommendation?: string | null;
+          risk_factors?: string[] | null;
+          score: number;
+          score_type: string;
+        };
+        Update: {
+          address?: string | null;
+          ai_adjustments?: Json | null;
+          confidence?: number;
+          created_at?: string;
+          created_by?: string | null;
+          factors?: Json;
+          id?: string;
+          model_used?: string;
+          owner_classification_id?: string | null;
+          property_id?: string | null;
+          recommendation?: string | null;
+          risk_factors?: string[] | null;
+          score?: number;
+          score_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'motivation_scores_owner_classification_id_fkey';
+            columns: ['owner_classification_id'];
+            isOneToOne: false;
+            referencedRelation: 'owner_classifications';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'motivation_scores_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
             referencedColumns: ['id'];
           },
         ];
@@ -1498,6 +2406,92 @@ export type Database = {
           },
         ];
       };
+      owner_classifications: {
+        Row: {
+          address: string | null;
+          classified_at: string;
+          confidence: number;
+          expires_at: string;
+          id: string;
+          matched_patterns: string[] | null;
+          owner_name: string;
+          primary_class: string;
+          property_id: string | null;
+          sub_class: string;
+        };
+        Insert: {
+          address?: string | null;
+          classified_at?: string;
+          confidence: number;
+          expires_at?: string;
+          id?: string;
+          matched_patterns?: string[] | null;
+          owner_name: string;
+          primary_class: string;
+          property_id?: string | null;
+          sub_class: string;
+        };
+        Update: {
+          address?: string | null;
+          classified_at?: string;
+          confidence?: number;
+          expires_at?: string;
+          id?: string;
+          matched_patterns?: string[] | null;
+          owner_name?: string;
+          primary_class?: string;
+          property_id?: string | null;
+          sub_class?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'owner_classifications_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pending_recommendations: {
+        Row: {
+          created_at: string | null;
+          expires_at: string;
+          id: string;
+          match_factors: Json | null;
+          property_id: string;
+          reason: string;
+          score: number;
+          shown_at: string | null;
+          status: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          expires_at: string;
+          id?: string;
+          match_factors?: Json | null;
+          property_id: string;
+          reason: string;
+          score: number;
+          shown_at?: string | null;
+          status?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          expires_at?: string;
+          id?: string;
+          match_factors?: Json | null;
+          property_id?: string;
+          reason?: string;
+          score?: number;
+          shown_at?: string | null;
+          status?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       properties: {
         Row: {
           address: string;
@@ -1505,6 +2499,11 @@ export type Database = {
           asking_price: number | null;
           bathrooms: number | null;
           bedrooms: number | null;
+          census_block_group_geoid: string | null;
+          census_county_fips: string | null;
+          census_geocoded_at: string | null;
+          census_state_fips: string | null;
+          census_tract_geoid: string | null;
           city: string | null;
           condition: string | null;
           county: string | null;
@@ -1524,8 +2523,11 @@ export type Database = {
           ownership_length_months: number | null;
           property_type: string | null;
           rentcast_id: string | null;
+          shovels_address_id: string | null;
+          shovels_matched_at: string | null;
           square_footage: number | null;
           state: string | null;
+          subdivision: string | null;
           updated_at: string | null;
           year_built: number | null;
           zip: string | null;
@@ -1536,6 +2538,11 @@ export type Database = {
           asking_price?: number | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
+          census_block_group_geoid?: string | null;
+          census_county_fips?: string | null;
+          census_geocoded_at?: string | null;
+          census_state_fips?: string | null;
+          census_tract_geoid?: string | null;
           city?: string | null;
           condition?: string | null;
           county?: string | null;
@@ -1555,8 +2562,11 @@ export type Database = {
           ownership_length_months?: number | null;
           property_type?: string | null;
           rentcast_id?: string | null;
+          shovels_address_id?: string | null;
+          shovels_matched_at?: string | null;
           square_footage?: number | null;
           state?: string | null;
+          subdivision?: string | null;
           updated_at?: string | null;
           year_built?: number | null;
           zip?: string | null;
@@ -1567,6 +2577,11 @@ export type Database = {
           asking_price?: number | null;
           bathrooms?: number | null;
           bedrooms?: number | null;
+          census_block_group_geoid?: string | null;
+          census_county_fips?: string | null;
+          census_geocoded_at?: string | null;
+          census_state_fips?: string | null;
+          census_tract_geoid?: string | null;
           city?: string | null;
           condition?: string | null;
           county?: string | null;
@@ -1586,11 +2601,85 @@ export type Database = {
           ownership_length_months?: number | null;
           property_type?: string | null;
           rentcast_id?: string | null;
+          shovels_address_id?: string | null;
+          shovels_matched_at?: string | null;
           square_footage?: number | null;
           state?: string | null;
+          subdivision?: string | null;
           updated_at?: string | null;
           year_built?: number | null;
           zip?: string | null;
+        };
+        Relationships: [];
+      };
+      property_signals: {
+        Row: {
+          address: string | null;
+          expires_at: string;
+          fetched_at: string;
+          id: string;
+          property_id: string | null;
+          signal_data: Json;
+          signal_source: string;
+        };
+        Insert: {
+          address?: string | null;
+          expires_at?: string;
+          fetched_at?: string;
+          id?: string;
+          property_id?: string | null;
+          signal_data?: Json;
+          signal_source: string;
+        };
+        Update: {
+          address?: string | null;
+          expires_at?: string;
+          fetched_at?: string;
+          id?: string;
+          property_id?: string | null;
+          signal_data?: Json;
+          signal_source?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'property_signals_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      recommendation_interactions: {
+        Row: {
+          action: string;
+          action_at: string | null;
+          created_at: string | null;
+          id: string;
+          metadata: Json | null;
+          property_id: string;
+          recommendation_score: number;
+          user_id: string;
+        };
+        Insert: {
+          action: string;
+          action_at?: string | null;
+          created_at?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          property_id: string;
+          recommendation_score: number;
+          user_id: string;
+        };
+        Update: {
+          action?: string;
+          action_at?: string | null;
+          created_at?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          property_id?: string;
+          recommendation_score?: number;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -1767,6 +2856,63 @@ export type Database = {
           },
         ];
       };
+      scoring_experiments: {
+        Row: {
+          control_config: Json;
+          control_percentage: number;
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          end_date: string | null;
+          experiment_id: string;
+          id: string;
+          min_sample_size: number | null;
+          name: string;
+          primary_metric: string;
+          secondary_metrics: string[] | null;
+          start_date: string | null;
+          status: string;
+          treatment_config: Json;
+          updated_at: string;
+        };
+        Insert: {
+          control_config: Json;
+          control_percentage?: number;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          end_date?: string | null;
+          experiment_id: string;
+          id?: string;
+          min_sample_size?: number | null;
+          name: string;
+          primary_metric?: string;
+          secondary_metrics?: string[] | null;
+          start_date?: string | null;
+          status?: string;
+          treatment_config: Json;
+          updated_at?: string;
+        };
+        Update: {
+          control_config?: Json;
+          control_percentage?: number;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          end_date?: string | null;
+          experiment_id?: string;
+          id?: string;
+          min_sample_size?: number | null;
+          name?: string;
+          primary_metric?: string;
+          secondary_metrics?: string[] | null;
+          start_date?: string | null;
+          status?: string;
+          treatment_config?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       search_history: {
         Row: {
           action_type: string | null;
@@ -1876,648 +3022,6 @@ export type Database = {
           },
         ];
       };
-      tasks: {
-        Row: {
-          assigned_to: string | null;
-          completed_at: string | null;
-          created_at: string | null;
-          deal_id: string | null;
-          description: string | null;
-          due_date: string | null;
-          id: string;
-          lead_id: string | null;
-          metadata: Json | null;
-          priority: string;
-          property_id: string | null;
-          status: string;
-          title: string;
-          updated_at: string | null;
-          user_id: string;
-          workflow_execution_id: string | null;
-          workflow_id: string | null;
-        };
-        Insert: {
-          assigned_to?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          priority?: string;
-          property_id?: string | null;
-          status?: string;
-          title: string;
-          updated_at?: string | null;
-          user_id: string;
-          workflow_execution_id?: string | null;
-          workflow_id?: string | null;
-        };
-        Update: {
-          assigned_to?: string | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          deal_id?: string | null;
-          description?: string | null;
-          due_date?: string | null;
-          id?: string;
-          lead_id?: string | null;
-          metadata?: Json | null;
-          priority?: string;
-          property_id?: string | null;
-          status?: string;
-          title?: string;
-          updated_at?: string | null;
-          user_id?: string;
-          workflow_execution_id?: string | null;
-          workflow_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'tasks_assigned_to_fkey';
-            columns: ['assigned_to'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_deal_id_fkey';
-            columns: ['deal_id'];
-            isOneToOne: false;
-            referencedRelation: 'deals';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_lead_id_fkey';
-            columns: ['lead_id'];
-            isOneToOne: false;
-            referencedRelation: 'leads';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_workflow_execution_id_fkey';
-            columns: ['workflow_execution_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflow_executions';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'tasks_workflow_id_fkey';
-            columns: ['workflow_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflows';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      team_members: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          invited_at: string | null;
-          invited_by: string | null;
-          joined_at: string | null;
-          permissions: Json | null;
-          role: string;
-          status: string | null;
-          team_id: string;
-          territories: Json | null;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          invited_at?: string | null;
-          invited_by?: string | null;
-          joined_at?: string | null;
-          permissions?: Json | null;
-          role?: string;
-          status?: string | null;
-          team_id: string;
-          territories?: Json | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          invited_at?: string | null;
-          invited_by?: string | null;
-          joined_at?: string | null;
-          permissions?: Json | null;
-          role?: string;
-          status?: string | null;
-          team_id?: string;
-          territories?: Json | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'team_members_invited_by_fkey';
-            columns: ['invited_by'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'team_members_team_id_fkey';
-            columns: ['team_id'];
-            isOneToOne: false;
-            referencedRelation: 'teams';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'team_members_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      teams: {
-        Row: {
-          created_at: string | null;
-          id: string;
-          is_active: boolean | null;
-          lead_assignment_mode: string | null;
-          monthly_report_day: number | null;
-          name: string;
-          owner_id: string;
-          settings: Json | null;
-          territory_mode: string | null;
-          updated_at: string | null;
-          weekly_report_recipients: Json | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          lead_assignment_mode?: string | null;
-          monthly_report_day?: number | null;
-          name: string;
-          owner_id: string;
-          settings?: Json | null;
-          territory_mode?: string | null;
-          updated_at?: string | null;
-          weekly_report_recipients?: Json | null;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string;
-          is_active?: boolean | null;
-          lead_assignment_mode?: string | null;
-          monthly_report_day?: number | null;
-          name?: string;
-          owner_id?: string;
-          settings?: Json | null;
-          territory_mode?: string | null;
-          updated_at?: string | null;
-          weekly_report_recipients?: Json | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'teams_owner_id_fkey';
-            columns: ['owner_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      templates: {
-        Row: {
-          approval_required: boolean | null;
-          body_template: string;
-          category: string | null;
-          channel: string;
-          created_at: string | null;
-          forbidden_topics: Json | null;
-          id: string;
-          is_active: boolean | null;
-          name: string;
-          sensitivity_level: string | null;
-          subject_template: string | null;
-          template_type: string | null;
-          updated_at: string | null;
-          user_id: string;
-          variables: Json | null;
-        };
-        Insert: {
-          approval_required?: boolean | null;
-          body_template: string;
-          category?: string | null;
-          channel: string;
-          created_at?: string | null;
-          forbidden_topics?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          name: string;
-          sensitivity_level?: string | null;
-          subject_template?: string | null;
-          template_type?: string | null;
-          updated_at?: string | null;
-          user_id: string;
-          variables?: Json | null;
-        };
-        Update: {
-          approval_required?: boolean | null;
-          body_template?: string;
-          category?: string | null;
-          channel?: string;
-          created_at?: string | null;
-          forbidden_topics?: Json | null;
-          id?: string;
-          is_active?: boolean | null;
-          name?: string;
-          sensitivity_level?: string | null;
-          subject_template?: string | null;
-          template_type?: string | null;
-          updated_at?: string | null;
-          user_id?: string;
-          variables?: Json | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'templates_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_preferences: {
-        Row: {
-          created_at: string | null;
-          default_filters: Json | null;
-          default_markets: Json | null;
-          id: string;
-          notification_settings: Json | null;
-          ui_preferences: Json | null;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string | null;
-          default_filters?: Json | null;
-          default_markets?: Json | null;
-          id?: string;
-          notification_settings?: Json | null;
-          ui_preferences?: Json | null;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string | null;
-          default_filters?: Json | null;
-          default_markets?: Json | null;
-          id?: string;
-          notification_settings?: Json | null;
-          ui_preferences?: Json | null;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_preferences_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: true;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      user_profiles: {
-        Row: {
-          api_calls_remaining: number | null;
-          api_calls_reset_date: string | null;
-          company_name: string | null;
-          created_at: string | null;
-          current_team_id: string | null;
-          email: string;
-          full_name: string | null;
-          id: string;
-          phone: string | null;
-          preferences: Json | null;
-          subscription_status: string | null;
-          subscription_tier: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          api_calls_remaining?: number | null;
-          api_calls_reset_date?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          current_team_id?: string | null;
-          email: string;
-          full_name?: string | null;
-          id: string;
-          phone?: string | null;
-          preferences?: Json | null;
-          subscription_status?: string | null;
-          subscription_tier?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          api_calls_remaining?: number | null;
-          api_calls_reset_date?: string | null;
-          company_name?: string | null;
-          created_at?: string | null;
-          current_team_id?: string | null;
-          email?: string;
-          full_name?: string | null;
-          id?: string;
-          phone?: string | null;
-          preferences?: Json | null;
-          subscription_status?: string | null;
-          subscription_tier?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'user_profiles_current_team_id_fkey';
-            columns: ['current_team_id'];
-            isOneToOne: false;
-            referencedRelation: 'teams';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      valuations: {
-        Row: {
-          arv_estimate: number | null;
-          created_at: string | null;
-          data_source: string | null;
-          equity_amount: number | null;
-          equity_percent: number | null;
-          estimated_value: number | null;
-          id: string;
-          price_range_high: number | null;
-          price_range_low: number | null;
-          property_id: string;
-          rent_estimate: number | null;
-          rent_range_high: number | null;
-          rent_range_low: number | null;
-          updated_at: string | null;
-          valuation_date: string | null;
-        };
-        Insert: {
-          arv_estimate?: number | null;
-          created_at?: string | null;
-          data_source?: string | null;
-          equity_amount?: number | null;
-          equity_percent?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          price_range_high?: number | null;
-          price_range_low?: number | null;
-          property_id: string;
-          rent_estimate?: number | null;
-          rent_range_high?: number | null;
-          rent_range_low?: number | null;
-          updated_at?: string | null;
-          valuation_date?: string | null;
-        };
-        Update: {
-          arv_estimate?: number | null;
-          created_at?: string | null;
-          data_source?: string | null;
-          equity_amount?: number | null;
-          equity_percent?: number | null;
-          estimated_value?: number | null;
-          id?: string;
-          price_range_high?: number | null;
-          price_range_low?: number | null;
-          property_id?: string;
-          rent_estimate?: number | null;
-          rent_range_high?: number | null;
-          rent_range_low?: number | null;
-          updated_at?: string | null;
-          valuation_date?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'valuations_property_id_fkey';
-            columns: ['property_id'];
-            isOneToOne: false;
-            referencedRelation: 'properties';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      workflow_executions: {
-        Row: {
-          actions_completed: number | null;
-          actions_total: number | null;
-          completed_at: string | null;
-          created_at: string | null;
-          error_message: string | null;
-          execution_log: Json | null;
-          id: string;
-          started_at: string | null;
-          status: string;
-          trigger_data: Json;
-          workflow_id: string;
-        };
-        Insert: {
-          actions_completed?: number | null;
-          actions_total?: number | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          error_message?: string | null;
-          execution_log?: Json | null;
-          id?: string;
-          started_at?: string | null;
-          status?: string;
-          trigger_data?: Json;
-          workflow_id: string;
-        };
-        Update: {
-          actions_completed?: number | null;
-          actions_total?: number | null;
-          completed_at?: string | null;
-          created_at?: string | null;
-          error_message?: string | null;
-          execution_log?: Json | null;
-          id?: string;
-          started_at?: string | null;
-          status?: string;
-          trigger_data?: Json;
-          workflow_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'workflow_executions_workflow_id_fkey';
-            columns: ['workflow_id'];
-            isOneToOne: false;
-            referencedRelation: 'workflows';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      workflows: {
-        Row: {
-          actions: Json;
-          conditions: Json | null;
-          created_at: string | null;
-          description: string | null;
-          execution_count: number | null;
-          id: string;
-          is_active: boolean | null;
-          last_executed_at: string | null;
-          name: string;
-          trigger_config: Json;
-          trigger_type: string;
-          updated_at: string | null;
-          user_id: string;
-        };
-        Insert: {
-          actions?: Json;
-          conditions?: Json | null;
-          created_at?: string | null;
-          description?: string | null;
-          execution_count?: number | null;
-          id?: string;
-          is_active?: boolean | null;
-          last_executed_at?: string | null;
-          name: string;
-          trigger_config?: Json;
-          trigger_type: string;
-          updated_at?: string | null;
-          user_id: string;
-        };
-        Update: {
-          actions?: Json;
-          conditions?: Json | null;
-          created_at?: string | null;
-          description?: string | null;
-          execution_count?: number | null;
-          id?: string;
-          is_active?: boolean | null;
-          last_executed_at?: string | null;
-          name?: string;
-          trigger_config?: Json;
-          trigger_type?: string;
-          updated_at?: string | null;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'workflows_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'user_profiles';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      // Shovels.ai Integration Tables
-      geo_vitality_scores: {
-        Row: {
-          avg_inspection_pass_rate: number | null;
-          avg_job_value: number | null;
-          calculated_at: string | null;
-          city: string | null;
-          county: string | null;
-          created_at: string | null;
-          geo_key: string;
-          geo_type: string;
-          high_value_permit_count: number | null;
-          high_value_ratio_score: number | null;
-          id: string;
-          improvement_permit_count: number | null;
-          improvement_ratio_score: number | null;
-          inspection_pass_score: number | null;
-          permit_volume_score: number | null;
-          permits_last_12_months: number | null;
-          permits_prior_12_months: number | null;
-          property_count: number | null;
-          state: string;
-          total_permits: number | null;
-          updated_at: string | null;
-          vertical_scores: Json | null;
-          vitality_score: number | null;
-          yoy_growth_rate: number | null;
-          yoy_growth_score: number | null;
-          zip_code: string | null;
-        };
-        Insert: {
-          avg_inspection_pass_rate?: number | null;
-          avg_job_value?: number | null;
-          calculated_at?: string | null;
-          city?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          geo_key: string;
-          geo_type?: string;
-          high_value_permit_count?: number | null;
-          high_value_ratio_score?: number | null;
-          id?: string;
-          improvement_permit_count?: number | null;
-          improvement_ratio_score?: number | null;
-          inspection_pass_score?: number | null;
-          permit_volume_score?: number | null;
-          permits_last_12_months?: number | null;
-          permits_prior_12_months?: number | null;
-          property_count?: number | null;
-          state: string;
-          total_permits?: number | null;
-          updated_at?: string | null;
-          vertical_scores?: Json | null;
-          vitality_score?: number | null;
-          yoy_growth_rate?: number | null;
-          yoy_growth_score?: number | null;
-          zip_code?: string | null;
-        };
-        Update: {
-          avg_inspection_pass_rate?: number | null;
-          avg_job_value?: number | null;
-          calculated_at?: string | null;
-          city?: string | null;
-          county?: string | null;
-          created_at?: string | null;
-          geo_key?: string;
-          geo_type?: string;
-          high_value_permit_count?: number | null;
-          high_value_ratio_score?: number | null;
-          id?: string;
-          improvement_permit_count?: number | null;
-          improvement_ratio_score?: number | null;
-          inspection_pass_score?: number | null;
-          permit_volume_score?: number | null;
-          permits_last_12_months?: number | null;
-          permits_prior_12_months?: number | null;
-          property_count?: number | null;
-          state?: string;
-          total_permits?: number | null;
-          updated_at?: string | null;
-          vertical_scores?: Json | null;
-          vitality_score?: number | null;
-          yoy_growth_rate?: number | null;
-          yoy_growth_score?: number | null;
-          zip_code?: string | null;
-        };
-        Relationships: [];
-      };
       shovels_address_metrics: {
         Row: {
           active_permits: number | null;
@@ -2530,6 +3034,7 @@ export type Database = {
           created_at: string | null;
           expired_permits: number | null;
           first_permit_date: string | null;
+          formatted_address: string | null;
           has_expired_permit: boolean | null;
           has_stalled_permit: boolean | null;
           high_value_permit_ratio: number | null;
@@ -2566,6 +3071,7 @@ export type Database = {
           created_at?: string | null;
           expired_permits?: number | null;
           first_permit_date?: string | null;
+          formatted_address?: string | null;
           has_expired_permit?: boolean | null;
           has_stalled_permit?: boolean | null;
           high_value_permit_ratio?: number | null;
@@ -2602,6 +3108,7 @@ export type Database = {
           created_at?: string | null;
           expired_permits?: number | null;
           first_permit_date?: string | null;
+          formatted_address?: string | null;
           has_expired_permit?: boolean | null;
           has_stalled_permit?: boolean | null;
           high_value_permit_ratio?: number | null;
@@ -2824,9 +3331,684 @@ export type Database = {
         };
         Relationships: [];
       };
+      tasks: {
+        Row: {
+          assigned_to: string | null;
+          completed_at: string | null;
+          created_at: string | null;
+          deal_id: string | null;
+          description: string | null;
+          due_date: string | null;
+          id: string;
+          lead_id: string | null;
+          metadata: Json | null;
+          priority: string;
+          property_id: string | null;
+          status: string;
+          title: string;
+          updated_at: string | null;
+          user_id: string;
+          workflow_execution_id: string | null;
+          workflow_id: string | null;
+        };
+        Insert: {
+          assigned_to?: string | null;
+          completed_at?: string | null;
+          created_at?: string | null;
+          deal_id?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          id?: string;
+          lead_id?: string | null;
+          metadata?: Json | null;
+          priority?: string;
+          property_id?: string | null;
+          status?: string;
+          title: string;
+          updated_at?: string | null;
+          user_id: string;
+          workflow_execution_id?: string | null;
+          workflow_id?: string | null;
+        };
+        Update: {
+          assigned_to?: string | null;
+          completed_at?: string | null;
+          created_at?: string | null;
+          deal_id?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          id?: string;
+          lead_id?: string | null;
+          metadata?: Json | null;
+          priority?: string;
+          property_id?: string | null;
+          status?: string;
+          title?: string;
+          updated_at?: string | null;
+          user_id?: string;
+          workflow_execution_id?: string | null;
+          workflow_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tasks_assigned_to_fkey';
+            columns: ['assigned_to'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_deal_id_fkey';
+            columns: ['deal_id'];
+            isOneToOne: false;
+            referencedRelation: 'deals';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_lead_id_fkey';
+            columns: ['lead_id'];
+            isOneToOne: false;
+            referencedRelation: 'leads';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_workflow_execution_id_fkey';
+            columns: ['workflow_execution_id'];
+            isOneToOne: false;
+            referencedRelation: 'workflow_executions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'tasks_workflow_id_fkey';
+            columns: ['workflow_id'];
+            isOneToOne: false;
+            referencedRelation: 'workflows';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      team_invitations: {
+        Row: {
+          accepted_at: string | null;
+          created_at: string | null;
+          email: string;
+          expires_at: string;
+          id: string;
+          invited_by: string;
+          role: string;
+          team_id: string;
+          token: string;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          created_at?: string | null;
+          email: string;
+          expires_at?: string;
+          id?: string;
+          invited_by: string;
+          role?: string;
+          team_id: string;
+          token: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          created_at?: string | null;
+          email?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string;
+          role?: string;
+          team_id?: string;
+          token?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'team_invitations_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'teams';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      team_members: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          invited_at: string | null;
+          invited_by: string | null;
+          joined_at: string | null;
+          permissions: Json | null;
+          role: string;
+          status: string | null;
+          team_id: string;
+          territories: Json | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          invited_at?: string | null;
+          invited_by?: string | null;
+          joined_at?: string | null;
+          permissions?: Json | null;
+          role?: string;
+          status?: string | null;
+          team_id: string;
+          territories?: Json | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          invited_at?: string | null;
+          invited_by?: string | null;
+          joined_at?: string | null;
+          permissions?: Json | null;
+          role?: string;
+          status?: string | null;
+          team_id?: string;
+          territories?: Json | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'team_members_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'team_members_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'team_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      teams: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          is_active: boolean | null;
+          lead_assignment_mode: string | null;
+          monthly_report_day: number | null;
+          name: string;
+          owner_id: string;
+          settings: Json | null;
+          territory_mode: string | null;
+          updated_at: string | null;
+          weekly_report_recipients: Json | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          lead_assignment_mode?: string | null;
+          monthly_report_day?: number | null;
+          name: string;
+          owner_id: string;
+          settings?: Json | null;
+          territory_mode?: string | null;
+          updated_at?: string | null;
+          weekly_report_recipients?: Json | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          lead_assignment_mode?: string | null;
+          monthly_report_day?: number | null;
+          name?: string;
+          owner_id?: string;
+          settings?: Json | null;
+          territory_mode?: string | null;
+          updated_at?: string | null;
+          weekly_report_recipients?: Json | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'teams_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      templates: {
+        Row: {
+          approval_required: boolean | null;
+          body_template: string;
+          category: string | null;
+          channel: string;
+          created_at: string | null;
+          forbidden_topics: Json | null;
+          id: string;
+          is_active: boolean | null;
+          name: string;
+          sensitivity_level: string | null;
+          subject_template: string | null;
+          template_type: string | null;
+          updated_at: string | null;
+          user_id: string;
+          variables: Json | null;
+        };
+        Insert: {
+          approval_required?: boolean | null;
+          body_template: string;
+          category?: string | null;
+          channel: string;
+          created_at?: string | null;
+          forbidden_topics?: Json | null;
+          id?: string;
+          is_active?: boolean | null;
+          name: string;
+          sensitivity_level?: string | null;
+          subject_template?: string | null;
+          template_type?: string | null;
+          updated_at?: string | null;
+          user_id: string;
+          variables?: Json | null;
+        };
+        Update: {
+          approval_required?: boolean | null;
+          body_template?: string;
+          category?: string | null;
+          channel?: string;
+          created_at?: string | null;
+          forbidden_topics?: Json | null;
+          id?: string;
+          is_active?: boolean | null;
+          name?: string;
+          sensitivity_level?: string | null;
+          subject_template?: string | null;
+          template_type?: string | null;
+          updated_at?: string | null;
+          user_id?: string;
+          variables?: Json | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'templates_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      tracked_zip_codes: {
+        Row: {
+          center_lat: number | null;
+          center_lng: number | null;
+          city: string | null;
+          county: string | null;
+          created_at: string | null;
+          geo_id: string | null;
+          id: string;
+          is_active: boolean | null;
+          last_calculated_at: string | null;
+          priority: number | null;
+          state: string;
+          updated_at: string | null;
+          zip_code: string;
+        };
+        Insert: {
+          center_lat?: number | null;
+          center_lng?: number | null;
+          city?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          geo_id?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_calculated_at?: string | null;
+          priority?: number | null;
+          state: string;
+          updated_at?: string | null;
+          zip_code: string;
+        };
+        Update: {
+          center_lat?: number | null;
+          center_lng?: number | null;
+          city?: string | null;
+          county?: string | null;
+          created_at?: string | null;
+          geo_id?: string | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_calculated_at?: string | null;
+          priority?: number | null;
+          state?: string;
+          updated_at?: string | null;
+          zip_code?: string;
+        };
+        Relationships: [];
+      };
+      user_favorite_tools: {
+        Row: {
+          favorited_at: string | null;
+          id: string;
+          tool_slug: string;
+          user_id: string;
+        };
+        Insert: {
+          favorited_at?: string | null;
+          id?: string;
+          tool_slug: string;
+          user_id: string;
+        };
+        Update: {
+          favorited_at?: string | null;
+          id?: string;
+          tool_slug?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_heat_map_data: {
+        Row: {
+          created_at: string | null;
+          data: Json;
+          id: string;
+          layer_type: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          data: Json;
+          id?: string;
+          layer_type: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          data?: Json;
+          id?: string;
+          layer_type?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_preferences: {
+        Row: {
+          created_at: string | null;
+          default_filters: Json | null;
+          default_markets: Json | null;
+          id: string;
+          notification_settings: Json | null;
+          ui_preferences: Json | null;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          default_filters?: Json | null;
+          default_markets?: Json | null;
+          id?: string;
+          notification_settings?: Json | null;
+          ui_preferences?: Json | null;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          default_filters?: Json | null;
+          default_markets?: Json | null;
+          id?: string;
+          notification_settings?: Json | null;
+          ui_preferences?: Json | null;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_preferences_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_profiles: {
+        Row: {
+          api_calls_remaining: number | null;
+          api_calls_reset_date: string | null;
+          company_name: string | null;
+          created_at: string | null;
+          current_team_id: string | null;
+          email: string;
+          full_name: string | null;
+          id: string;
+          phone: string | null;
+          preferences: Json | null;
+          subscription_status: string | null;
+          subscription_tier: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          api_calls_remaining?: number | null;
+          api_calls_reset_date?: string | null;
+          company_name?: string | null;
+          created_at?: string | null;
+          current_team_id?: string | null;
+          email: string;
+          full_name?: string | null;
+          id: string;
+          phone?: string | null;
+          preferences?: Json | null;
+          subscription_status?: string | null;
+          subscription_tier?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          api_calls_remaining?: number | null;
+          api_calls_reset_date?: string | null;
+          company_name?: string | null;
+          created_at?: string | null;
+          current_team_id?: string | null;
+          email?: string;
+          full_name?: string | null;
+          id?: string;
+          phone?: string | null;
+          preferences?: Json | null;
+          subscription_status?: string | null;
+          subscription_tier?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_profiles_current_team_id_fkey';
+            columns: ['current_team_id'];
+            isOneToOne: false;
+            referencedRelation: 'teams';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      user_recent_tools: {
+        Row: {
+          context: Json | null;
+          id: string;
+          tool_slug: string;
+          used_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          context?: Json | null;
+          id?: string;
+          tool_slug: string;
+          used_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          context?: Json | null;
+          id?: string;
+          tool_slug?: string;
+          used_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_success_profiles: {
+        Row: {
+          closed_deals_count: number | null;
+          created_at: string | null;
+          id: string;
+          last_updated: string | null;
+          pattern_weights: Json;
+          profile_data: Json;
+          user_id: string;
+        };
+        Insert: {
+          closed_deals_count?: number | null;
+          created_at?: string | null;
+          id?: string;
+          last_updated?: string | null;
+          pattern_weights?: Json;
+          profile_data?: Json;
+          user_id: string;
+        };
+        Update: {
+          closed_deals_count?: number | null;
+          created_at?: string | null;
+          id?: string;
+          last_updated?: string | null;
+          pattern_weights?: Json;
+          profile_data?: Json;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_tasks: {
+        Row: {
+          completed_at: string | null;
+          created_at: string | null;
+          description: string | null;
+          dismissed_at: string | null;
+          due_date: string | null;
+          entity_id: string | null;
+          entity_type: string | null;
+          id: string;
+          metadata: Json | null;
+          priority: string | null;
+          source: string | null;
+          task_type: string;
+          title: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          dismissed_at?: string | null;
+          due_date?: string | null;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          priority?: string | null;
+          source?: string | null;
+          task_type: string;
+          title: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          created_at?: string | null;
+          description?: string | null;
+          dismissed_at?: string | null;
+          due_date?: string | null;
+          entity_id?: string | null;
+          entity_type?: string | null;
+          id?: string;
+          metadata?: Json | null;
+          priority?: string | null;
+          source?: string | null;
+          task_type?: string;
+          title?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      user_tool_workflows: {
+        Row: {
+          created_at: string | null;
+          description: string | null;
+          id: string;
+          is_public: boolean | null;
+          last_used_at: string | null;
+          name: string;
+          step_prompts: Json | null;
+          tool_slugs: string[];
+          updated_at: string | null;
+          use_count: number | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          is_public?: boolean | null;
+          last_used_at?: string | null;
+          name: string;
+          step_prompts?: Json | null;
+          tool_slugs: string[];
+          updated_at?: string | null;
+          use_count?: number | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          is_public?: boolean | null;
+          last_used_at?: string | null;
+          name?: string;
+          step_prompts?: Json | null;
+          tool_slugs?: string[];
+          updated_at?: string | null;
+          use_count?: number | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       user_verticals: {
         Row: {
-          active_vertical: string;
           created_at: string | null;
           enabled_verticals: string[] | null;
           filter_presets: Json | null;
@@ -2837,7 +4019,6 @@ export type Database = {
           vertical_settings: Json | null;
         };
         Insert: {
-          active_vertical?: string;
           created_at?: string | null;
           enabled_verticals?: string[] | null;
           filter_presets?: Json | null;
@@ -2848,7 +4029,6 @@ export type Database = {
           vertical_settings?: Json | null;
         };
         Update: {
-          active_vertical?: string;
           created_at?: string | null;
           enabled_verticals?: string[] | null;
           filter_presets?: Json | null;
@@ -2860,11 +4040,230 @@ export type Database = {
         };
         Relationships: [];
       };
+      valuations: {
+        Row: {
+          arv_estimate: number | null;
+          created_at: string | null;
+          data_source: string | null;
+          equity_amount: number | null;
+          equity_percent: number | null;
+          estimated_value: number | null;
+          id: string;
+          price_range_high: number | null;
+          price_range_low: number | null;
+          property_id: string;
+          rent_estimate: number | null;
+          rent_range_high: number | null;
+          rent_range_low: number | null;
+          updated_at: string | null;
+          valuation_date: string | null;
+        };
+        Insert: {
+          arv_estimate?: number | null;
+          created_at?: string | null;
+          data_source?: string | null;
+          equity_amount?: number | null;
+          equity_percent?: number | null;
+          estimated_value?: number | null;
+          id?: string;
+          price_range_high?: number | null;
+          price_range_low?: number | null;
+          property_id: string;
+          rent_estimate?: number | null;
+          rent_range_high?: number | null;
+          rent_range_low?: number | null;
+          updated_at?: string | null;
+          valuation_date?: string | null;
+        };
+        Update: {
+          arv_estimate?: number | null;
+          created_at?: string | null;
+          data_source?: string | null;
+          equity_amount?: number | null;
+          equity_percent?: number | null;
+          estimated_value?: number | null;
+          id?: string;
+          price_range_high?: number | null;
+          price_range_low?: number | null;
+          property_id?: string;
+          rent_estimate?: number | null;
+          rent_range_high?: number | null;
+          rent_range_low?: number | null;
+          updated_at?: string | null;
+          valuation_date?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'valuations_property_id_fkey';
+            columns: ['property_id'];
+            isOneToOne: false;
+            referencedRelation: 'properties';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      workflow_executions: {
+        Row: {
+          actions_completed: number | null;
+          actions_total: number | null;
+          completed_at: string | null;
+          created_at: string | null;
+          error_message: string | null;
+          execution_log: Json | null;
+          id: string;
+          started_at: string | null;
+          status: string;
+          trigger_data: Json;
+          workflow_id: string;
+        };
+        Insert: {
+          actions_completed?: number | null;
+          actions_total?: number | null;
+          completed_at?: string | null;
+          created_at?: string | null;
+          error_message?: string | null;
+          execution_log?: Json | null;
+          id?: string;
+          started_at?: string | null;
+          status?: string;
+          trigger_data?: Json;
+          workflow_id: string;
+        };
+        Update: {
+          actions_completed?: number | null;
+          actions_total?: number | null;
+          completed_at?: string | null;
+          created_at?: string | null;
+          error_message?: string | null;
+          execution_log?: Json | null;
+          id?: string;
+          started_at?: string | null;
+          status?: string;
+          trigger_data?: Json;
+          workflow_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'workflow_executions_workflow_id_fkey';
+            columns: ['workflow_id'];
+            isOneToOne: false;
+            referencedRelation: 'workflows';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      workflows: {
+        Row: {
+          actions: Json;
+          conditions: Json | null;
+          created_at: string | null;
+          description: string | null;
+          execution_count: number | null;
+          id: string;
+          is_active: boolean | null;
+          last_executed_at: string | null;
+          name: string;
+          trigger_config: Json;
+          trigger_type: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
+          actions?: Json;
+          conditions?: Json | null;
+          created_at?: string | null;
+          description?: string | null;
+          execution_count?: number | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_executed_at?: string | null;
+          name: string;
+          trigger_config?: Json;
+          trigger_type: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          actions?: Json;
+          conditions?: Json | null;
+          created_at?: string | null;
+          description?: string | null;
+          execution_count?: number | null;
+          id?: string;
+          is_active?: boolean | null;
+          last_executed_at?: string | null;
+          name?: string;
+          trigger_config?: Json;
+          trigger_type?: string;
+          updated_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'workflows_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'user_profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      calculate_city_velocity_aggregates: {
+        Args: never;
+        Returns: {
+          avg_velocity_index: number;
+          cold_zip_count: number;
+          dominant_classification: string;
+          geo_name: string;
+          geo_type: string;
+          hot_zip_count: number;
+          max_velocity_index: number;
+          median_velocity_index: number;
+          min_velocity_index: number;
+          state: string;
+          zip_count: number;
+        }[];
+      };
+      calculate_deal_outcome_patterns: { Args: never; Returns: undefined };
+      calculate_experiment_stats: {
+        Args: { p_experiment_id: string };
+        Returns: Json;
+      };
+      clean_expired_heat_map_cache: { Args: never; Returns: number };
+      clean_expired_motivation_caches: { Args: never; Returns: number };
+      clean_expired_recommendations: { Args: never; Returns: number };
+      find_similar_deals: {
+        Args: {
+          p_city?: string;
+          p_deal_type?: string;
+          p_limit?: number;
+          p_price_max?: number;
+          p_price_min?: number;
+          p_seller_type?: string;
+          p_state?: string;
+        };
+        Returns: {
+          address: string;
+          arv: number;
+          city: string;
+          days_to_close: number;
+          deal_id: string;
+          deal_type: string;
+          lessons_learned: string;
+          outcome: string;
+          profit: number;
+          purchase_price: number;
+          relevance_score: number;
+          roi: number;
+          seller_type: string;
+          state: string;
+        }[];
+      };
       get_activity_kpis: {
         Args: { p_end_date?: string; p_start_date?: string; p_user_id: string };
         Returns: {
@@ -2902,6 +4301,45 @@ export type Database = {
           outbound_count: number;
           sms_count: number;
           total_messages: number;
+        }[];
+      };
+      get_comp_analyses_in_block_group: {
+        Args: { p_block_group_geoid: string };
+        Returns: {
+          analysis_date: string;
+          arv_confidence: number | null;
+          block_group_polygon: Json | null;
+          comps: Json;
+          created_at: string | null;
+          data_source: string | null;
+          estimated_arv: number | null;
+          id: string;
+          scoring_config: Json;
+          subject_address: string | null;
+          subject_block_group_geoid: string | null;
+          subject_latitude: number | null;
+          subject_longitude: number | null;
+          subject_property_id: string | null;
+          subject_subdivision: string | null;
+          subject_tract_geoid: string | null;
+          summary: Json;
+          tract_polygon: Json | null;
+          updated_at: string | null;
+          user_id: string | null;
+        }[];
+        SetofOptions: {
+          from: '*';
+          to: 'comp_analyses';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      get_comp_tier_stats: {
+        Args: { p_analysis_id: string };
+        Returns: {
+          avg_score: number;
+          count: number;
+          tier: string;
         }[];
       };
       get_dashboard_summary: {
@@ -2944,6 +4382,48 @@ export type Database = {
           roi_percentage: number;
           total_expenses: number;
           total_revenue: number;
+        }[];
+      };
+      get_latest_comp_analysis: {
+        Args: { p_property_id: string };
+        Returns: {
+          analysis_date: string;
+          arv_confidence: number | null;
+          block_group_polygon: Json | null;
+          comps: Json;
+          created_at: string | null;
+          data_source: string | null;
+          estimated_arv: number | null;
+          id: string;
+          scoring_config: Json;
+          subject_address: string | null;
+          subject_block_group_geoid: string | null;
+          subject_latitude: number | null;
+          subject_longitude: number | null;
+          subject_property_id: string | null;
+          subject_subdivision: string | null;
+          subject_tract_geoid: string | null;
+          summary: Json;
+          tract_polygon: Json | null;
+          updated_at: string | null;
+          user_id: string | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'comp_analyses';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      get_or_create_experiment_assignment: {
+        Args: {
+          p_address?: string;
+          p_experiment_id: string;
+          p_property_id?: string;
+        };
+        Returns: {
+          is_new: boolean;
+          variant: string;
         }[];
       };
       get_outreach_kpis: {
@@ -2991,6 +4471,34 @@ export type Database = {
           unique_criteria: number;
         }[];
       };
+      get_velocity_for_bounds: {
+        Args: {
+          p_east: number;
+          p_north: number;
+          p_south: number;
+          p_west: number;
+        };
+        Returns: {
+          center_lat: number;
+          center_lng: number;
+          classification: string;
+          velocity_index: number;
+          zip_code: string;
+        }[];
+      };
+      get_velocity_rankings: {
+        Args: { p_limit?: number; p_state?: string; p_type?: string };
+        Returns: {
+          avg_days_on_market: number;
+          city: string;
+          classification: string;
+          months_of_inventory: number;
+          state: string;
+          velocity_index: number;
+          zip_code: string;
+        }[];
+      };
+      has_abandoned_project: { Args: { property_id: string }; Returns: boolean };
       log_search: {
         Args: {
           p_criteria?: Json;
@@ -3002,6 +4510,7 @@ export type Database = {
         };
         Returns: string;
       };
+      major_system_due: { Args: { property_id: string }; Returns: boolean };
       match_documents: {
         Args: {
           filter_category?: string;
@@ -3018,6 +4527,44 @@ export type Database = {
           id: string;
           similarity: number;
         }[];
+      };
+      match_historical_deals: {
+        Args: {
+          filter_deal_type?: string;
+          filter_outcome?: string;
+          filter_state?: string;
+          match_count?: number;
+          query_embedding: string;
+          similarity_threshold?: number;
+        };
+        Returns: {
+          address: string;
+          arv: number;
+          city: string;
+          days_to_close: number;
+          deal_id: string;
+          deal_type: string;
+          lessons_learned: string;
+          outcome: string;
+          profit: number;
+          purchase_price: number;
+          roi: number;
+          seller_type: string;
+          similarity: number;
+          state: string;
+        }[];
+      };
+      neighborhood_permit_percentile: {
+        Args: { zip_code: string };
+        Returns: number;
+      };
+      property_inspection_pass_rate: {
+        Args: { property_id: string };
+        Returns: number;
+      };
+      property_permit_count: {
+        Args: { property_id: string; since_date?: string };
+        Returns: number;
       };
       search_properties: {
         Args: {

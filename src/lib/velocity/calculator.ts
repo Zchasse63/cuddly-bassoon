@@ -5,7 +5,7 @@
 
 import type { RentCastMarketData } from '@/lib/rentcast/types';
 import type { ShovelsGeoMetrics } from '@/lib/shovels/types';
-import type { MarketVelocityIndex, VelocityClassification } from '@/types/velocity';
+import type { MarketVelocityIndex } from '@/types/velocity';
 import { getVelocityClassification } from '@/types/velocity';
 
 // =============================================
@@ -16,10 +16,10 @@ import { getVelocityClassification } from '@/types/velocity';
  * Weight configuration for velocity index components
  */
 export const VELOCITY_WEIGHTS = {
-  daysOnMarket: 0.4,      // 40% - How fast properties sell
-  absorption: 0.25,        // 25% - Monthly sales rate
-  inventory: 0.1,          // 10% - Months of inventory
-  permitActivity: 0.15,    // 15% - Construction activity
+  daysOnMarket: 0.4, // 40% - How fast properties sell
+  absorption: 0.25, // 25% - Monthly sales rate
+  inventory: 0.1, // 10% - Months of inventory
+  permitActivity: 0.15, // 15% - Construction activity
   investmentConviction: 0.1, // 10% - Investment quality
 } as const;
 
@@ -64,9 +64,8 @@ export function calculateAbsorptionRate(marketData: RentCastMarketData): number 
   const monthlyData = marketData.monthlyData || [];
   const recentMonths = monthlyData.slice(-3);
 
-  // If no monthly data, estimate from inventory and DOM
+  // If no monthly data, estimate from DOM
   if (recentMonths.length === 0) {
-    const inventory = marketData.inventory || 100;
     const daysOnMarket = marketData.daysOnMarket || 45;
 
     // If DOM is 30 days, roughly 1 cycle per month = 100% absorption
@@ -380,13 +379,9 @@ export function generateWholesaleImplications(velocity: MarketVelocityIndex): st
     implications.push(
       'This is a neutral market - extra due diligence recommended before locking up deals.'
     );
-    implications.push(
-      'Consider having backup buyers lined up before making offers.'
-    );
+    implications.push('Consider having backup buyers lined up before making offers.');
   } else {
-    implications.push(
-      'Caution advised in this market - assignment risk is elevated.'
-    );
+    implications.push('Caution advised in this market - assignment risk is elevated.');
     implications.push(
       'Consider longer contract periods or having buyers pre-committed before making offers.'
     );
@@ -406,9 +401,7 @@ export function generateWholesaleImplications(velocity: MarketVelocityIndex): st
   }
 
   if (velocity.permitActivityScore >= 70) {
-    implications.push(
-      'Strong permit activity suggests investor interest in the area.'
-    );
+    implications.push('Strong permit activity suggests investor interest in the area.');
   }
 
   return implications.join(' ');
@@ -445,9 +438,7 @@ export function generateComparisonAnalysis(velocities: MarketVelocityIndex[]): s
 
   // Recommendation
   if (best.velocityIndex - worst.velocityIndex > 20) {
-    analysis.push(
-      `${best.city || best.zipCode} is significantly stronger for wholesaling.`
-    );
+    analysis.push(`${best.city || best.zipCode} is significantly stronger for wholesaling.`);
   } else {
     analysis.push('Both markets are relatively comparable for wholesaling activity.');
   }

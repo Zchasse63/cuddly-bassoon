@@ -11,7 +11,6 @@ import type {
   OwnerClassification,
   OwnerPrimaryClass,
   RawPropertySignals,
-  NormalizedSignals,
   ScoringFactor,
   ScoringModelConfig,
   ScoringRules,
@@ -36,38 +35,38 @@ export const individualOwnerModel: ScoringModelConfig = {
   ownerClasses: ['individual'],
 
   weights: {
-    equity: 0.20,
+    equity: 0.2,
     duration: 0.25,
     marketPressure: 0.15,
-    condition: 0.20,
-    distress: 0.20,
+    condition: 0.2,
+    distress: 0.2,
   },
 
   scoringRules: {
     duration: {
       shortTermThresholdYears: 3,
       longTermThresholdYears: 10,
-      shortTermScore: 30,           // Recent purchase = low motivation
-      longTermScore: 80,            // Long ownership = HIGH motivation (life change)
+      shortTermScore: 30, // Recent purchase = low motivation
+      longTermScore: 80, // Long ownership = HIGH motivation (life change)
       invertForInvestor: false,
     },
     equity: {
       lowEquityPercent: 20,
       highEquityPercent: 80,
-      lowEquityScore: 40,           // Low equity = harder to sell
-      highEquityScore: 70,          // High equity = capability, moderate motivation
+      lowEquityScore: 40, // Low equity = harder to sell
+      highEquityScore: 70, // High equity = capability, moderate motivation
       invertForInvestor: false,
     },
     market: {
       hotMarketDom: 20,
       coldMarketDom: 60,
-      hotMarketScore: 30,           // Hot market = less motivated (can wait)
-      coldMarketScore: 70,          // Cold market = more motivated
+      hotMarketScore: 30, // Hot market = less motivated (can wait)
+      coldMarketScore: 70, // Cold market = more motivated
     },
     adjustments: {
-      trustBonusPoints: 15,         // Trust = likely estate
-      reoDiscountPoints: 0,         // N/A for individuals
-      distressMultiplier: 1.5,      // Distress signals amplified
+      trustBonusPoints: 15, // Trust = likely estate
+      reoDiscountPoints: 0, // N/A for individuals
+      distressMultiplier: 1.5, // Distress signals amplified
     },
   },
 };
@@ -87,37 +86,37 @@ export const investorOwnerModel: ScoringModelConfig = {
 
   weights: {
     equity: 0.15,
-    duration: 0.20,
+    duration: 0.2,
     marketPressure: 0.15,
-    condition: 0.30,        // Property condition is key for "tired landlord"
-    distress: 0.20,
+    condition: 0.3, // Property condition is key for "tired landlord"
+    distress: 0.2,
   },
 
   scoringRules: {
     duration: {
       shortTermThresholdYears: 2,
       longTermThresholdYears: 10,
-      shortTermScore: 60,           // Recent purchase = possible flip
-      longTermScore: 25,            // Long ownership = STABLE, LOW motivation
-      invertForInvestor: true,      // INVERTED from individual
+      shortTermScore: 60, // Recent purchase = possible flip
+      longTermScore: 25, // Long ownership = STABLE, LOW motivation
+      invertForInvestor: true, // INVERTED from individual
     },
     equity: {
       lowEquityPercent: 20,
       highEquityPercent: 80,
-      lowEquityScore: 50,           // Low equity = might need to sell
-      highEquityScore: 20,          // High equity = NO motivation (why sell?)
-      invertForInvestor: true,      // INVERTED from individual
+      lowEquityScore: 50, // Low equity = might need to sell
+      highEquityScore: 20, // High equity = NO motivation (why sell?)
+      invertForInvestor: true, // INVERTED from individual
     },
     market: {
       hotMarketDom: 20,
       coldMarketDom: 60,
-      hotMarketScore: 60,           // Hot market = good time to exit
-      coldMarketScore: 40,          // Cold market = hold
+      hotMarketScore: 60, // Hot market = good time to exit
+      coldMarketScore: 40, // Cold market = hold
     },
     adjustments: {
-      trustBonusPoints: 5,          // Living trust = estate planning, not distress
-      reoDiscountPoints: 0,         // N/A for investors
-      distressMultiplier: 2.0,      // Distress signals are KEY for investors
+      trustBonusPoints: 5, // Living trust = estate planning, not distress
+      reoDiscountPoints: 0, // N/A for investors
+      distressMultiplier: 2.0, // Distress signals are KEY for investors
     },
   },
 };
@@ -137,38 +136,38 @@ export const institutionalOwnerModel: ScoringModelConfig = {
   ownerClasses: ['institutional_distressed'],
 
   weights: {
-    equity: 0.05,           // Banks don't care about equity (they own the debt)
-    duration: 0.15,         // How long in REO affects bank motivation
-    marketPressure: 0.25,   // Market conditions affect institutional timeline
-    condition: 0.25,        // Condition affects pricing strategy
-    distress: 0.30,         // Distress level is primary factor
+    equity: 0.05, // Banks don't care about equity (they own the debt)
+    duration: 0.15, // How long in REO affects bank motivation
+    marketPressure: 0.25, // Market conditions affect institutional timeline
+    condition: 0.25, // Condition affects pricing strategy
+    distress: 0.3, // Distress level is primary factor
   },
 
   scoringRules: {
     duration: {
-      shortTermThresholdYears: 0.5,   // 6 months in REO
-      longTermThresholdYears: 2,      // 2+ years in REO = very motivated bank
-      shortTermScore: 40,             // New REO = bank still testing prices
-      longTermScore: 85,              // Long REO = bank desperate to move
+      shortTermThresholdYears: 0.5, // 6 months in REO
+      longTermThresholdYears: 2, // 2+ years in REO = very motivated bank
+      shortTermScore: 40, // New REO = bank still testing prices
+      longTermScore: 85, // Long REO = bank desperate to move
       invertForInvestor: false,
     },
     equity: {
       lowEquityPercent: 0,
       highEquityPercent: 100,
       lowEquityScore: 50,
-      highEquityScore: 50,            // Equity irrelevant for institutions
+      highEquityScore: 50, // Equity irrelevant for institutions
       invertForInvestor: false,
     },
     market: {
       hotMarketDom: 20,
       coldMarketDom: 60,
-      hotMarketScore: 75,             // Hot market = bank can move faster
-      coldMarketScore: 55,            // Cold market = bank still motivated but slower
+      hotMarketScore: 75, // Hot market = bank can move faster
+      coldMarketScore: 55, // Cold market = bank still motivated but slower
     },
     adjustments: {
-      trustBonusPoints: 25,           // Estate/probate = high motivation
-      reoDiscountPoints: -10,         // REO = motivated but slow (discount confidence)
-      distressMultiplier: 1.2,        // Already distressed, less amplification
+      trustBonusPoints: 25, // Estate/probate = high motivation
+      reoDiscountPoints: -10, // REO = motivated but slow (discount confidence)
+      distressMultiplier: 1.2, // Already distressed, less amplification
     },
   },
 };
@@ -230,7 +229,8 @@ function normalizeDurationScore(
   years: number,
   rules: ScoringRules
 ): { score: number; description: string } {
-  const { shortTermThresholdYears, longTermThresholdYears, shortTermScore, longTermScore } = rules.duration;
+  const { shortTermThresholdYears, longTermThresholdYears, shortTermScore, longTermScore } =
+    rules.duration;
 
   if (years < shortTermThresholdYears) {
     return {
@@ -333,7 +333,7 @@ function scorePropertyCondition(
     const permits = signals.recentPermits;
 
     // Abandoned/inactive permits = distress signal
-    const inactiveCount = permits.filter(p => p.status === 'inactive').length;
+    const inactiveCount = permits.filter((p) => p.status === 'inactive').length;
     if (inactiveCount > 0) {
       baseScore += 25;
       conditions.push(`${inactiveCount} abandoned permit(s)`);
@@ -341,9 +341,7 @@ function scorePropertyCondition(
 
     // Major repair permits = deferred maintenance
     const repairTags = ['roofing', 'plumbing', 'electrical', 'hvac', 'foundation'];
-    const repairPermits = permits.filter(p =>
-      p.tags?.some(tag => repairTags.includes(tag))
-    );
+    const repairPermits = permits.filter((p) => p.tags?.some((tag) => repairTags.includes(tag)));
     if (repairPermits.length > 0) {
       baseScore += 15;
       conditions.push('Major repair permits');
@@ -351,9 +349,8 @@ function scorePropertyCondition(
 
     // Recent renovation might mean flip or preparing to sell
     const renoTags = ['remodel', 'renovation', 'addition'];
-    const renoPermits = permits.filter(p =>
-      p.status === 'final' &&
-      p.tags?.some(tag => renoTags.includes(tag))
+    const renoPermits = permits.filter(
+      (p) => p.status === 'final' && p.tags?.some((tag) => renoTags.includes(tag))
     );
     if (renoPermits.length > 0) {
       baseScore -= 10; // Lower motivation (just renovated)
@@ -435,7 +432,12 @@ export function calculateMotivationScore(
       weight: model.weights.duration,
       rawValue: `${ownershipYears.toFixed(1)} years`,
       normalizedScore: durationResult.score,
-      impact: durationResult.score >= 60 ? 'positive' : durationResult.score <= 40 ? 'negative' : 'neutral',
+      impact:
+        durationResult.score >= 60
+          ? 'positive'
+          : durationResult.score <= 40
+            ? 'negative'
+            : 'neutral',
       description: model.scoringRules.duration.invertForInvestor
         ? `${durationResult.description} - ${durationResult.score >= 60 ? 'May be exiting investment' : 'Stable hold, low motivation'}`
         : `${durationResult.description} - ${durationResult.score >= 60 ? 'Likely life transition' : 'Recent purchase, likely staying'}`,
@@ -453,7 +455,8 @@ export function calculateMotivationScore(
       weight: model.weights.equity,
       rawValue: `${equityPercent.toFixed(0)}%`,
       normalizedScore: equityResult.score,
-      impact: equityResult.score >= 60 ? 'positive' : equityResult.score <= 40 ? 'negative' : 'neutral',
+      impact:
+        equityResult.score >= 60 ? 'positive' : equityResult.score <= 40 ? 'negative' : 'neutral',
       description: model.scoringRules.equity.invertForInvestor
         ? `${equityResult.description} - ${equityResult.score >= 60 ? 'May take profit' : 'No urgency to sell'}`
         : `${equityResult.description} - ${equityResult.score >= 60 ? 'Flexibility to sell' : 'Limited selling options'}`,
@@ -470,7 +473,8 @@ export function calculateMotivationScore(
       weight: model.weights.marketPressure,
       rawValue: signals.daysOnMarket,
       normalizedScore: marketResult.score,
-      impact: marketResult.score >= 60 ? 'positive' : marketResult.score <= 40 ? 'negative' : 'neutral',
+      impact:
+        marketResult.score >= 60 ? 'positive' : marketResult.score <= 40 ? 'negative' : 'neutral',
       description: marketResult.description,
       dataSource: 'rentcast',
     });
@@ -478,20 +482,31 @@ export function calculateMotivationScore(
   }
 
   // 4. Property Condition Score
-  const conditionResult = scorePropertyCondition(signals, model.scoringRules.adjustments.distressMultiplier);
+  const conditionResult = scorePropertyCondition(
+    signals,
+    model.scoringRules.adjustments.distressMultiplier
+  );
   factors.push({
     name: 'Property Condition',
     weight: model.weights.condition,
     rawValue: signals.recentPermits?.length || 0,
     normalizedScore: conditionResult.score,
-    impact: conditionResult.score >= 60 ? 'positive' : conditionResult.score <= 40 ? 'negative' : 'neutral',
+    impact:
+      conditionResult.score >= 60
+        ? 'positive'
+        : conditionResult.score <= 40
+          ? 'negative'
+          : 'neutral',
     description: conditionResult.description,
     dataSource: 'shovels',
   });
   totalScore += conditionResult.score * model.weights.condition;
 
   // 5. Distress Signals Score
-  const distressResult = scoreDistressSignals(signals, model.scoringRules.adjustments.distressMultiplier);
+  const distressResult = scoreDistressSignals(
+    signals,
+    model.scoringRules.adjustments.distressMultiplier
+  );
   if (distressResult.factors.length > 0) {
     factors.push({
       name: 'Distress Indicators',
@@ -503,13 +518,13 @@ export function calculateMotivationScore(
       dataSource: 'supabase',
     });
     totalScore += distressResult.score * model.weights.distress;
-    riskFactors.push(...distressResult.factors.map(f => `Distress signal: ${f}`));
+    riskFactors.push(...distressResult.factors.map((f) => `Distress signal: ${f}`));
   } else {
     factors.push({
       name: 'Distress Indicators',
       weight: model.weights.distress,
       rawValue: null,
-      normalizedScore: 30,  // Low base score when no distress
+      normalizedScore: 30, // Low base score when no distress
       impact: 'neutral',
       description: 'No active distress signals detected',
       dataSource: 'supabase',
@@ -535,18 +550,13 @@ export function calculateMotivationScore(
 
   // Calculate confidence based on data availability
   const maxFactors = 5;
-  const factorsWithData = factors.filter(f => f.rawValue !== null).length;
+  const factorsWithData = factors.filter((f) => f.rawValue !== null).length;
   const dataConfidence = factorsWithData / maxFactors;
   const classificationConfidence = classification.confidence;
-  const overallConfidence = (dataConfidence * 0.6 + classificationConfidence * 0.4);
+  const overallConfidence = dataConfidence * 0.6 + classificationConfidence * 0.4;
 
   // Generate recommendation
-  const recommendation = generateRecommendation(
-    finalScore,
-    classification,
-    factors,
-    riskFactors
-  );
+  const recommendation = generateRecommendation(finalScore, classification, factors, riskFactors);
 
   return {
     score: finalScore,
@@ -606,7 +616,9 @@ function generateRecommendation(
   }
 
   // Key factor callout
-  const highImpactFactors = factors.filter(f => f.impact === 'positive' && f.normalizedScore >= 70);
+  const highImpactFactors = factors.filter(
+    (f) => f.impact === 'positive' && f.normalizedScore >= 70
+  );
   if (highImpactFactors.length > 0) {
     parts.push(`Key positive factor: ${highImpactFactors[0]!.name}.`);
   }

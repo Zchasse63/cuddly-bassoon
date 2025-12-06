@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid parameters',
-          details: validation.error.errors,
+          details: validation.error.issues,
         },
         { status: 400 }
       );
@@ -78,9 +78,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[Market Velocity API] Rankings error:', error);
 
-    return NextResponse.json(
-      { error: 'Failed to get market rankings' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get market rankings' }, { status: 500 });
   }
 }

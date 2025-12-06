@@ -8,15 +8,8 @@ import {
   findSimilarDeals,
   getOutcomePattern,
   getHistoricalDealCount,
-  buildDealEmbeddingText,
 } from './search';
-import type {
-  DealSearchResult,
-  DealOutcomePattern,
-  DealPredictionContext,
-  DealType,
-  SellerType,
-} from './types';
+import type { DealSearchResult, DealPredictionContext, DealType, SellerType } from './types';
 
 /**
  * Build a prediction context for a new deal using historical data
@@ -32,17 +25,8 @@ export async function buildDealPredictionContext(options: {
   propertyType?: string;
   lessonsQuery?: string; // Specific question to search for relevant lessons
 }): Promise<DealPredictionContext> {
-  const {
-    address,
-    city,
-    state,
-    dealType,
-    sellerType,
-    purchasePrice,
-    arv,
-    propertyType,
-    lessonsQuery,
-  } = options;
+  const { city, state, dealType, sellerType, purchasePrice, arv, propertyType, lessonsQuery } =
+    options;
 
   // Check if we have any historical data
   const dealCount = await getHistoricalDealCount();
@@ -95,9 +79,8 @@ export async function buildDealPredictionContext(options: {
     queryParts.push(lessonsQuery);
   }
 
-  const searchQuery = queryParts.length > 0
-    ? queryParts.join('. ')
-    : 'Successful wholesale real estate deal';
+  const searchQuery =
+    queryParts.length > 0 ? queryParts.join('. ') : 'Successful wholesale real estate deal';
 
   // Parallel search for similar deals
   const [semanticResults, attributeResults, outcomePattern] = await Promise.all([
@@ -148,8 +131,8 @@ export async function buildDealPredictionContext(options: {
   }
 
   // Calculate predictions from similar deals
-  const successfulDeals = similarDeals.filter(d => d.outcome === 'success');
-  const failedDeals = similarDeals.filter(d => d.outcome && d.outcome !== 'success');
+  const successfulDeals = similarDeals.filter((d) => d.outcome === 'success');
+  const failedDeals = similarDeals.filter((d) => d.outcome && d.outcome !== 'success');
 
   // Success rate prediction
   let predictedSuccessRate: number;
@@ -158,7 +141,8 @@ export async function buildDealPredictionContext(options: {
     predictedSuccessRate = outcomePattern.successRate;
   } else if (similarDeals.length >= 3) {
     // Calculate from similar deals
-    predictedSuccessRate = successfulDeals.length / (successfulDeals.length + failedDeals.length) || 0.5;
+    predictedSuccessRate =
+      successfulDeals.length / (successfulDeals.length + failedDeals.length) || 0.5;
   } else {
     // Default with low confidence
     predictedSuccessRate = 0.65;
@@ -170,11 +154,12 @@ export async function buildDealPredictionContext(options: {
     predictedDaysToClose = Math.round(outcomePattern.avgDaysToClose);
   } else {
     const daysToCloseValues = successfulDeals
-      .filter(d => d.daysToClose)
-      .map(d => d.daysToClose!);
-    predictedDaysToClose = daysToCloseValues.length > 0
-      ? Math.round(daysToCloseValues.reduce((a, b) => a + b, 0) / daysToCloseValues.length)
-      : 30;
+      .filter((d) => d.daysToClose)
+      .map((d) => d.daysToClose!);
+    predictedDaysToClose =
+      daysToCloseValues.length > 0
+        ? Math.round(daysToCloseValues.reduce((a, b) => a + b, 0) / daysToCloseValues.length)
+        : 30;
   }
 
   // Profit prediction
@@ -182,9 +167,7 @@ export async function buildDealPredictionContext(options: {
   if (outcomePattern?.avgProfit) {
     predictedProfit = outcomePattern.avgProfit;
   } else {
-    const profits = successfulDeals
-      .filter(d => d.profit !== undefined)
-      .map(d => d.profit!);
+    const profits = successfulDeals.filter((d) => d.profit !== undefined).map((d) => d.profit!);
     if (profits.length > 0) {
       predictedProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
     }
@@ -194,9 +177,7 @@ export async function buildDealPredictionContext(options: {
   const riskFactors: string[] = [];
 
   // Analyze failure reasons
-  const failureReasons = failedDeals
-    .filter(d => d.outcome)
-    .map(d => d.outcome!);
+  const failureReasons = failedDeals.filter((d) => d.outcome).map((d) => d.outcome!);
 
   const failureCounts: Record<string, number> = {};
   for (const reason of failureReasons) {
@@ -204,7 +185,9 @@ export async function buildDealPredictionContext(options: {
   }
 
   if (outcomePattern?.mostCommonFailureReason) {
-    riskFactors.push(`Common failure in similar deals: ${outcomePattern.mostCommonFailureReason.replace('_', ' ')}`);
+    riskFactors.push(
+      `Common failure in similar deals: ${outcomePattern.mostCommonFailureReason.replace('_', ' ')}`
+    );
   }
 
   for (const [reason, count] of Object.entries(failureCounts)) {
@@ -220,8 +203,8 @@ export async function buildDealPredictionContext(options: {
   // Extract recommendations from lessons learned
   const recommendations: string[] = [];
   const allLessons = similarDeals
-    .filter(d => d.lessonsLearned)
-    .map(d => d.lessonsLearned!)
+    .filter((d) => d.lessonsLearned)
+    .map((d) => d.lessonsLearned!)
     .slice(0, 3);
 
   for (const lesson of allLessons) {

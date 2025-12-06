@@ -54,24 +54,22 @@ async function checkSupabase(): Promise<ServiceStatus> {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SECRET_KEY!
     );
-    
-    const { error } = await supabase
-      .from('embeddings')
-      .select('*', { count: 'exact', head: true });
-    
+
+    const { error } = await supabase.from('embeddings').select('*', { count: 'exact', head: true });
+
     const latencyMs = Date.now() - start;
-    
+
     if (error) {
       return { status: 'down', latencyMs, error: error.message };
     }
-    
-    return { 
-      status: latencyMs > 2000 ? 'slow' : 'up', 
+
+    return {
+      status: latencyMs > 2000 ? 'slow' : 'up',
       latencyMs,
     };
   } catch (error) {
-    return { 
-      status: 'down', 
+    return {
+      status: 'down',
       latencyMs: Date.now() - start,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
@@ -84,14 +82,14 @@ async function checkRedis(): Promise<ServiceStatus> {
     // Simple ping test
     await redis.ping();
     const latencyMs = Date.now() - start;
-    
-    return { 
-      status: latencyMs > 500 ? 'slow' : 'up', 
+
+    return {
+      status: latencyMs > 500 ? 'slow' : 'up',
       latencyMs,
     };
   } catch (error) {
-    return { 
-      status: 'down', 
+    return {
+      status: 'down',
       latencyMs: Date.now() - start,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
@@ -104,23 +102,23 @@ async function checkOpenAI(): Promise<ServiceStatus> {
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-    
+
     // Minimal embedding request to verify API is working
     await client.embeddings.create({
       model: 'text-embedding-3-small',
       input: 'health check',
       dimensions: 1536,
     });
-    
+
     const latencyMs = Date.now() - start;
-    
-    return { 
-      status: latencyMs > 3000 ? 'slow' : 'up', 
+
+    return {
+      status: latencyMs > 3000 ? 'slow' : 'up',
       latencyMs,
     };
   } catch (error) {
-    return { 
-      status: 'down', 
+    return {
+      status: 'down',
       latencyMs: Date.now() - start,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
@@ -156,7 +154,6 @@ async function checkXai(): Promise<ServiceStatus> {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_request: NextRequest) {
   try {
     // Run all health checks in parallel
@@ -169,14 +166,14 @@ export async function GET(_request: NextRequest) {
     ]);
 
     const services = { supabase, redis: redisStatus, openai, xai: xaiStatus };
-    
+
     // Determine overall status
-    const statuses = Object.values(services).map(s => s.status);
+    const statuses = Object.values(services).map((s) => s.status);
     let overallStatus: 'healthy' | 'unhealthy' | 'degraded' = 'healthy';
-    
-    if (statuses.some(s => s === 'down')) {
+
+    if (statuses.some((s) => s === 'down')) {
       overallStatus = 'unhealthy';
-    } else if (statuses.some(s => s === 'slow')) {
+    } else if (statuses.some((s) => s === 'slow')) {
       overallStatus = 'degraded';
     }
 
@@ -196,7 +193,7 @@ export async function GET(_request: NextRequest) {
   } catch (error) {
     console.error('Health check error:', error);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         status: 'unhealthy',
         timestamp: new Date().toISOString(),
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -205,4 +202,3 @@ export async function GET(_request: NextRequest) {
     );
   }
 }
-

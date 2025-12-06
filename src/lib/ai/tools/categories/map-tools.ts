@@ -10,7 +10,7 @@ import { ToolDefinition, ToolHandler } from '../types';
 import { MAP_CONFIG, MAPBOX_TOKEN } from '@/lib/map/config';
 import { fetchIsochrone, TravelProfile } from '@/lib/map/isochrone';
 import { getNearbyPOIs, queryTileset, MAPBOX_TILESETS } from '@/lib/map/tilequery';
-import { calculateDistance, GeoPoint, MapBounds } from '@/lib/map/utils';
+import { MapBounds } from '@/lib/map/utils';
 
 // ============================================================================
 // Shared Types
@@ -28,11 +28,13 @@ const drawSearchAreaInput = z.object({
   radiusMiles: z.number().min(0.1).max(50).optional(),
   shape: z.enum(['circle', 'rectangle', 'polygon']).default('circle'),
   polygonPoints: z.array(geoPointSchema).min(3).optional(),
-  filters: z.object({
-    propertyTypes: z.array(z.string()).optional(),
-    priceRange: z.object({ min: z.number(), max: z.number() }).optional(),
-    status: z.array(z.string()).optional(),
-  }).optional(),
+  filters: z
+    .object({
+      propertyTypes: z.array(z.string()).optional(),
+      priceRange: z.object({ min: z.number(), max: z.number() }).optional(),
+      status: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 const drawSearchAreaOutput = z.object({
@@ -56,7 +58,8 @@ type DrawSearchAreaOutput = z.infer<typeof drawSearchAreaOutput>;
 const drawSearchAreaDefinition: ToolDefinition<DrawSearchAreaInput, DrawSearchAreaOutput> = {
   id: 'map.draw_search_area',
   name: 'Draw Search Area',
-  description: 'Create a search area on the map by defining a center point and radius, or drawing a polygon. Returns the bounds and property count within the area.',
+  description:
+    'Create a search area on the map by defining a center point and radius, or drawing a polygon. Returns the bounds and property count within the area.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: drawSearchAreaInput,
@@ -67,7 +70,9 @@ const drawSearchAreaDefinition: ToolDefinition<DrawSearchAreaInput, DrawSearchAr
   tags: ['map', 'search', 'area', 'polygon'],
 };
 
-const drawSearchAreaHandler: ToolHandler<DrawSearchAreaInput, DrawSearchAreaOutput> = async (input) => {
+const drawSearchAreaHandler: ToolHandler<DrawSearchAreaInput, DrawSearchAreaOutput> = async (
+  input
+) => {
   const { center, radiusMiles = 5, shape, polygonPoints } = input;
 
   let bounds: MapBounds;
@@ -75,8 +80,8 @@ const drawSearchAreaHandler: ToolHandler<DrawSearchAreaInput, DrawSearchAreaOutp
 
   if (shape === 'polygon' && polygonPoints && polygonPoints.length >= 3) {
     // Calculate bounds from polygon points
-    const lats = polygonPoints.map(p => p.lat);
-    const lngs = polygonPoints.map(p => p.lng);
+    const lats = polygonPoints.map((p) => p.lat);
+    const lngs = polygonPoints.map((p) => p.lng);
     bounds = {
       north: Math.max(...lats),
       south: Math.min(...lats),
@@ -85,12 +90,17 @@ const drawSearchAreaHandler: ToolHandler<DrawSearchAreaInput, DrawSearchAreaOutp
     };
     geometry = {
       type: 'Polygon',
-      coordinates: [[...polygonPoints.map(p => [p.lng, p.lat]), [polygonPoints[0]!.lng, polygonPoints[0]!.lat]]],
+      coordinates: [
+        [
+          ...polygonPoints.map((p) => [p.lng, p.lat]),
+          [polygonPoints[0]!.lng, polygonPoints[0]!.lat],
+        ],
+      ],
     };
   } else {
     // Calculate bounds from circle (approximate)
     const latDelta = radiusMiles / 69; // ~69 miles per degree latitude
-    const lngDelta = radiusMiles / (69 * Math.cos(center.lat * Math.PI / 180));
+    const lngDelta = radiusMiles / (69 * Math.cos((center.lat * Math.PI) / 180));
     bounds = {
       north: center.lat + latDelta,
       south: center.lat - latDelta,
@@ -148,25 +158,42 @@ const drawSearchAreaHandler: ToolHandler<DrawSearchAreaInput, DrawSearchAreaOutp
 // Compare Areas Tool
 // ============================================================================
 const compareAreasInput = z.object({
-  areas: z.array(z.object({
-    name: z.string(),
-    center: geoPointSchema,
-    radiusMiles: z.number().min(0.1).max(50).default(3),
-  })).min(2).max(5),
-  metrics: z.array(z.enum([
-    'avg_price', 'price_growth', 'days_on_market', 'inventory',
-    'price_per_sqft', 'rental_yield', 'appreciation', 'crime_rate',
-  ])).default(['avg_price', 'days_on_market', 'inventory']),
+  areas: z
+    .array(
+      z.object({
+        name: z.string(),
+        center: geoPointSchema,
+        radiusMiles: z.number().min(0.1).max(50).default(3),
+      })
+    )
+    .min(2)
+    .max(5),
+  metrics: z
+    .array(
+      z.enum([
+        'avg_price',
+        'price_growth',
+        'days_on_market',
+        'inventory',
+        'price_per_sqft',
+        'rental_yield',
+        'appreciation',
+        'crime_rate',
+      ])
+    )
+    .default(['avg_price', 'days_on_market', 'inventory']),
 });
 
 const compareAreasOutput = z.object({
-  comparison: z.array(z.object({
-    areaName: z.string(),
-    center: geoPointSchema,
-    metrics: z.record(z.number()),
-    ranking: z.number(),
-    recommendation: z.string(),
-  })),
+  comparison: z.array(
+    z.object({
+      areaName: z.string(),
+      center: geoPointSchema,
+      metrics: z.record(z.string(), z.number()),
+      ranking: z.number(),
+      recommendation: z.string(),
+    })
+  ),
   bestArea: z.string(),
   summary: z.string(),
 });
@@ -177,7 +204,8 @@ type CompareAreasOutput = z.infer<typeof compareAreasOutput>;
 const compareAreasDefinition: ToolDefinition<CompareAreasInput, CompareAreasOutput> = {
   id: 'map.compare_areas',
   name: 'Compare Areas',
-  description: 'Compare multiple geographic areas based on real estate metrics like average price, days on market, inventory levels, and appreciation rates.',
+  description:
+    'Compare multiple geographic areas based on real estate metrics like average price, days on market, inventory levels, and appreciation rates.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: compareAreasInput,
@@ -188,66 +216,77 @@ const compareAreasDefinition: ToolDefinition<CompareAreasInput, CompareAreasOutp
   tags: ['map', 'compare', 'analysis', 'metrics'],
 };
 
-const compareAreasHandler: ToolHandler<CompareAreasInput, CompareAreasOutput> = async (input, context) => {
+const compareAreasHandler: ToolHandler<CompareAreasInput, CompareAreasOutput> = async (
+  input,
+  _context
+) => {
   const { areas, metrics } = input;
 
   // Query real market data for each area via spatial analysis
-  const comparison = await Promise.all(areas.map(async (area, index) => {
-    // Get POI density as a proxy for area development
-    let poiCount = 0;
-    try {
-      if (MAPBOX_TOKEN) {
-        const pois = await getNearbyPOIs(area.center.lng, area.center.lat, area.radiusMiles * 1609.34);
-        poiCount = pois.length;
+  const comparison = await Promise.all(
+    areas.map(async (area, index) => {
+      // Get POI density as a proxy for area development
+      let poiCount = 0;
+      try {
+        if (MAPBOX_TOKEN) {
+          const pois = await getNearbyPOIs(
+            area.center.lng,
+            area.center.lat,
+            area.radiusMiles * 1609.34
+          );
+          poiCount = pois.length;
+        }
+      } catch {
+        poiCount = Math.floor(Math.random() * 30) + 10;
       }
-    } catch {
-      poiCount = Math.floor(Math.random() * 30) + 10;
-    }
 
-    // Calculate metrics based on location analysis
-    const metricsData: Record<string, number> = {};
-    const urbanityScore = poiCount / 50; // 0-1 scale based on POI density
+      // Calculate metrics based on location analysis
+      const metricsData: Record<string, number> = {};
+      const urbanityScore = poiCount / 50; // 0-1 scale based on POI density
 
-    for (const metric of metrics) {
-      switch (metric) {
-        case 'avg_price':
-          metricsData[metric] = Math.round(200000 + urbanityScore * 300000 + (area.center.lat % 1) * 100000);
-          break;
-        case 'price_growth':
-          metricsData[metric] = parseFloat((3 + urbanityScore * 7).toFixed(2));
-          break;
-        case 'days_on_market':
-          metricsData[metric] = Math.round(45 - urbanityScore * 25);
-          break;
-        case 'inventory':
-          metricsData[metric] = Math.round(50 + Math.random() * 100);
-          break;
-        case 'price_per_sqft':
-          metricsData[metric] = Math.round(120 + urbanityScore * 180);
-          break;
-        case 'rental_yield':
-          metricsData[metric] = parseFloat((4 + (1 - urbanityScore) * 4).toFixed(2));
-          break;
-        case 'appreciation':
-          metricsData[metric] = parseFloat((2 + urbanityScore * 6).toFixed(2));
-          break;
-        case 'crime_rate':
-          metricsData[metric] = parseFloat((1 + Math.random() * 5).toFixed(2));
-          break;
+      for (const metric of metrics) {
+        switch (metric) {
+          case 'avg_price':
+            metricsData[metric] = Math.round(
+              200000 + urbanityScore * 300000 + (area.center.lat % 1) * 100000
+            );
+            break;
+          case 'price_growth':
+            metricsData[metric] = parseFloat((3 + urbanityScore * 7).toFixed(2));
+            break;
+          case 'days_on_market':
+            metricsData[metric] = Math.round(45 - urbanityScore * 25);
+            break;
+          case 'inventory':
+            metricsData[metric] = Math.round(50 + Math.random() * 100);
+            break;
+          case 'price_per_sqft':
+            metricsData[metric] = Math.round(120 + urbanityScore * 180);
+            break;
+          case 'rental_yield':
+            metricsData[metric] = parseFloat((4 + (1 - urbanityScore) * 4).toFixed(2));
+            break;
+          case 'appreciation':
+            metricsData[metric] = parseFloat((2 + urbanityScore * 6).toFixed(2));
+            break;
+          case 'crime_rate':
+            metricsData[metric] = parseFloat((1 + Math.random() * 5).toFixed(2));
+            break;
+        }
       }
-    }
 
-    return {
-      areaName: area.name,
-      center: area.center,
-      metrics: metricsData,
-      ranking: index + 1, // Will be recalculated
-      recommendation: '',
-    };
-  }));
+      return {
+        areaName: area.name,
+        center: area.center,
+        metrics: metricsData,
+        ranking: index + 1, // Will be recalculated
+        recommendation: '',
+      };
+    })
+  );
 
   // Calculate rankings based on weighted score
-  const scores = comparison.map(area => {
+  const scores = comparison.map((area) => {
     let score = 0;
     if (area.metrics.price_growth) score += area.metrics.price_growth * 2;
     if (area.metrics.rental_yield) score += area.metrics.rental_yield * 1.5;
@@ -259,11 +298,12 @@ const compareAreasHandler: ToolHandler<CompareAreasInput, CompareAreasOutput> = 
   const sortedIndices = scores.map((_, i) => i).sort((a, b) => scores[b]! - scores[a]!);
   sortedIndices.forEach((originalIndex, rank) => {
     comparison[originalIndex]!.ranking = rank + 1;
-    comparison[originalIndex]!.recommendation = rank === 0
-      ? 'Best investment opportunity based on growth metrics'
-      : rank === sortedIndices.length - 1
-        ? 'Lower priority - consider other areas first'
-        : 'Moderate opportunity - good for diversification';
+    comparison[originalIndex]!.recommendation =
+      rank === 0
+        ? 'Best investment opportunity based on growth metrics'
+        : rank === sortedIndices.length - 1
+          ? 'Lower priority - consider other areas first'
+          : 'Moderate opportunity - good for diversification';
   });
 
   const bestAreaIndex = sortedIndices[0]!;
@@ -292,10 +332,12 @@ const showCommuteTimeOutput = z.object({
   minutes: z.number(),
   profile: z.string(),
   estimatedAreaSqMiles: z.number(),
-  travelInfo: z.object({
-    maxDistance: z.number(),
-    avgSpeed: z.number(),
-  }).optional(),
+  travelInfo: z
+    .object({
+      maxDistance: z.number(),
+      avgSpeed: z.number(),
+    })
+    .optional(),
 });
 
 type ShowCommuteTimeInput = z.infer<typeof showCommuteTimeInput>;
@@ -304,7 +346,8 @@ type ShowCommuteTimeOutput = z.infer<typeof showCommuteTimeOutput>;
 const showCommuteTimeDefinition: ToolDefinition<ShowCommuteTimeInput, ShowCommuteTimeOutput> = {
   id: 'map.show_commute_time',
   name: 'Show Commute Time',
-  description: 'Display isochrone (travel time) polygons on the map showing areas reachable within a specified time using Mapbox Isochrone API.',
+  description:
+    'Display isochrone (travel time) polygons on the map showing areas reachable within a specified time using Mapbox Isochrone API.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: showCommuteTimeInput,
@@ -315,7 +358,9 @@ const showCommuteTimeDefinition: ToolDefinition<ShowCommuteTimeInput, ShowCommut
   tags: ['map', 'commute', 'isochrone', 'travel'],
 };
 
-const showCommuteTimeHandler: ToolHandler<ShowCommuteTimeInput, ShowCommuteTimeOutput> = async (input) => {
+const showCommuteTimeHandler: ToolHandler<ShowCommuteTimeInput, ShowCommuteTimeOutput> = async (
+  input
+) => {
   const { center, minutes, profile } = input;
 
   let geometry: unknown;
@@ -323,10 +368,10 @@ const showCommuteTimeHandler: ToolHandler<ShowCommuteTimeInput, ShowCommuteTimeO
 
   // Average speeds by profile (mph)
   const avgSpeeds: Record<TravelProfile, number> = {
-    'driving': 35,
+    driving: 35,
     'driving-traffic': 25,
-    'walking': 3,
-    'cycling': 12,
+    walking: 3,
+    cycling: 12,
   };
 
   const avgSpeed = avgSpeeds[profile as TravelProfile] || 35;
@@ -351,7 +396,7 @@ const showCommuteTimeHandler: ToolHandler<ShowCommuteTimeInput, ShowCommuteTimeO
 
     // Generate approximate circle geometry
     const latDelta = maxDistance / 69;
-    const lngDelta = maxDistance / (69 * Math.cos(center.lat * Math.PI / 180));
+    const lngDelta = maxDistance / (69 * Math.cos((center.lat * Math.PI) / 180));
 
     const points: [number, number][] = [];
     for (let i = 0; i <= 32; i++) {
@@ -364,19 +409,21 @@ const showCommuteTimeHandler: ToolHandler<ShowCommuteTimeInput, ShowCommuteTimeO
 
     geometry = {
       type: 'FeatureCollection',
-      features: [{
-        type: 'Feature',
-        properties: {
-          contour: minutes,
-          color: '#3b82f6',
-          fillColor: '#3b82f6',
-          fillOpacity: 0.2,
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            contour: minutes,
+            color: '#3b82f6',
+            fillColor: '#3b82f6',
+            fillOpacity: 0.2,
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [points],
+          },
         },
-        geometry: {
-          type: 'Polygon',
-          coordinates: [points],
-        },
-      }],
+      ],
     };
 
     estimatedAreaSqMiles = Math.PI * maxDistance * maxDistance;
@@ -414,7 +461,8 @@ type ToggleStyleOutput = z.infer<typeof toggleStyleOutput>;
 const toggleStyleDefinition: ToolDefinition<ToggleStyleInput, ToggleStyleOutput> = {
   id: 'map.toggle_style',
   name: 'Toggle Map Style',
-  description: 'Switch between different map visual styles: streets, satellite, satellite-streets, light, or dark mode.',
+  description:
+    'Switch between different map visual styles: streets, satellite, satellite-streets, light, or dark mode.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: toggleStyleInput,
@@ -425,7 +473,10 @@ const toggleStyleDefinition: ToolDefinition<ToggleStyleInput, ToggleStyleOutput>
   tags: ['map', 'style', 'visualization'],
 };
 
-const toggleStyleHandler: ToolHandler<ToggleStyleInput, ToggleStyleOutput> = async (input, context) => {
+const toggleStyleHandler: ToolHandler<ToggleStyleInput, ToggleStyleOutput> = async (
+  input,
+  context
+) => {
   const styleUrls: Record<string, string> = {
     streets: MAP_CONFIG.styles.streets,
     satellite: MAP_CONFIG.styles.satellite,
@@ -454,13 +505,15 @@ const spatialQueryInput = z.object({
 });
 
 const spatialQueryOutput = z.object({
-  features: z.array(z.object({
-    name: z.string().optional(),
-    category: z.string().optional(),
-    distance: z.number(),
-    coordinates: geoPointSchema,
-    properties: z.record(z.unknown()),
-  })),
+  features: z.array(
+    z.object({
+      name: z.string().optional(),
+      category: z.string().optional(),
+      distance: z.number(),
+      coordinates: geoPointSchema,
+      properties: z.record(z.string(), z.unknown()),
+    })
+  ),
   totalFound: z.number(),
   searchRadius: z.number(),
 });
@@ -471,7 +524,8 @@ type SpatialQueryOutput = z.infer<typeof spatialQueryOutput>;
 const spatialQueryDefinition: ToolDefinition<SpatialQueryInput, SpatialQueryOutput> = {
   id: 'map.spatial_query',
   name: 'Spatial Query',
-  description: 'Query points of interest (POIs) near a location using Mapbox Tilequery API. Find schools, restaurants, shops, and other amenities.',
+  description:
+    'Query points of interest (POIs) near a location using Mapbox Tilequery API. Find schools, restaurants, shops, and other amenities.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: spatialQueryInput,
@@ -491,7 +545,7 @@ const spatialQueryHandler: ToolHandler<SpatialQueryInput, SpatialQueryOutput> = 
     if (MAPBOX_TOKEN) {
       const pois = await getNearbyPOIs(center.lng, center.lat, radiusMeters, poiTypes);
 
-      features = pois.slice(0, limit).map(poi => ({
+      features = pois.slice(0, limit).map((poi) => ({
         name: poi.properties.name as string | undefined,
         category: poi.properties.category_en as string | undefined,
         distance: poi.tilequery.distance,
@@ -520,35 +574,57 @@ const spatialQueryHandler: ToolHandler<SpatialQueryInput, SpatialQueryOutput> = 
 // Compare Neighborhoods Tool
 // ============================================================================
 const compareNeighborhoodsInput = z.object({
-  neighborhoods: z.array(z.object({
-    name: z.string(),
-    center: geoPointSchema,
-  })).min(2).max(4),
-  factors: z.array(z.enum([
-    'schools', 'crime', 'walkability', 'transit', 'restaurants',
-    'parks', 'shopping', 'healthcare', 'entertainment',
-  ])).default(['schools', 'walkability', 'transit']),
+  neighborhoods: z
+    .array(
+      z.object({
+        name: z.string(),
+        center: geoPointSchema,
+      })
+    )
+    .min(2)
+    .max(4),
+  factors: z
+    .array(
+      z.enum([
+        'schools',
+        'crime',
+        'walkability',
+        'transit',
+        'restaurants',
+        'parks',
+        'shopping',
+        'healthcare',
+        'entertainment',
+      ])
+    )
+    .default(['schools', 'walkability', 'transit']),
 });
 
 const compareNeighborhoodsOutput = z.object({
-  neighborhoods: z.array(z.object({
-    name: z.string(),
-    scores: z.record(z.number()),
-    overallScore: z.number(),
-    highlights: z.array(z.string()),
-    concerns: z.array(z.string()),
-  })),
+  neighborhoods: z.array(
+    z.object({
+      name: z.string(),
+      scores: z.record(z.string(), z.number()),
+      overallScore: z.number(),
+      highlights: z.array(z.string()),
+      concerns: z.array(z.string()),
+    })
+  ),
   recommendation: z.string(),
-  bestFor: z.record(z.string()),
+  bestFor: z.record(z.string(), z.string()),
 });
 
 type CompareNeighborhoodsInput = z.infer<typeof compareNeighborhoodsInput>;
 type CompareNeighborhoodsOutput = z.infer<typeof compareNeighborhoodsOutput>;
 
-const compareNeighborhoodsDefinition: ToolDefinition<CompareNeighborhoodsInput, CompareNeighborhoodsOutput> = {
+const compareNeighborhoodsDefinition: ToolDefinition<
+  CompareNeighborhoodsInput,
+  CompareNeighborhoodsOutput
+> = {
   id: 'map.compare_neighborhoods',
   name: 'Compare Neighborhoods',
-  description: 'Compare multiple neighborhoods based on livability factors like schools, walkability, transit access, and amenities using POI density analysis.',
+  description:
+    'Compare multiple neighborhoods based on livability factors like schools, walkability, transit access, and amenities using POI density analysis.',
   category: 'map',
   requiredPermission: 'read',
   inputSchema: compareNeighborhoodsInput,
@@ -559,7 +635,10 @@ const compareNeighborhoodsDefinition: ToolDefinition<CompareNeighborhoodsInput, 
   tags: ['map', 'neighborhoods', 'compare', 'livability'],
 };
 
-const compareNeighborhoodsHandler: ToolHandler<CompareNeighborhoodsInput, CompareNeighborhoodsOutput> = async (input) => {
+const compareNeighborhoodsHandler: ToolHandler<
+  CompareNeighborhoodsInput,
+  CompareNeighborhoodsOutput
+> = async (input) => {
   const { neighborhoods, factors } = input;
 
   // POI type mappings for each factor
@@ -573,59 +652,61 @@ const compareNeighborhoodsHandler: ToolHandler<CompareNeighborhoodsInput, Compar
     transit: ['bus_stop', 'rail_station', 'subway'],
   };
 
-  const neighborhoodResults = await Promise.all(neighborhoods.map(async (neighborhood) => {
-    const scores: Record<string, number> = {};
-    const highlights: string[] = [];
-    const concerns: string[] = [];
+  const neighborhoodResults = await Promise.all(
+    neighborhoods.map(async (neighborhood) => {
+      const scores: Record<string, number> = {};
+      const highlights: string[] = [];
+      const concerns: string[] = [];
 
-    for (const factor of factors) {
-      let score = 50; // Base score
+      for (const factor of factors) {
+        let score = 50; // Base score
 
-      try {
-        if (MAPBOX_TOKEN && factorPoiTypes[factor]) {
-          const pois = await getNearbyPOIs(
-            neighborhood.center.lng,
-            neighborhood.center.lat,
-            1500, // 1.5km radius
-            factorPoiTypes[factor]
-          );
-          // Score based on POI count (0-100 scale)
-          score = Math.min(100, Math.round((pois.length / 10) * 100));
-        } else {
-          // Estimate score for factors without direct POI mapping
-          if (factor === 'walkability') {
-            // Would integrate Walk Score API in production
-            score = 50 + Math.floor(Math.random() * 40);
-          } else if (factor === 'crime') {
-            // Lower is better for crime, invert for display
-            score = 60 + Math.floor(Math.random() * 30);
+        try {
+          if (MAPBOX_TOKEN && factorPoiTypes[factor]) {
+            const pois = await getNearbyPOIs(
+              neighborhood.center.lng,
+              neighborhood.center.lat,
+              1500, // 1.5km radius
+              factorPoiTypes[factor]
+            );
+            // Score based on POI count (0-100 scale)
+            score = Math.min(100, Math.round((pois.length / 10) * 100));
+          } else {
+            // Estimate score for factors without direct POI mapping
+            if (factor === 'walkability') {
+              // Would integrate Walk Score API in production
+              score = 50 + Math.floor(Math.random() * 40);
+            } else if (factor === 'crime') {
+              // Lower is better for crime, invert for display
+              score = 60 + Math.floor(Math.random() * 30);
+            }
           }
+        } catch {
+          score = 50 + Math.floor(Math.random() * 30);
         }
-      } catch {
-        score = 50 + Math.floor(Math.random() * 30);
+
+        scores[factor] = score;
+
+        if (score >= 75) {
+          highlights.push(`Excellent ${factor} (${score}/100)`);
+        } else if (score < 40) {
+          concerns.push(`Limited ${factor} options (${score}/100)`);
+        }
       }
 
-      scores[factor] = score;
+      const overallScore = Math.round(
+        Object.values(scores).reduce((sum, s) => sum + s, 0) / factors.length
+      );
 
-      if (score >= 75) {
-        highlights.push(`Excellent ${factor} (${score}/100)`);
-      } else if (score < 40) {
-        concerns.push(`Limited ${factor} options (${score}/100)`);
-      }
-    }
-
-    const overallScore = Math.round(
-      Object.values(scores).reduce((sum, s) => sum + s, 0) / factors.length
-    );
-
-    return {
-      name: neighborhood.name,
-      scores,
-      overallScore,
-      highlights: highlights.slice(0, 3),
-      concerns: concerns.slice(0, 2),
-    };
-  }));
+      return {
+        name: neighborhood.name,
+        scores,
+        overallScore,
+        highlights: highlights.slice(0, 3),
+        concerns: concerns.slice(0, 2),
+      };
+    })
+  );
 
   // Determine best neighborhood for each factor
   const bestFor: Record<string, string> = {};

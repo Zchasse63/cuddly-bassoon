@@ -83,7 +83,7 @@ export function NotificationsForm({ initialData }: NotificationsFormProps) {
       if (!response.ok) throw new Error('Failed to save');
       toast({ title: 'Saved', description: 'Notification preferences updated.' });
       router.refresh();
-    } catch (error) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to save preferences', variant: 'destructive' });
     } finally {
       setLoading(false);

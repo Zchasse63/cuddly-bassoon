@@ -39,7 +39,7 @@ export function SecurityActions({ email }: SecurityActionsProps) {
       if (error) throw error;
       toast({ title: 'Email sent', description: 'Check your email for the password reset link.' });
       setResetDialogOpen(false);
-    } catch (error) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to send reset email', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -54,7 +54,7 @@ export function SecurityActions({ email }: SecurityActionsProps) {
       if (error) throw error;
       toast({ title: 'Signed out', description: 'You have been signed out from all devices.' });
       router.push('/login');
-    } catch (error) {
+    } catch {
       toast({ title: 'Error', description: 'Failed to sign out', variant: 'destructive' });
     } finally {
       setLoading(false);
