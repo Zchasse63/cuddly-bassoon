@@ -4,7 +4,7 @@ title: Maximum Allowable Offer (MAO) Formula - The Complete Calculation Guide
 category: Fundamentals
 subcategory: Deal Analysis
 tags: [MAO formula, maximum allowable offer, deal analysis, offer calculation, ARV, repair estimates, wholesale profit]
-related_docs: [after-repair-value-estimation, repair-cost-estimation, cash-buyer-analysis, assignment-fee-strategies, deal-analysis-fundamentals]
+related_docs: [after-repair-value-estimation, repair-cost-estimation, cash-buyer-analysis, assignment-fee-strategies, deal-analysis-fundamentals, tool-deal-analysis-calculate-mao, tool-deal-analysis-analyze]
 difficulty_level: intermediate
 estimated_reading_time: 14 minutes
 last_updated: 2025-12-02

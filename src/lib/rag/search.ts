@@ -29,13 +29,15 @@ export interface SearchOptions {
   threshold?: number;
   categories?: string[];
   difficultyLevel?: 'beginner' | 'intermediate' | 'advanced';
+  excludeDocIds?: string[]; // Document IDs to exclude from results (for conversation context)
 }
 
-const DEFAULT_OPTIONS: Required<Omit<SearchOptions, 'difficultyLevel'>> & { difficultyLevel?: string } = {
+const DEFAULT_OPTIONS: Required<Omit<SearchOptions, 'difficultyLevel' | 'excludeDocIds'>> & { difficultyLevel?: string; excludeDocIds: string[] } = {
   limit: 5,
   threshold: 0.5,
   categories: [],
   difficultyLevel: undefined,
+  excludeDocIds: [],
 };
 
 function getSupabaseClient() {
@@ -68,6 +70,9 @@ export async function searchDocuments(
   const { embedding } = await generateEmbedding(query);
   const embeddingStr = formatEmbeddingForPgVector(embedding);
 
+  // Set of document IDs to exclude (for conversation context deduplication)
+  const excludeSet = new Set(opts.excludeDocIds || []);
+
   const transformRow = (row: {
     id: string;
     document_id: string;
@@ -89,6 +94,9 @@ export async function searchDocuments(
       chunkIndex: 0,
     },
   });
+
+  // Helper to check if a document should be excluded
+  const shouldInclude = (docId: string): boolean => !excludeSet.has(docId);
 
   // Strategy: If categories specified, search each category then merge
   if (opts.categories.length > 0) {
@@ -121,7 +129,7 @@ export async function searchDocuments(
     for (const result of categoryResults) {
       if (result.data) {
         for (const row of result.data) {
-          if (!seenChunks.has(row.id)) {
+          if (!seenChunks.has(row.id) && shouldInclude(row.document_id)) {
             seenChunks.add(row.id);
             mergedResults.push(transformRow(row));
           }
@@ -132,7 +140,7 @@ export async function searchDocuments(
     // Second: If we have fewer than requested, add from unfiltered search
     if (mergedResults.length < opts.limit && unfilteredResult.data) {
       for (const row of unfilteredResult.data) {
-        if (!seenChunks.has(row.id) && mergedResults.length < opts.limit) {
+        if (!seenChunks.has(row.id) && shouldInclude(row.document_id) && mergedResults.length < opts.limit) {
           seenChunks.add(row.id);
           mergedResults.push(transformRow(row));
         }
@@ -160,7 +168,10 @@ export async function searchDocuments(
     return [];
   }
 
-  return data.map(transformRow);
+  // Filter out excluded documents and transform
+  return data
+    .filter(row => shouldInclude(row.document_id))
+    .map(transformRow);
 }
 
 /**

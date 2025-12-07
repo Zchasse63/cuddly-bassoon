@@ -1,16 +1,37 @@
 /**
  * Mock Index
  * Central export for all test mocks
+ *
+ * For the new mock/live toggle system, use:
+ *   import { setupServiceMocks, itLive } from '@/test/config/service-registry';
  */
 
 export * from './mapbox';
 export * from './shovels';
 export * from './skip-trace';
+export * from './twilio';
+export * from './sendgrid';
+export * from './rentcast';
+
+// Re-export the service registry for convenience
+export {
+  setupServiceMocks,
+  teardownServiceMocks,
+  itLive,
+  describeLive,
+  itOnlyLive,
+  itOnlyMock,
+  isServiceLive,
+  createTestSetup,
+  getTestMode,
+  getServiceStatus,
+} from '../config/service-registry';
 
 import { vi } from 'vitest';
 import { mockMapboxApis } from './mapbox';
 import { mockShovelsApis } from './shovels';
 import { mockSkipTraceApis } from './skip-trace';
+import { mockRentCastApis } from './rentcast';
 
 /**
  * Combined mock that handles all external API calls
@@ -19,23 +40,28 @@ export function mockAllExternalApis() {
   const mapboxMock = mockMapboxApis();
   const shovelsMock = mockShovelsApis();
   const skipTraceMock = mockSkipTraceApis();
-  
+  const rentcastMock = mockRentCastApis();
+
   return vi.fn().mockImplementation((url: string, options?: RequestInit) => {
     const urlStr = url.toString();
-    
+
     // Route to appropriate mock based on URL
     if (urlStr.includes('api.mapbox.com')) {
       return mapboxMock(url, options);
     }
-    
+
     if (urlStr.includes('api.shovels.ai')) {
       return shovelsMock(url, options);
     }
-    
+
     if (urlStr.includes('skiptrace') || urlStr.includes('skip-trace')) {
       return skipTraceMock(url, options);
     }
-    
+
+    if (urlStr.includes('api.rentcast.io') || urlStr.includes('rentcast')) {
+      return rentcastMock(url, options);
+    }
+
     // Default: simulate a successful empty response
     return Promise.resolve({
       ok: true,

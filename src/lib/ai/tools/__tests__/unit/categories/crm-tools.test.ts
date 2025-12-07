@@ -12,19 +12,20 @@ describe('CRM Tools', () => {
   });
 
   describe('Tool Registration', () => {
+    // Tool IDs use snake_case: crm.create_lead_list
     const expectedTools = [
-      'crm.createLeadList',
-      'crm.rankByMotivation',
-      'crm.suggestOutreach',
-      'crm.analyzeSource',
-      'crm.segmentLeads',
-      'crm.predictConversion',
-      'crm.generateReport',
-      'crm.identifyHot',
-      'crm.trackEngagement',
-      'crm.suggestNurturing',
-      'crm.mergeLeads',
-      'crm.exportLeads',
+      'crm.create_lead_list',
+      'crm.rank_by_motivation',
+      'crm.suggest_outreach',
+      'crm.analyze_source',
+      'crm.segment_leads',
+      'crm.predict_conversion',
+      'crm.generate_report',
+      'crm.identify_hot',
+      'crm.track_engagement',
+      'crm.suggest_nurturing',
+      'crm.merge_leads',
+      'crm.export_leads',
     ];
 
     expectedTools.forEach(toolId => {
@@ -36,9 +37,9 @@ describe('CRM Tools', () => {
     });
   });
 
-  describe('crm.createLeadList', () => {
+  describe('crm.create_lead_list', () => {
     it('should accept valid list creation input', () => {
-      const tool = toolRegistry.get('crm.createLeadList');
+      const tool = toolRegistry.get('crm.create_lead_list');
 
       // Match actual schema: name, description, listType, filterCriteria
       const validInput = {
@@ -53,7 +54,7 @@ describe('CRM Tools', () => {
     });
 
     it('should require list name', () => {
-      const tool = toolRegistry.get('crm.createLeadList');
+      const tool = toolRegistry.get('crm.create_lead_list');
 
       const invalidInput = {
         // Missing name
@@ -65,7 +66,7 @@ describe('CRM Tools', () => {
     });
 
     it('should accept minimal input', () => {
-      const tool = toolRegistry.get('crm.createLeadList');
+      const tool = toolRegistry.get('crm.create_lead_list');
 
       const minimalInput = { name: 'Test List' };
       const parseResult = tool?.inputSchema.safeParse(minimalInput);
@@ -73,9 +74,9 @@ describe('CRM Tools', () => {
     });
   });
 
-  describe('crm.rankByMotivation', () => {
+  describe('crm.rank_by_motivation', () => {
     it('should accept list ID and limit', () => {
-      const tool = toolRegistry.get('crm.rankByMotivation');
+      const tool = toolRegistry.get('crm.rank_by_motivation');
 
       // Match actual schema: listId (optional), limit
       const validInput = {
@@ -88,16 +89,16 @@ describe('CRM Tools', () => {
     });
 
     it('should accept empty input (uses defaults)', () => {
-      const tool = toolRegistry.get('crm.rankByMotivation');
+      const tool = toolRegistry.get('crm.rank_by_motivation');
 
       const parseResult = tool?.inputSchema.safeParse({});
       expect(parseResult?.success).toBe(true);
     });
   });
 
-  describe('crm.suggestOutreach', () => {
+  describe('crm.suggest_outreach', () => {
     it('should accept limit for outreach suggestions', () => {
-      const tool = toolRegistry.get('crm.suggestOutreach');
+      const tool = toolRegistry.get('crm.suggest_outreach');
 
       // Match actual schema: limit
       const validInput = { limit: 10 };
@@ -107,16 +108,16 @@ describe('CRM Tools', () => {
     });
 
     it('should accept empty input (uses defaults)', () => {
-      const tool = toolRegistry.get('crm.suggestOutreach');
+      const tool = toolRegistry.get('crm.suggest_outreach');
 
       const parseResult = tool?.inputSchema.safeParse({});
       expect(parseResult?.success).toBe(true);
     });
   });
 
-  describe('crm.segmentLeads', () => {
+  describe('crm.segment_leads', () => {
     it('should accept segmentation criteria', () => {
-      const tool = toolRegistry.get('crm.segmentLeads');
+      const tool = toolRegistry.get('crm.segment_leads');
 
       // Actual schema requires criteria enum
       const validInput = { criteria: 'motivation' };
@@ -125,16 +126,16 @@ describe('CRM Tools', () => {
     });
 
     it('should require criteria field', () => {
-      const tool = toolRegistry.get('crm.segmentLeads');
+      const tool = toolRegistry.get('crm.segment_leads');
 
       const parseResult = tool?.inputSchema.safeParse({});
       expect(parseResult?.success).toBe(false);
     });
   });
 
-  describe('crm.predictConversion', () => {
+  describe('crm.predict_conversion', () => {
     it('should accept lead ID', () => {
-      const tool = toolRegistry.get('crm.predictConversion');
+      const tool = toolRegistry.get('crm.predict_conversion');
 
       // Match actual schema: leadId
       const validInput = { leadId: 'lead-123' };
@@ -143,7 +144,7 @@ describe('CRM Tools', () => {
     });
 
     it('should require leadId', () => {
-      const tool = toolRegistry.get('crm.predictConversion');
+      const tool = toolRegistry.get('crm.predict_conversion');
 
       const invalidInput = {};
       const parseResult = tool?.inputSchema.safeParse(invalidInput);
@@ -151,9 +152,9 @@ describe('CRM Tools', () => {
     });
   });
 
-  describe('crm.identifyHot', () => {
+  describe('crm.identify_hot', () => {
     it('should accept threshold and limit', () => {
-      const tool = toolRegistry.get('crm.identifyHot');
+      const tool = toolRegistry.get('crm.identify_hot');
 
       // Match actual schema: threshold, limit
       const validInput = {
@@ -166,16 +167,16 @@ describe('CRM Tools', () => {
     });
 
     it('should accept empty input (uses defaults)', () => {
-      const tool = toolRegistry.get('crm.identifyHot');
+      const tool = toolRegistry.get('crm.identify_hot');
 
       const parseResult = tool?.inputSchema.safeParse({});
       expect(parseResult?.success).toBe(true);
     });
   });
 
-  describe('crm.mergeLeads', () => {
+  describe('crm.merge_leads', () => {
     it('should accept primary and duplicate lead IDs', () => {
-      const tool = toolRegistry.get('crm.mergeLeads');
+      const tool = toolRegistry.get('crm.merge_leads');
 
       // Actual schema: primaryLeadId, duplicateLeadIds (array)
       const validInput = {
@@ -188,7 +189,7 @@ describe('CRM Tools', () => {
     });
 
     it('should require both fields', () => {
-      const tool = toolRegistry.get('crm.mergeLeads');
+      const tool = toolRegistry.get('crm.merge_leads');
 
       const invalidInput = {
         primaryLeadId: 'lead-main',
@@ -200,9 +201,9 @@ describe('CRM Tools', () => {
     });
   });
 
-  describe('crm.exportLeads', () => {
+  describe('crm.export_leads', () => {
     it('should accept export format', () => {
-      const tool = toolRegistry.get('crm.exportLeads');
+      const tool = toolRegistry.get('crm.export_leads');
 
       const validInput = {
         format: 'csv',

@@ -89,7 +89,8 @@ describe('AI SDK Adapter', () => {
       const mapKeys = getActiveToolKeys(['map']);
       expect(mapKeys.length).toBeGreaterThan(0);
       expect(mapKeys.length).toBeLessThan(20); // Map tools are limited
-      expect(mapKeys.every(key => key.startsWith('map_'))).toBe(true);
+      // Map category includes both map_* and census_* tools (census geography tools are map-related)
+      expect(mapKeys.every(key => key.startsWith('map_') || key.startsWith('census_'))).toBe(true);
     });
 
     it('should combine multiple categories', () => {

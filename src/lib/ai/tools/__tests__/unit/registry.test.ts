@@ -132,9 +132,9 @@ describe('Tool Registry', () => {
 
   describe('getByCategory', () => {
     it('should return tools in specified category', () => {
-      const mapTools = toolRegistry.getByCategory('system');
+      const mapTools = toolRegistry.getByCategory('map');
       expect(mapTools.length).toBeGreaterThan(0);
-      expect(mapTools.every(t => t.category === 'system')).toBe(true);
+      expect(mapTools.every(t => t.category === 'map')).toBe(true);
     });
   });
 

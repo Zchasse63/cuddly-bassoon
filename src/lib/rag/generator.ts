@@ -60,9 +60,10 @@ function getXaiClient() {
   return xaiClient;
 }
 
-// All 10 knowledge base categories (exact database values)
-// Used for validation and reference
+// All knowledge base categories (exact database values)
+// Includes original 10 categories + 5 new categories for AI tools and platform documentation
 const _ALL_CATEGORIES = [
+  // Original domain knowledge categories
   'Fundamentals',
   'Filter System',
   'Buyer Intelligence',
@@ -73,6 +74,12 @@ const _ALL_CATEGORIES = [
   'Risk Factors',
   'Legal & Compliance',
   'Case Studies & Examples',
+  // New platform documentation categories
+  'AI Tools',           // Tool usage documentation (11-ai-tools/)
+  'Data Sources',       // API data source reference (12-data-sources/)
+  'Platform Workflows', // Multi-step workflow guides (13-platform-workflows/)
+  'Data Interpretation',// Data analysis guidance (14-data-interpretation/)
+  'AI Principles',      // Meta-documentation for AI creativity (00-ai-principles/)
 ] as const;
 void _ALL_CATEGORIES; // Suppress unused warning - kept for documentation
 
@@ -245,6 +252,79 @@ const TOPIC_CATEGORY_MAP: Record<string, string[]> = {
   'how i': ['Case Studies & Examples'],
   'step by step': ['Case Studies & Examples'],
   'walkthrough example': ['Case Studies & Examples'],
+
+  // AI Tools - tool usage and capabilities
+  'tool': ['AI Tools'],
+  'ai tool': ['AI Tools'],
+  'use tool': ['AI Tools'],
+  'which tool': ['AI Tools'],
+  'how to use': ['AI Tools', 'Platform Workflows'],
+  'can the ai': ['AI Tools', 'AI Principles'],
+  'can you': ['AI Tools', 'AI Principles'],
+  'what can': ['AI Tools', 'AI Principles'],
+  'analyze tool': ['AI Tools', 'Deal Analysis'],
+  'search tool': ['AI Tools', 'Filter System'],
+  'score tool': ['AI Tools'],
+  'calculate tool': ['AI Tools', 'Fundamentals'],
+  'match tool': ['AI Tools', 'Buyer Intelligence'],
+  'batch': ['AI Tools'],
+  'automation': ['AI Tools', 'Platform Workflows'],
+  'workflow': ['AI Tools', 'Platform Workflows'],
+
+  // Data Sources - API and data reference
+  'data source': ['Data Sources'],
+  'data provider': ['Data Sources'],
+  'api': ['Data Sources'],
+  'rentcast': ['Data Sources'],
+  'shovels': ['Data Sources'],
+  'census': ['Data Sources', 'Market Analysis'],
+  'avm': ['Data Sources', 'Fundamentals'],
+  'property data': ['Data Sources'],
+  'permit data': ['Data Sources'],
+  'contractor data': ['Data Sources'],
+  'demographic': ['Data Sources', 'Market Analysis'],
+  'data freshness': ['Data Sources'],
+  'data accuracy': ['Data Sources', 'Data Interpretation'],
+
+  // Platform Workflows - multi-step processes
+  'process': ['Platform Workflows'],
+  'pipeline': ['Platform Workflows', 'Deal Analysis'],
+  'acquisition': ['Platform Workflows'],
+  'disposition': ['Platform Workflows'],
+  'lead gen': ['Platform Workflows', 'Filter System'],
+  'lead generation': ['Platform Workflows', 'Filter System'],
+  'marketing workflow': ['Platform Workflows', 'Outreach & Communication'],
+  'deal workflow': ['Platform Workflows', 'Deal Analysis'],
+  'end to end': ['Platform Workflows'],
+  'step-by-step': ['Platform Workflows', 'Case Studies & Examples'],
+
+  // Data Interpretation - understanding results
+  'interpret': ['Data Interpretation'],
+  'what does': ['Data Interpretation'],
+  'what means': ['Data Interpretation'],
+  'understand': ['Data Interpretation'],
+  'explain': ['Data Interpretation', 'Fundamentals'],
+  'confidence': ['Data Interpretation'],
+  'accuracy': ['Data Interpretation', 'Data Sources'],
+  'signal': ['Data Interpretation', 'Filter System'],
+  'indicator': ['Data Interpretation'],
+  'score meaning': ['Data Interpretation'],
+  'why is': ['Data Interpretation'],
+  'how reliable': ['Data Interpretation', 'Data Sources'],
+
+  // AI Principles - meta-documentation for creative AI usage
+  'creative': ['AI Principles'],
+  'combine': ['AI Principles'],
+  'combination': ['AI Principles'],
+  'beyond': ['AI Principles'],
+  'innovative': ['AI Principles'],
+  'custom': ['AI Principles'],
+  'novel': ['AI Principles'],
+  'adapt': ['AI Principles'],
+  'capability': ['AI Principles', 'AI Tools'],
+  'what else': ['AI Principles'],
+  'other ways': ['AI Principles'],
+  'different approach': ['AI Principles'],
 };
 
 function mapTopicsToCategories(topics: string[], query: string): string[] {
@@ -664,6 +744,11 @@ Topics - extract 2-4 specific terms from this list that match the query:
 - Risk: red flags, liens, title issues, fraud, deal killers, mistakes
 - Legal: contracts, disclosure, assignment, double close, earnest money, contingencies, LLC
 - Examples: case study, success story, step by step, real deal
+- AI Tools: tool, ai tool, analyze, score, calculate, match, search, batch, automation, workflow
+- Data Sources: data source, API, rentcast, shovels, census, AVM, property data, permit data
+- Platform Workflows: process, pipeline, acquisition, disposition, lead generation, step-by-step
+- Data Interpretation: interpret, what does, understand, explain, confidence, signal, indicator
+- AI Principles: creative, combine, capability, novel approach, custom solution, adapt
 
 Complexity: simple (1 topic), moderate (2-3 topics), complex (4+ topics or cross-category)`,
     }],

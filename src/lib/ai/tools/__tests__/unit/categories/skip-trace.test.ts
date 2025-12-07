@@ -18,17 +18,18 @@ describe('Skip Trace Tools', () => {
   });
 
   describe('Tool Registration', () => {
+    // Tool IDs use snake_case: skip_trace.trace_lead
     const expectedTools = [
-      'skipTrace.traceLead',
-      'skipTrace.batchTrace',
-      'skipTrace.getStatus',
-      'skipTrace.validatePhone',
-      'skipTrace.validateEmail',
-      'skipTrace.enrichLead',
-      'skipTrace.findRelated',
-      'skipTrace.reversePhone',
-      'skipTrace.reverseAddress',
-      'skipTrace.getCredits',
+      'skip_trace.trace_lead',
+      'skip_trace.batch_trace',
+      'skip_trace.get_status',
+      'skip_trace.validate_phone',
+      'skip_trace.validate_email',
+      'skip_trace.enrich_lead',
+      'skip_trace.find_related',
+      'skip_trace.reverse_phone',
+      'skip_trace.reverse_address',
+      'skip_trace.get_credits',
     ];
 
     expectedTools.forEach(toolId => {
@@ -39,9 +40,9 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.traceLead', () => {
+  describe('skip_trace.trace_lead', () => {
     it('should accept valid trace input with leadId', () => {
-      const tool = toolRegistry.get('skipTrace.traceLead');
+      const tool = toolRegistry.get('skip_trace.trace_lead');
 
       // Match actual schema: leadId, includeRelatives, includeAssociates
       const validInput = {
@@ -55,7 +56,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should require leadId', () => {
-      const tool = toolRegistry.get('skipTrace.traceLead');
+      const tool = toolRegistry.get('skip_trace.trace_lead');
 
       const invalidInput = {
         // Missing leadId
@@ -67,7 +68,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should accept minimal input', () => {
-      const tool = toolRegistry.get('skipTrace.traceLead');
+      const tool = toolRegistry.get('skip_trace.trace_lead');
 
       const minimalInput = { leadId: 'lead-123' };
       const parseResult = tool?.inputSchema.safeParse(minimalInput);
@@ -75,9 +76,9 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.validatePhone', () => {
+  describe('skip_trace.validate_phone', () => {
     it('should accept valid phone number', () => {
-      const tool = toolRegistry.get('skipTrace.validatePhone');
+      const tool = toolRegistry.get('skip_trace.validate_phone');
 
       // Match actual schema: phoneNumber, checkCarrier
       const validInput = { phoneNumber: '+1-305-555-1234' };
@@ -86,7 +87,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should accept various phone formats', () => {
-      const tool = toolRegistry.get('skipTrace.validatePhone');
+      const tool = toolRegistry.get('skip_trace.validate_phone');
 
       const formats = [
         '+1-305-555-1234',
@@ -102,7 +103,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should execute and return validation result', async () => {
-      const tool = toolRegistry.get('skipTrace.validatePhone');
+      const tool = toolRegistry.get('skip_trace.validate_phone');
       const context = createMockContext();
 
       const result = await tool?.handler(
@@ -116,9 +117,9 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.validateEmail', () => {
+  describe('skip_trace.validate_email', () => {
     it('should accept valid email', () => {
-      const tool = toolRegistry.get('skipTrace.validateEmail');
+      const tool = toolRegistry.get('skip_trace.validate_email');
 
       const validInput = { email: 'test@example.com' };
       const parseResult = tool?.inputSchema.safeParse(validInput);
@@ -126,7 +127,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should accept any string for email (validation in handler)', () => {
-      const tool = toolRegistry.get('skipTrace.validateEmail');
+      const tool = toolRegistry.get('skip_trace.validate_email');
 
       // Schema accepts any string, validation happens in handler
       const input = { email: 'not-an-email' };
@@ -135,7 +136,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should execute and return validation result', async () => {
-      const tool = toolRegistry.get('skipTrace.validateEmail');
+      const tool = toolRegistry.get('skip_trace.validate_email');
       const context = createMockContext();
 
       const result = await tool?.handler(
@@ -149,9 +150,9 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.batchTrace', () => {
+  describe('skip_trace.batch_trace', () => {
     it('should accept array of lead IDs', () => {
-      const tool = toolRegistry.get('skipTrace.batchTrace');
+      const tool = toolRegistry.get('skip_trace.batch_trace');
 
       // Match actual schema: leadIds (array of strings), priority
       const validInput = {
@@ -164,7 +165,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should limit batch size to 100', () => {
-      const tool = toolRegistry.get('skipTrace.batchTrace');
+      const tool = toolRegistry.get('skip_trace.batch_trace');
 
       // Create 101 lead IDs (over limit)
       const leadIds = Array(101).fill(null).map((_, i) => `lead-${i}`);
@@ -174,16 +175,16 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.getCredits', () => {
+  describe('skip_trace.get_credits', () => {
     it('should not require any input', () => {
-      const tool = toolRegistry.get('skipTrace.getCredits');
+      const tool = toolRegistry.get('skip_trace.get_credits');
 
       const parseResult = tool?.inputSchema.safeParse({});
       expect(parseResult?.success).toBe(true);
     });
 
     it('should execute and return credit balance', async () => {
-      const tool = toolRegistry.get('skipTrace.getCredits');
+      const tool = toolRegistry.get('skip_trace.get_credits');
       const context = createMockContext();
 
       const result = await tool?.handler({}, context) as { remaining: number } | undefined;
@@ -195,9 +196,9 @@ describe('Skip Trace Tools', () => {
     });
   });
 
-  describe('skipTrace.reversePhone', () => {
+  describe('skip_trace.reverse_phone', () => {
     it('should accept phone number for reverse lookup', () => {
-      const tool = toolRegistry.get('skipTrace.reversePhone');
+      const tool = toolRegistry.get('skip_trace.reverse_phone');
 
       // Match actual schema: phoneNumber
       const validInput = { phoneNumber: '+1-305-555-1234' };
@@ -206,7 +207,7 @@ describe('Skip Trace Tools', () => {
     });
 
     it('should execute and return owner info', async () => {
-      const tool = toolRegistry.get('skipTrace.reversePhone');
+      const tool = toolRegistry.get('skip_trace.reverse_phone');
       const context = createMockContext();
 
       const result = await tool?.handler(

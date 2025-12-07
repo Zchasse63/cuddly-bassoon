@@ -979,31 +979,6 @@ export const toolRegistry: DiscoveryToolDefinition[] = [
     requiresContext: ['none'],
   },
   {
-    slug: 'market_velocity.get_velocity',
-    displayName: 'Market Velocity',
-    shortDescription: 'Check how fast properties are selling',
-    fullDescription:
-      'Get the Market Velocity Index showing how quickly properties move in an area. Higher velocity means faster transactions and more opportunity.',
-    category: 'market-research',
-    icon: 'Gauge',
-    examples: [
-      {
-        prompt: 'How fast is the Tampa market moving?',
-        description: 'Check market speed',
-        resultPreview: 'Velocity score with interpretation',
-      },
-      {
-        prompt: 'Find the hottest markets in Florida',
-        description: 'High-velocity market discovery',
-        resultPreview: 'Markets ranked by velocity',
-      },
-    ],
-    keywords: ['velocity', 'speed', 'fast', 'moving', 'hot markets'],
-    isPrimary: false,
-    isAdvanced: false,
-    requiresContext: ['none'],
-  },
-  {
     slug: 'heat_mapping.detect_opportunities',
     displayName: 'Opportunity Zones',
     shortDescription: 'Find high-opportunity investment areas',

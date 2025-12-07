@@ -14,12 +14,15 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
-    // Exclude integration tests - they run separately with vitest.integration.config.ts
+    // Exclude integration, AI tools, and component tests - they run separately
     exclude: [
       'node_modules',
       '.next',
       'dist',
       'src/lib/ai/tools/__tests__/integration/**',
+      'src/test/ai-tools/**',
+      'src/test/components/**',
+      'src/**/*.component.test.tsx',
     ],
     setupFiles: ['./src/test/setup.ts'],
     coverage: {

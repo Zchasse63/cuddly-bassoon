@@ -1,0 +1,6623 @@
+{
+  "totalTools": 203,
+  "byCategory": {
+    "advanced_search": [
+      {
+        "id": "search.similar_to_deal",
+        "name": "Find Similar Properties",
+        "description": "Find properties similar to a successful deal.",
+        "category": "advanced_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 20,
+        "tags": [
+          "search",
+          "similar",
+          "matching",
+          "deals"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.buyer_property_match",
+        "name": "Match Buyer to Properties",
+        "description": "Find properties matching a buyer\\",
+        "category": "advanced_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 25,
+        "tags": [
+          "search",
+          "buyer",
+          "matching",
+          "properties"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.permit_pattern_match",
+        "name": "Permit Pattern Search",
+        "description": "Find properties with permit activity indicating investment opportunities.",
+        "category": "advanced_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 6000,
+        "rateLimit": 15,
+        "tags": [
+          "search",
+          "permits",
+          "patterns",
+          "opportunities"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "automation": [
+      {
+        "id": "workflow.auto_follow_up",
+        "name": "Auto Follow-Up",
+        "description": "Schedule automatic follow-up communications for a deal.",
+        "category": "automation",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "automation",
+          "follow-up",
+          "communication"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "workflow.deal_stage_trigger",
+        "name": "Deal Stage Trigger",
+        "description": "Create automated actions when deals move between stages.",
+        "category": "automation",
+        "requiredPermission": "admin",
+        "requiresConfirmation": true,
+        "estimatedDuration": 3000,
+        "rateLimit": 10,
+        "tags": [
+          "automation",
+          "trigger",
+          "deals",
+          "workflow"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "workflow.alert_on_match",
+        "name": "Alert on Match",
+        "description": "Create alerts for properties matching specific criteria.",
+        "category": "automation",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 20,
+        "tags": [
+          "automation",
+          "alerts",
+          "notifications",
+          "matching"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "batch_operations": [
+      {
+        "id": "batch.skip_trace_bulk",
+        "name": "Bulk Skip Trace",
+        "description": "Queue multiple properties for skip tracing. Returns a job ID to track progress.",
+        "category": "batch_operations",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "estimatedDuration": 5000,
+        "rateLimit": 10,
+        "tags": [
+          "batch",
+          "skip-trace",
+          "bulk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "batch.add_to_list_bulk",
+        "name": "Bulk Add to List",
+        "description": "Add multiple properties to a list at once with optional tags.",
+        "category": "batch_operations",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "batch",
+          "list",
+          "bulk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "batch.update_deal_status",
+        "name": "Bulk Update Deal Status",
+        "description": "Update the status of multiple deals at once.",
+        "category": "batch_operations",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "estimatedDuration": 2000,
+        "rateLimit": 15,
+        "tags": [
+          "batch",
+          "deals",
+          "status"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "batch.export_properties",
+        "name": "Export Properties",
+        "description": "Export properties to CSV, Excel, or JSON format.",
+        "category": "batch_operations",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 10000,
+        "rateLimit": 5,
+        "tags": [
+          "batch",
+          "export",
+          "download"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "buyer_management": [
+      {
+        "id": "buyer_management.match_buyers_to_property",
+        "name": "Match Buyers to Property",
+        "description": "Find buyers whose preferences match a specific property. Returns ranked list with match scores and factors.",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "buyers",
+          "matching",
+          "property"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer_management.get_buyer_insights",
+        "name": "Get Buyer Insights",
+        "description": "Get AI-powered insights about a buyer including score breakdown, strengths, and recommendations.",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "buyers",
+          "insights",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer_management.analyze_buyer_activity",
+        "name": "Analyze Buyer Activity",
+        "description": "Analyze buyer engagement patterns, identify top performers and those needing attention.",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 10,
+        "tags": [
+          "buyers",
+          "analytics",
+          "activity"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer_management.search_buyers",
+        "name": "Search Buyers",
+        "description": "Search for buyers by name, status, tier, or type.",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "buyers",
+          "search"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.suggest_outreach",
+        "name": "suggestBuyerOutreach",
+        "description": "Identify buyers to contact and prioritize by opportunity",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "outreach",
+          "crm"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.compare",
+        "name": "compareBuyers",
+        "description": "Compare buyers and recommend for specific deal",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "compare",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.predict_behavior",
+        "name": "predictBuyerBehavior",
+        "description": "Predict buyer response and close probability",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "predict",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.segment",
+        "name": "segmentBuyers",
+        "description": "Group buyers by criteria for targeted marketing",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "segment",
+          "marketing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.identify_gaps",
+        "name": "identifyBuyerGaps",
+        "description": "Analyze buyer network coverage and identify missing types",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "gaps",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.generate_report",
+        "name": "generateBuyerReport",
+        "description": "Create buyer summary report with activity metrics",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "report"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.score_fit",
+        "name": "scoreBuyerFit",
+        "description": "Calculate buyer-property fit score with match factors",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "scoring",
+          "matching"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.track_preference_changes",
+        "name": "trackBuyerPreferenceChanges",
+        "description": "Monitor preference updates and alert on significant changes",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "preferences",
+          "tracking"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "buyer.recommend_actions",
+        "name": "recommendBuyerActions",
+        "description": "Suggest next actions for buyers prioritized by impact",
+        "category": "buyer_management",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "buyer",
+          "actions",
+          "recommendations"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "map": [
+      {
+        "id": "census.get_geography",
+        "name": "Get Census Geography",
+        "description": "Retrieve Census geographic identifiers (Block Group, Tract, County, State) for a property based on coordinates. Use this when you need to identify a property",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 400,
+        "rateLimit": 30,
+        "tags": [
+          "census",
+          "geography",
+          "geocode",
+          "block_group",
+          "tract",
+          "micro-territory"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "census.get_boundary_polygon",
+        "name": "Get Census Boundary Polygon",
+        "description": "Retrieve the GeoJSON polygon boundary for a Census geography to display on a map. Requires a GEOID from get_census_geography. Use this when the user asks to ",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 20,
+        "tags": [
+          "census",
+          "boundary",
+          "polygon",
+          "geojson",
+          "map",
+          "visualization"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "census.classify_comp_geography",
+        "name": "Classify Comp Geography",
+        "description": "Determine the geographic relationship between a subject property and a comparable property. Returns a tier (excellent/good/acceptable/marginal) and explanation. Use this when the user asks ",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 10,
+        "rateLimit": 100,
+        "tags": [
+          "census",
+          "comp",
+          "classification",
+          "geography",
+          "tier"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "census.batch_geocode_comps",
+        "name": "Batch Geocode Comps",
+        "description": "Geocode multiple comparable properties to their Census geographies in a single operation. Use this when analyzing multiple comps, after receiving comps from RentCast valuation API, or when the user asks to ",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 10,
+        "tags": [
+          "census",
+          "batch",
+          "geocode",
+          "comps",
+          "bulk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "census.get_boundary_by_point",
+        "name": "Get Census Boundary by Point",
+        "description": "Retrieve Census boundary polygon(s) that contain a specific point. This is a convenience tool that combines geocoding and boundary retrieval in one step. Use when you have coordinates and want to immediately visualize the surrounding Census geography.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 800,
+        "rateLimit": 15,
+        "tags": [
+          "census",
+          "boundary",
+          "point",
+          "map",
+          "visualization"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.draw_search_area",
+        "name": "Draw Search Area",
+        "description": "Create a search area on the map by defining a center point and radius, or drawing a polygon. Returns the bounds and property count within the area.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "map",
+          "search",
+          "area",
+          "polygon"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.compare_areas",
+        "name": "Compare Areas",
+        "description": "Compare multiple geographic areas based on real estate metrics like average price, days on market, inventory levels, and appreciation rates.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "map",
+          "compare",
+          "analysis",
+          "metrics"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.show_commute_time",
+        "name": "Show Commute Time",
+        "description": "Display isochrone (travel time) polygons on the map showing areas reachable within a specified time using Mapbox Isochrone API.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "map",
+          "commute",
+          "isochrone",
+          "travel"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.toggle_style",
+        "name": "Toggle Map Style",
+        "description": "Switch between different map visual styles: streets, satellite, satellite-streets, light, or dark mode.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 60,
+        "tags": [
+          "map",
+          "style",
+          "visualization"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.spatial_query",
+        "name": "Spatial Query",
+        "description": "Query points of interest (POIs) near a location using Mapbox Tilequery API. Find schools, restaurants, shops, and other amenities.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 25,
+        "tags": [
+          "map",
+          "spatial",
+          "poi",
+          "query"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "map.compare_neighborhoods",
+        "name": "Compare Neighborhoods",
+        "description": "Compare multiple neighborhoods based on livability factors like schools, walkability, transit access, and amenities using POI density analysis.",
+        "category": "map",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 6000,
+        "rateLimit": 10,
+        "tags": [
+          "map",
+          "neighborhoods",
+          "compare",
+          "livability"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "communication": [
+      {
+        "id": "comms.generate_sms_template",
+        "name": "Generate SMS Template",
+        "description": "Generate personalized SMS templates for seller outreach.",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "communication",
+          "sms",
+          "template",
+          "outreach"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "comms.generate_email_sequence",
+        "name": "Generate Email Sequence",
+        "description": "Generate a multi-email drip sequence for seller outreach.",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "communication",
+          "email",
+          "sequence",
+          "drip"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "comms.generate_talking_points",
+        "name": "Generate Talking Points",
+        "description": "Generate talking points and scripts for seller calls.",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 25,
+        "tags": [
+          "communication",
+          "script",
+          "call",
+          "talking-points"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.send_sms",
+        "name": "sendSMS",
+        "description": "Send an SMS message to a phone number",
+        "category": "communication",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "sms",
+          "communication",
+          "notification"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.send_email",
+        "name": "sendEmail",
+        "description": "Send an email to a recipient",
+        "category": "communication",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "email",
+          "communication",
+          "notification"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.send_from_template",
+        "name": "sendFromTemplate",
+        "description": "Send a message using a pre-defined template",
+        "category": "communication",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "template",
+          "communication",
+          "notification"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.generate_ai_message",
+        "name": "generateAIMessage",
+        "description": "Generate a personalized message using AI",
+        "category": "communication",
+        "requiredPermission": "execute",
+        "requiresConfirmation": false,
+        "tags": [
+          "ai",
+          "message",
+          "generation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.get_inbox",
+        "name": "getInboxMessages",
+        "description": "Get messages from the unified inbox",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "inbox",
+          "messages",
+          "communication"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.mark_as_read",
+        "name": "markAsRead",
+        "description": "Mark messages as read",
+        "category": "communication",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "tags": [
+          "inbox",
+          "messages",
+          "read"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.list_templates",
+        "name": "listTemplates",
+        "description": "List available message templates",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "templates",
+          "communication"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.get_status",
+        "name": "getCommunicationStatus",
+        "description": "Check if SMS and email services are configured",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "status",
+          "configuration"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.check_opt_out",
+        "name": "checkOptOut",
+        "description": "Check if a contact has opted out of communications",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "opt-out",
+          "compliance"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "notification.get_history",
+        "name": "getMessageHistory",
+        "description": "Get message history for a specific contact",
+        "category": "communication",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "history",
+          "messages",
+          "contact"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "contractors": [
+      {
+        "id": "contractor.search",
+        "name": "searchContractors",
+        "description": "Search for contractors by location and specialty. Use to find contractors for renovation projects.",
+        "category": "contractors",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "contractor",
+          "search",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "contractor.details",
+        "name": "getContractorDetails",
+        "description": "Get detailed information and performance metrics for a specific contractor.",
+        "category": "contractors",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "contractor",
+          "details",
+          "performance",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "contractor.history",
+        "name": "getContractorHistory",
+        "description": "Get permit history for a contractor to evaluate their work experience.",
+        "category": "contractors",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "contractor",
+          "history",
+          "permits",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "contractor.compare",
+        "name": "compareContractors",
+        "description": "Compare multiple contractors side-by-side to help choose the best one.",
+        "category": "contractors",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "contractor",
+          "compare",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "contractor.top",
+        "name": "findTopContractors",
+        "description": "Find the highest-rated contractors in an area, optionally filtered by specialty.",
+        "category": "contractors",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "contractor",
+          "top",
+          "rated",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "crm": [
+      {
+        "id": "crm.create_lead_list",
+        "name": "createLeadList",
+        "description": "Create a new lead list for organizing leads",
+        "category": "crm",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "crm",
+          "leads",
+          "list"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.rank_by_motivation",
+        "name": "rankListByMotivation",
+        "description": "Rank leads by motivation score, highest first",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "motivation",
+          "ranking"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.suggest_outreach",
+        "name": "suggestLeadOutreach",
+        "description": "Suggest leads to contact based on motivation and status",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "outreach"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.analyze_source",
+        "name": "analyzeLeadSource",
+        "description": "Analyze performance of different lead sources",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "analytics",
+          "source"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.segment_leads",
+        "name": "segmentLeads",
+        "description": "Segment leads by motivation, status, source, or recency",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "segmentation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.predict_conversion",
+        "name": "predictLeadConversion",
+        "description": "Predict likelihood of lead converting to deal",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "prediction",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.generate_report",
+        "name": "generateLeadReport",
+        "description": "Generate a summary report for leads",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "report"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.identify_hot",
+        "name": "identifyHotLeads",
+        "description": "Find leads with high motivation scores",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "hot",
+          "priority"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.track_engagement",
+        "name": "trackLeadEngagement",
+        "description": "Track engagement history for a lead",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "engagement"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.suggest_nurturing",
+        "name": "suggestLeadNurturing",
+        "description": "Suggest nurturing plan for a lead",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "nurturing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.merge_leads",
+        "name": "mergeLeadRecords",
+        "description": "Merge duplicate lead records",
+        "category": "crm",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "crm",
+          "leads",
+          "merge",
+          "cleanup"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "crm.export_leads",
+        "name": "exportLeadData",
+        "description": "Export lead data in JSON or CSV format",
+        "category": "crm",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "crm",
+          "leads",
+          "export"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "reporting": [
+      {
+        "id": "dashboard.insights",
+        "name": "Generate Insights",
+        "description": "Generate AI-powered insights from your data",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "dashboard",
+          "insights",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.goals",
+        "name": "Goal Tracking",
+        "description": "Track progress towards your goals",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "goals",
+          "tracking"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.performance",
+        "name": "Performance Summary",
+        "description": "Get a summary of your performance metrics",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "performance",
+          "summary"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.report",
+        "name": "Generate Report",
+        "description": "Generate automated analytics reports",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 10,
+        "tags": [
+          "dashboard",
+          "report",
+          "automated"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.anomalies",
+        "name": "Anomaly Detection",
+        "description": "Detect unusual patterns in your metrics",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "anomaly",
+          "detection"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.trends",
+        "name": "Dashboard Trends",
+        "description": "Analyze trends across your key metrics",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "trends"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.activity",
+        "name": "Activity Summary",
+        "description": "Summarize your recent activity",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "activity"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.funnel",
+        "name": "Conversion Funnel",
+        "description": "Analyze your deal conversion funnel",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "funnel",
+          "conversion"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.compare_periods",
+        "name": "Compare Periods",
+        "description": "Compare metrics between two time periods",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "compare"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.alerts",
+        "name": "Get Alerts",
+        "description": "Get current alerts and notifications",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 60,
+        "tags": [
+          "dashboard",
+          "alerts"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.recommendations",
+        "name": "Get Recommendations",
+        "description": "Get AI-powered action recommendations",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 20,
+        "tags": [
+          "dashboard",
+          "recommendations",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "dashboard.kpis",
+        "name": "KPI Status",
+        "description": "Get current KPI status and progress",
+        "category": "reporting",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "dashboard",
+          "kpi"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "deal_analysis": [
+      {
+        "id": "deal_analysis.analyze",
+        "name": "Analyze Deal",
+        "description": "Perform comprehensive analysis of a wholesale deal including ARV, MAO, and profit calculations",
+        "category": "deal_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "analysis",
+          "deal",
+          "arv",
+          "mao"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal_analysis.calculate_mao",
+        "name": "Calculate MAO",
+        "description": "Calculate Maximum Allowable Offer based on ARV, repairs, and desired margins",
+        "category": "deal_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 100,
+        "rateLimit": 100,
+        "tags": [
+          "mao",
+          "calculation",
+          "offer"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal_analysis.score",
+        "name": "Score Deal",
+        "description": "Generate a deal score based on multiple factors including motivation, equity, and market conditions",
+        "category": "deal_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 50,
+        "tags": [
+          "score",
+          "deal",
+          "ranking"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "deal_pipeline": [
+      {
+        "id": "deal.create",
+        "name": "createDeal",
+        "description": "Create a new deal in the pipeline",
+        "category": "deal_pipeline",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "deal",
+          "create",
+          "pipeline"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.update_stage",
+        "name": "updateDealStage",
+        "description": "Move a deal to a different pipeline stage",
+        "category": "deal_pipeline",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "deal",
+          "stage",
+          "update"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.analyze_progress",
+        "name": "analyzeDealProgress",
+        "description": "Analyze deal progress and identify bottlenecks",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "analysis",
+          "progress"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.generate_offer_strategy",
+        "name": "generateOfferStrategy",
+        "description": "Calculate tiered offer prices (optimal, target, max, walk-away)",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "offer",
+          "strategy",
+          "pricing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.assign_buyer",
+        "name": "assignBuyerToDeal",
+        "description": "Assign a buyer to a deal and move to assigned stage",
+        "category": "deal_pipeline",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "deal",
+          "buyer",
+          "assignment"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.get_timeline",
+        "name": "getDealTimeline",
+        "description": "Get activity timeline for a deal",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "timeline",
+          "activities"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.predict_outcome",
+        "name": "predictDealOutcome",
+        "description": "Predict likelihood of deal closing successfully",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "prediction",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.generate_summary",
+        "name": "generateDealSummary",
+        "description": "Generate a comprehensive summary of a deal",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "summary",
+          "report"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.compare_to_portfolio",
+        "name": "compareDealToPortfolio",
+        "description": "Compare deal metrics to portfolio averages",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "compare",
+          "portfolio"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.suggest_actions",
+        "name": "suggestDealActions",
+        "description": "Suggest next actions for a deal",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "actions",
+          "suggestions"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.calculate_metrics",
+        "name": "calculateDealMetrics",
+        "description": "Calculate financial metrics for a deal",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "metrics",
+          "financial"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "deal.flag_issues",
+        "name": "flagDealIssues",
+        "description": "Identify deals with issues that need attention",
+        "category": "deal_pipeline",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "deal",
+          "issues",
+          "alerts"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "document_generation": [
+      {
+        "id": "docs.generate_offer_letter",
+        "name": "Generate Offer Letter",
+        "description": "Generate a professional offer letter for a property with customizable terms.",
+        "category": "document_generation",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 20,
+        "tags": [
+          "documents",
+          "offer",
+          "letter"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "docs.generate_deal_summary",
+        "name": "Generate Deal Summary",
+        "description": "Generate a comprehensive deal summary with comps, financials, and timeline.",
+        "category": "document_generation",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 8000,
+        "rateLimit": 15,
+        "tags": [
+          "documents",
+          "deal",
+          "summary",
+          "report"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "docs.generate_comp_report",
+        "name": "Generate Comp Report",
+        "description": "Generate a comparable sales report for a property.",
+        "category": "document_generation",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 6000,
+        "rateLimit": 20,
+        "tags": [
+          "documents",
+          "comps",
+          "report",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "property_search": [
+      {
+        "id": "filter.suggest",
+        "name": "suggestFilters",
+        "description": "Analyze user goals and recommend filter combinations",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "suggest",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.explain",
+        "name": "explainFilter",
+        "description": "Describe what a filter does with usage examples",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "explain",
+          "help"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.optimize",
+        "name": "optimizeFilterCombination",
+        "description": "Analyze filter set, identify redundancies, suggest improvements",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "optimize"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.create",
+        "name": "createCustomFilter",
+        "description": "Create filter from natural language description",
+        "category": "property_search",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "create"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.compare",
+        "name": "compareFilters",
+        "description": "Compare two filter sets and recommend which to use",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "compare"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.performance",
+        "name": "getFilterPerformance",
+        "description": "Track filter usage and lead-to-deal conversion",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "performance",
+          "analytics"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.refine",
+        "name": "suggestFilterRefinements",
+        "description": "Analyze results and suggest tightening/loosening filters",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "refine"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.export",
+        "name": "exportFilterDefinition",
+        "description": "Export filter as shareable format",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "export",
+          "share"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.import",
+        "name": "importFilter",
+        "description": "Import filter from definition",
+        "category": "property_search",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "import"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.recommendations",
+        "name": "getFilterRecommendations",
+        "description": "Get filter recommendations based on success patterns",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "recommendations",
+          "ai"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "filter.validate",
+        "name": "validateFilterCriteria",
+        "description": "Check filter for logical errors and impossible combinations",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "filter",
+          "validate"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.valuation",
+        "name": "getPropertyValuation",
+        "description": "Get AI-powered property valuation with ARV estimate",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "valuation",
+          "arv"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.comps",
+        "name": "getComparables",
+        "description": "Find comparable sold properties with adjustments",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "comps",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.motivation",
+        "name": "calculateMotivationScore",
+        "description": "Calculate seller motivation score with reasoning",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "motivation",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.summary",
+        "name": "generatePropertySummary",
+        "description": "Generate AI-written property description for different audiences",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "summary",
+          "content"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.deal_potential",
+        "name": "analyzeDealPotential",
+        "description": "Calculate potential profit margins and assess risk factors",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "deal",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.ownership",
+        "name": "getOwnershipHistory",
+        "description": "Retrieve ownership timeline and identify patterns",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "ownership",
+          "history"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.repairs",
+        "name": "estimateRepairCosts",
+        "description": "Generate repair estimate with category breakdown",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "repairs",
+          "estimate"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.time_on_market",
+        "name": "predictTimeOnMarket",
+        "description": "Predict days to sell based on market and property characteristics",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "market",
+          "prediction"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.neighborhood",
+        "name": "getNeighborhoodInsights",
+        "description": "Analyze surrounding area including crime, schools, and market trends",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "neighborhood",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.portfolio_compare",
+        "name": "compareToPortfolio",
+        "description": "Compare property to user past deals and predict success",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "portfolio",
+          "comparison"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.offer_price",
+        "name": "generateOfferPrice",
+        "description": "Calculate optimal offer price with justification",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "offer",
+          "pricing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.rental",
+        "name": "assessRentalPotential",
+        "description": "Estimate rental income and calculate cap rate",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "rental",
+          "investment"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property.issues",
+        "name": "flagPropertyIssues",
+        "description": "Identify potential red flags including title issues, liens, and violations",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "property",
+          "issues",
+          "risk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property_search.search",
+        "name": "Search Properties",
+        "description": "Search for properties matching specified criteria including location, price, property type, and motivation indicators",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "search",
+          "properties",
+          "filter"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "property_search.get_details",
+        "name": "Get Property Details",
+        "description": "Get detailed information about a specific property including owner info and comparable sales",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 60,
+        "tags": [
+          "property",
+          "details",
+          "comps"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.by_description",
+        "name": "searchPropertiesByDescription",
+        "description": "Search for properties using natural language description",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "natural-language"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.execute_filter",
+        "name": "executeFilter",
+        "description": "Execute a saved search filter",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "filter"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.save_filter",
+        "name": "saveSearchAsFilter",
+        "description": "Save search criteria as a reusable filter",
+        "category": "property_search",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "save"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.recent",
+        "name": "getRecentSearches",
+        "description": "Get recent search history",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "history"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.refine",
+        "name": "refineSearch",
+        "description": "Refine search based on natural language",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "refine"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.compare",
+        "name": "compareSearchResults",
+        "description": "Compare two search result sets",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "compare"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.export",
+        "name": "exportSearchResults",
+        "description": "Export search results to CSV/JSON",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "export"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.schedule",
+        "name": "scheduleSearch",
+        "description": "Schedule a recurring search",
+        "category": "property_search",
+        "requiredPermission": "write",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "schedule"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.suggestions",
+        "name": "getSearchSuggestions",
+        "description": "Get AI-based search suggestions",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "suggestions"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "search.analyze",
+        "name": "analyzeSearchPerformance",
+        "description": "Analyze search-to-deal conversion",
+        "category": "property_search",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "search",
+          "analytics"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "market_analysis": [
+      {
+        "id": "heat_mapping.analyze_area",
+        "name": "Analyze Area",
+        "description": "Analyze a geographic area for investment opportunities based on market data",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "area",
+          "analysis",
+          "opportunity"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.competition_analysis",
+        "name": "Competition Analysis",
+        "description": "Analyze competition levels in a specific area",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "competition",
+          "market"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.detect_opportunities",
+        "name": "Detect Opportunities",
+        "description": "Detect high-opportunity areas based on specified criteria",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "heat-map",
+          "opportunity",
+          "detection"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.price_trends",
+        "name": "Price Trend Analysis",
+        "description": "Analyze price trends in an area",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "price",
+          "trend"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.distress_indicator",
+        "name": "Distress Indicator",
+        "description": "Identify distressed property concentrations",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "distress",
+          "foreclosure"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.equity_analysis",
+        "name": "Equity Analysis",
+        "description": "Analyze equity levels in an area",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "equity"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.absentee_owners",
+        "name": "Absentee Owner Analysis",
+        "description": "Identify absentee owner concentrations",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "absentee",
+          "owner"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.rental_yield",
+        "name": "Rental Yield Analysis",
+        "description": "Calculate rental yields in an area",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "rental",
+          "yield"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.inventory",
+        "name": "Inventory Analysis",
+        "description": "Analyze current inventory levels",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "inventory"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.days_on_market",
+        "name": "Days on Market Analysis",
+        "description": "Analyze average days on market",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "dom"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.flip_potential",
+        "name": "Flip Potential Analysis",
+        "description": "Analyze flip potential in an area",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "flip",
+          "renovation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.school_impact",
+        "name": "School District Impact",
+        "description": "Analyze school district impact on values",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "school",
+          "education"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.crime_impact",
+        "name": "Crime Impact Analysis",
+        "description": "Analyze crime impact on property values",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "crime",
+          "safety"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "heat_mapping.development",
+        "name": "Development Activity",
+        "description": "Track development and construction activity",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "heat-map",
+          "development",
+          "construction"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.trends",
+        "name": "Market Trend Analysis",
+        "description": "Analyze market trends and momentum",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "trend",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.forecast",
+        "name": "Price Forecasting",
+        "description": "Forecast future property prices",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "market",
+          "forecast",
+          "price"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.compare",
+        "name": "Market Comparison",
+        "description": "Compare multiple markets side by side",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2500,
+        "rateLimit": 20,
+        "tags": [
+          "market",
+          "compare",
+          "benchmark"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.seasonality",
+        "name": "Seasonality Analysis",
+        "description": "Analyze seasonal patterns in the market",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "seasonality",
+          "timing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.supply_demand",
+        "name": "Supply/Demand Analysis",
+        "description": "Analyze market supply and demand dynamics",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "supply",
+          "demand"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.economic",
+        "name": "Economic Indicators",
+        "description": "Analyze economic factors affecting the market",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "economic",
+          "jobs"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.roi",
+        "name": "Investment ROI Calculator",
+        "description": "Calculate investment returns",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 100,
+        "tags": [
+          "market",
+          "roi",
+          "investment"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.neighborhood",
+        "name": "Neighborhood Scoring",
+        "description": "Score neighborhood quality factors",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "neighborhood",
+          "score"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.rental",
+        "name": "Rental Market Analysis",
+        "description": "Analyze rental market conditions",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "rental",
+          "landlord"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_analysis.timing",
+        "name": "Market Timing Indicator",
+        "description": "Get market timing signals",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "market",
+          "timing",
+          "signal"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.get_velocity",
+        "name": "Get Market Velocity",
+        "description": "Get the Market Velocity Index for a specific location. The velocity index\n    measures buyer demand intensity on a 0-100 scale. Higher scores mean properties sell\n    faster and wholesalers can assign contracts more confidently. Use this when users ask\n    about market heat, buyer demand, how fast things are selling, or whether an area is\n    good for wholesaling.",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 30,
+        "tags": [
+          "velocity",
+          "market",
+          "demand",
+          "wholesaling",
+          "heat"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.find_hot_markets",
+        "name": "Find Hot Markets",
+        "description": "Find markets with high buyer velocity/demand. Use when users say things\n    like ",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 20,
+        "tags": [
+          "velocity",
+          "hot",
+          "markets",
+          "demand",
+          "wholesaling"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.find_cold_markets",
+        "name": "Find Cold Markets",
+        "description": "Find markets with low buyer velocity - useful for identifying areas to\n    avoid or for finding deep value plays (though risky for wholesaling). Use when users\n    ask about slow markets, cold areas, or places to avoid.",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 20,
+        "tags": [
+          "velocity",
+          "cold",
+          "markets",
+          "slow",
+          "avoid"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.compare_markets",
+        "name": "Compare Market Velocity",
+        "description": "Compare market velocity between multiple locations. Use when users want\n    to compare markets, decide between areas, or understand relative demand. Examples:\n    ",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "velocity",
+          "compare",
+          "markets",
+          "rank"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.explain_score",
+        "name": "Explain Velocity Score",
+        "description": "Explain why a specific area has its velocity score. Breaks down the\n    component factors (DOM, absorption, inventory, permit activity). Use when users ask\n    ",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 3000,
+        "rateLimit": 30,
+        "tags": [
+          "velocity",
+          "explain",
+          "breakdown",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.get_trend",
+        "name": "Get Velocity Trend",
+        "description": "Get the historical trend of market velocity for an area. Shows whether\n    the market is heating up, cooling down, or stable. Use when users ask ",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "velocity",
+          "trend",
+          "history",
+          "forecast"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.get_rankings",
+        "name": "Get Velocity Rankings",
+        "description": "Get ranked list of markets by velocity. Use when users want to see\n    ",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "velocity",
+          "rankings",
+          "top",
+          "bottom"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "market_velocity.get_for_bounds",
+        "name": "Get Velocity for Map Bounds",
+        "description": "Get velocity data for a geographic bounding box. Used internally for\n    heat map rendering.",
+        "category": "market_analysis",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1500,
+        "rateLimit": 30,
+        "tags": [
+          "velocity",
+          "bounds",
+          "heatmap",
+          "map"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "integrations": [
+      {
+        "id": "sync.crm_export",
+        "name": "Export to CRM",
+        "description": "Export leads, contacts, or deals to external CRM systems.",
+        "category": "integrations",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "estimatedDuration": 10000,
+        "rateLimit": 5,
+        "tags": [
+          "integration",
+          "crm",
+          "export",
+          "sync"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "sync.calendar_integration",
+        "name": "Calendar Integration",
+        "description": "Create, update, or manage calendar events for property viewings and meetings.",
+        "category": "integrations",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "estimatedDuration": 3000,
+        "rateLimit": 20,
+        "tags": [
+          "integration",
+          "calendar",
+          "scheduling",
+          "events"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "intelligence": [
+      {
+        "id": "intel.competitor_activity",
+        "name": "Analyze Competitor Activity",
+        "description": "Analyze investor/flipper activity in zip codes using permit data.",
+        "category": "intelligence",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 8000,
+        "rateLimit": 10,
+        "tags": [
+          "intelligence",
+          "competitors",
+          "market",
+          "permits"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "intel.market_saturation",
+        "name": "Analyze Market Saturation",
+        "description": "Analyze market saturation using real market data and permit activity.",
+        "category": "intelligence",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "intelligence",
+          "market",
+          "saturation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "intel.market_velocity",
+        "name": "Analyze Market Velocity",
+        "description": "Comprehensive market velocity analysis for investment timing decisions.",
+        "category": "intelligence",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 20,
+        "tags": [
+          "intelligence",
+          "market",
+          "velocity",
+          "timing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "permits": [
+      {
+        "id": "permit.history",
+        "name": "getPermitHistory",
+        "description": "Get complete permit history for a property address. Use when user asks about permits, renovations, or construction history.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "history",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.details",
+        "name": "getPermitDetails",
+        "description": "Get detailed information about a specific permit by ID.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "details",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.search",
+        "name": "searchPermitsByArea",
+        "description": "Search for permits in a geographic area with filters. Use for finding renovation activity in neighborhoods.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "search",
+          "area",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.metrics",
+        "name": "getPermitMetrics",
+        "description": "Get aggregated permit metrics for a property. Shows total permits, values, and activity patterns.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "metrics",
+          "analysis",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.analyze_patterns",
+        "name": "analyzePermitPatterns",
+        "description": "Analyze permit history to identify seller motivation signals and property condition.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "analysis",
+          "motivation",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.check_system_age",
+        "name": "checkSystemAge",
+        "description": "Check the age of major systems (roof, HVAC, plumbing, electrical) based on permit history.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "systems",
+          "age",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.deferred_maintenance",
+        "name": "identifyDeferredMaintenance",
+        "description": "Find properties with no recent permits, indicating potential deferred maintenance.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "deferred",
+          "maintenance",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "permit.stalled",
+        "name": "findStalledPermits",
+        "description": "Find properties with stalled or expired permits - indicates abandoned projects or motivated sellers.",
+        "category": "permits",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "permit",
+          "stalled",
+          "expired",
+          "shovels"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "portfolio": [
+      {
+        "id": "portfolio.performance_summary",
+        "name": "Portfolio Performance Summary",
+        "description": "Get a comprehensive summary of portfolio performance from actual deal data.",
+        "category": "portfolio",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 20,
+        "tags": [
+          "portfolio",
+          "performance",
+          "summary",
+          "analytics"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "portfolio.roi_by_strategy",
+        "name": "ROI by Strategy",
+        "description": "Analyze ROI performance by investment strategy from actual deal data.",
+        "category": "portfolio",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "portfolio",
+          "roi",
+          "strategy",
+          "analytics"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "portfolio.geographic_concentration",
+        "name": "Geographic Concentration Analysis",
+        "description": "Analyze portfolio geographic concentration and diversification from actual data.",
+        "category": "portfolio",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 20,
+        "tags": [
+          "portfolio",
+          "geographic",
+          "diversification",
+          "risk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "predictive": [
+      {
+        "id": "predict.seller_motivation",
+        "name": "Predict Seller Motivation",
+        "description": "Analyze property and owner data using stratified scoring models. Uses different scoring logic based on owner type: Individual (long ownership = HIGH motivation), Investor/Entity (long ownership = LOW motivation), Institutional (process-focused). Optionally includes AI-enhanced DealFlow IQ score.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 20,
+        "tags": [
+          "predictive",
+          "motivation",
+          "seller",
+          "analysis",
+          "stratified-scoring"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.deal_close_probability",
+        "name": "Predict Deal Close Probability",
+        "description": "Predict the likelihood of a deal closing using market velocity and property data.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 20,
+        "tags": [
+          "predictive",
+          "deals",
+          "probability",
+          "risk"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.optimal_offer_price",
+        "name": "Calculate Optimal Offer Price",
+        "description": "Calculate optimal offer price using real ARV from RentCast and market data.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 5000,
+        "rateLimit": 15,
+        "tags": [
+          "predictive",
+          "pricing",
+          "offer",
+          "analysis"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.time_to_close",
+        "name": "Predict Time to Close",
+        "description": "Predict deal timeline using market velocity data and deal type analysis.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 4000,
+        "rateLimit": 25,
+        "tags": [
+          "predictive",
+          "timeline",
+          "deals"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.classify_owner",
+        "name": "Classify Owner Type",
+        "description": "Classify a property owner into categories: Individual (owner-occupied/absentee), Investor/Entity (LLC, corporation, trust), or Institutional (bank REO, government, estate). Uses pattern matching on owner name and optional signals.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 500,
+        "rateLimit": 50,
+        "tags": [
+          "predictive",
+          "owner",
+          "classification",
+          "entity-detection"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.batch_motivation",
+        "name": "Batch Score Seller Motivation",
+        "description": "Calculate seller motivation scores for multiple properties at once. Returns scores, owner classifications, and recommendations for up to 20 properties. Useful for prioritizing lead lists.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 30000,
+        "rateLimit": 5,
+        "tags": [
+          "predictive",
+          "motivation",
+          "batch",
+          "lead-scoring"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "predict.compare_motivation",
+        "name": "Compare Motivation Scores",
+        "description": "Compare seller motivation scores across multiple properties to prioritize outreach. Ranks properties and provides analysis of which to contact first.",
+        "category": "predictive",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 15000,
+        "rateLimit": 10,
+        "tags": [
+          "predictive",
+          "motivation",
+          "comparison",
+          "prioritization"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "data_enrichment": [
+      {
+        "id": "skip_trace.trace_lead",
+        "name": "skipTraceLead",
+        "description": "Skip trace a lead to find phone numbers, emails, and addresses",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "estimatedDuration": 5000,
+        "tags": [
+          "skip-trace",
+          "contact",
+          "enrichment"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.batch_trace",
+        "name": "batchSkipTrace",
+        "description": "Queue multiple leads for skip tracing",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "skip-trace",
+          "batch",
+          "enrichment"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.get_status",
+        "name": "getSkipTraceStatus",
+        "description": "Check the status of a skip trace request",
+        "category": "data_enrichment",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "skip-trace",
+          "status"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.validate_phone",
+        "name": "validatePhoneNumber",
+        "description": "Validate and get info about a phone number",
+        "category": "data_enrichment",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "skip-trace",
+          "phone",
+          "validation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.validate_email",
+        "name": "validateEmail",
+        "description": "Validate an email address",
+        "category": "data_enrichment",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "skip-trace",
+          "email",
+          "validation"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.enrich_lead",
+        "name": "enrichLeadData",
+        "description": "Enrich lead with demographics, property, or financial data",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "skip-trace",
+          "enrichment",
+          "data"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.find_related",
+        "name": "findRelatedContacts",
+        "description": "Find relatives, associates, or neighbors of a lead",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "skip-trace",
+          "contacts",
+          "relatives"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.reverse_phone",
+        "name": "reversePhoneLookup",
+        "description": "Look up owner information by phone number",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "skip-trace",
+          "phone",
+          "lookup"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.reverse_address",
+        "name": "reverseAddressLookup",
+        "description": "Look up owner information by property address",
+        "category": "data_enrichment",
+        "requiredPermission": "execute",
+        "requiresConfirmation": true,
+        "tags": [
+          "skip-trace",
+          "address",
+          "lookup"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "skip_trace.get_credits",
+        "name": "getSkipTraceCredits",
+        "description": "Check remaining skip trace credits",
+        "category": "data_enrichment",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "skip-trace",
+          "credits",
+          "billing"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "utility": [
+      {
+        "id": "utility.geocode",
+        "name": "Geocode Address",
+        "description": "Convert a street address or place name to geographic coordinates (latitude/longitude) using Mapbox Geocoding API.",
+        "category": "utility",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 50,
+        "tags": [
+          "utility",
+          "geocode",
+          "address",
+          "coordinates"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "utility.reverse_geocode",
+        "name": "Reverse Geocode",
+        "description": "Convert geographic coordinates (latitude/longitude) to a human-readable address using Mapbox Geocoding API.",
+        "category": "utility",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 1000,
+        "rateLimit": 50,
+        "tags": [
+          "utility",
+          "geocode",
+          "reverse",
+          "address"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "utility.format_currency",
+        "name": "Format Currency",
+        "description": "Format a numeric amount as a currency string with proper locale-specific formatting, symbols, and notation.",
+        "category": "utility",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 50,
+        "rateLimit": 100,
+        "tags": [
+          "utility",
+          "format",
+          "currency",
+          "money"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "utility.calculate_distance",
+        "name": "Calculate Distance",
+        "description": "Calculate the straight-line (Haversine) distance between two points. Accepts coordinates or addresses.",
+        "category": "utility",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "estimatedDuration": 2000,
+        "rateLimit": 30,
+        "tags": [
+          "utility",
+          "distance",
+          "calculation",
+          "geo"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ],
+    "verticals": [
+      {
+        "id": "vertical.get_active",
+        "name": "getActiveVertical",
+        "description": "Get the user\\",
+        "category": "verticals",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "vertical",
+          "active",
+          "configuration"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "vertical.switch",
+        "name": "switchVertical",
+        "description": "Switch the user\\",
+        "category": "verticals",
+        "requiredPermission": "write",
+        "requiresConfirmation": true,
+        "tags": [
+          "vertical",
+          "switch",
+          "change"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "vertical.filters",
+        "name": "getVerticalFilters",
+        "description": "Get the available filters for a business vertical.",
+        "category": "verticals",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "vertical",
+          "filters"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      },
+      {
+        "id": "vertical.insights",
+        "name": "getVerticalInsights",
+        "description": "Get vertical-specific insights and opportunities for a property.",
+        "category": "verticals",
+        "requiredPermission": "read",
+        "requiresConfirmation": false,
+        "tags": [
+          "vertical",
+          "insights",
+          "property"
+        ],
+        "inputFields": [],
+        "outputFields": []
+      }
+    ]
+  },
+  "tools": [
+    {
+      "id": "search.similar_to_deal",
+      "name": "Find Similar Properties",
+      "description": "Find properties similar to a successful deal.",
+      "category": "advanced_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 20,
+      "tags": [
+        "search",
+        "similar",
+        "matching",
+        "deals"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.buyer_property_match",
+      "name": "Match Buyer to Properties",
+      "description": "Find properties matching a buyer\\",
+      "category": "advanced_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 25,
+      "tags": [
+        "search",
+        "buyer",
+        "matching",
+        "properties"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.permit_pattern_match",
+      "name": "Permit Pattern Search",
+      "description": "Find properties with permit activity indicating investment opportunities.",
+      "category": "advanced_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 6000,
+      "rateLimit": 15,
+      "tags": [
+        "search",
+        "permits",
+        "patterns",
+        "opportunities"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "workflow.auto_follow_up",
+      "name": "Auto Follow-Up",
+      "description": "Schedule automatic follow-up communications for a deal.",
+      "category": "automation",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "automation",
+        "follow-up",
+        "communication"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "workflow.deal_stage_trigger",
+      "name": "Deal Stage Trigger",
+      "description": "Create automated actions when deals move between stages.",
+      "category": "automation",
+      "requiredPermission": "admin",
+      "requiresConfirmation": true,
+      "estimatedDuration": 3000,
+      "rateLimit": 10,
+      "tags": [
+        "automation",
+        "trigger",
+        "deals",
+        "workflow"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "workflow.alert_on_match",
+      "name": "Alert on Match",
+      "description": "Create alerts for properties matching specific criteria.",
+      "category": "automation",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 20,
+      "tags": [
+        "automation",
+        "alerts",
+        "notifications",
+        "matching"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "batch.skip_trace_bulk",
+      "name": "Bulk Skip Trace",
+      "description": "Queue multiple properties for skip tracing. Returns a job ID to track progress.",
+      "category": "batch_operations",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "estimatedDuration": 5000,
+      "rateLimit": 10,
+      "tags": [
+        "batch",
+        "skip-trace",
+        "bulk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "batch.add_to_list_bulk",
+      "name": "Bulk Add to List",
+      "description": "Add multiple properties to a list at once with optional tags.",
+      "category": "batch_operations",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "batch",
+        "list",
+        "bulk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "batch.update_deal_status",
+      "name": "Bulk Update Deal Status",
+      "description": "Update the status of multiple deals at once.",
+      "category": "batch_operations",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "estimatedDuration": 2000,
+      "rateLimit": 15,
+      "tags": [
+        "batch",
+        "deals",
+        "status"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "batch.export_properties",
+      "name": "Export Properties",
+      "description": "Export properties to CSV, Excel, or JSON format.",
+      "category": "batch_operations",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 10000,
+      "rateLimit": 5,
+      "tags": [
+        "batch",
+        "export",
+        "download"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer_management.match_buyers_to_property",
+      "name": "Match Buyers to Property",
+      "description": "Find buyers whose preferences match a specific property. Returns ranked list with match scores and factors.",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "buyers",
+        "matching",
+        "property"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer_management.get_buyer_insights",
+      "name": "Get Buyer Insights",
+      "description": "Get AI-powered insights about a buyer including score breakdown, strengths, and recommendations.",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "buyers",
+        "insights",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer_management.analyze_buyer_activity",
+      "name": "Analyze Buyer Activity",
+      "description": "Analyze buyer engagement patterns, identify top performers and those needing attention.",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 10,
+      "tags": [
+        "buyers",
+        "analytics",
+        "activity"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer_management.search_buyers",
+      "name": "Search Buyers",
+      "description": "Search for buyers by name, status, tier, or type.",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "buyers",
+        "search"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.suggest_outreach",
+      "name": "suggestBuyerOutreach",
+      "description": "Identify buyers to contact and prioritize by opportunity",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "outreach",
+        "crm"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.compare",
+      "name": "compareBuyers",
+      "description": "Compare buyers and recommend for specific deal",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "compare",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.predict_behavior",
+      "name": "predictBuyerBehavior",
+      "description": "Predict buyer response and close probability",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "predict",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.segment",
+      "name": "segmentBuyers",
+      "description": "Group buyers by criteria for targeted marketing",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "segment",
+        "marketing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.identify_gaps",
+      "name": "identifyBuyerGaps",
+      "description": "Analyze buyer network coverage and identify missing types",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "gaps",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.generate_report",
+      "name": "generateBuyerReport",
+      "description": "Create buyer summary report with activity metrics",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "report"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.score_fit",
+      "name": "scoreBuyerFit",
+      "description": "Calculate buyer-property fit score with match factors",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "scoring",
+        "matching"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.track_preference_changes",
+      "name": "trackBuyerPreferenceChanges",
+      "description": "Monitor preference updates and alert on significant changes",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "preferences",
+        "tracking"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "buyer.recommend_actions",
+      "name": "recommendBuyerActions",
+      "description": "Suggest next actions for buyers prioritized by impact",
+      "category": "buyer_management",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "buyer",
+        "actions",
+        "recommendations"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "census.get_geography",
+      "name": "Get Census Geography",
+      "description": "Retrieve Census geographic identifiers (Block Group, Tract, County, State) for a property based on coordinates. Use this when you need to identify a property",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 400,
+      "rateLimit": 30,
+      "tags": [
+        "census",
+        "geography",
+        "geocode",
+        "block_group",
+        "tract",
+        "micro-territory"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "census.get_boundary_polygon",
+      "name": "Get Census Boundary Polygon",
+      "description": "Retrieve the GeoJSON polygon boundary for a Census geography to display on a map. Requires a GEOID from get_census_geography. Use this when the user asks to ",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 20,
+      "tags": [
+        "census",
+        "boundary",
+        "polygon",
+        "geojson",
+        "map",
+        "visualization"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "census.classify_comp_geography",
+      "name": "Classify Comp Geography",
+      "description": "Determine the geographic relationship between a subject property and a comparable property. Returns a tier (excellent/good/acceptable/marginal) and explanation. Use this when the user asks ",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 10,
+      "rateLimit": 100,
+      "tags": [
+        "census",
+        "comp",
+        "classification",
+        "geography",
+        "tier"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "census.batch_geocode_comps",
+      "name": "Batch Geocode Comps",
+      "description": "Geocode multiple comparable properties to their Census geographies in a single operation. Use this when analyzing multiple comps, after receiving comps from RentCast valuation API, or when the user asks to ",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 10,
+      "tags": [
+        "census",
+        "batch",
+        "geocode",
+        "comps",
+        "bulk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "census.get_boundary_by_point",
+      "name": "Get Census Boundary by Point",
+      "description": "Retrieve Census boundary polygon(s) that contain a specific point. This is a convenience tool that combines geocoding and boundary retrieval in one step. Use when you have coordinates and want to immediately visualize the surrounding Census geography.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 800,
+      "rateLimit": 15,
+      "tags": [
+        "census",
+        "boundary",
+        "point",
+        "map",
+        "visualization"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "comms.generate_sms_template",
+      "name": "Generate SMS Template",
+      "description": "Generate personalized SMS templates for seller outreach.",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "communication",
+        "sms",
+        "template",
+        "outreach"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "comms.generate_email_sequence",
+      "name": "Generate Email Sequence",
+      "description": "Generate a multi-email drip sequence for seller outreach.",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "communication",
+        "email",
+        "sequence",
+        "drip"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "comms.generate_talking_points",
+      "name": "Generate Talking Points",
+      "description": "Generate talking points and scripts for seller calls.",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 25,
+      "tags": [
+        "communication",
+        "script",
+        "call",
+        "talking-points"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "contractor.search",
+      "name": "searchContractors",
+      "description": "Search for contractors by location and specialty. Use to find contractors for renovation projects.",
+      "category": "contractors",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "contractor",
+        "search",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "contractor.details",
+      "name": "getContractorDetails",
+      "description": "Get detailed information and performance metrics for a specific contractor.",
+      "category": "contractors",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "contractor",
+        "details",
+        "performance",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "contractor.history",
+      "name": "getContractorHistory",
+      "description": "Get permit history for a contractor to evaluate their work experience.",
+      "category": "contractors",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "contractor",
+        "history",
+        "permits",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "contractor.compare",
+      "name": "compareContractors",
+      "description": "Compare multiple contractors side-by-side to help choose the best one.",
+      "category": "contractors",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "contractor",
+        "compare",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "contractor.top",
+      "name": "findTopContractors",
+      "description": "Find the highest-rated contractors in an area, optionally filtered by specialty.",
+      "category": "contractors",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "contractor",
+        "top",
+        "rated",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.create_lead_list",
+      "name": "createLeadList",
+      "description": "Create a new lead list for organizing leads",
+      "category": "crm",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "crm",
+        "leads",
+        "list"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.rank_by_motivation",
+      "name": "rankListByMotivation",
+      "description": "Rank leads by motivation score, highest first",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "motivation",
+        "ranking"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.suggest_outreach",
+      "name": "suggestLeadOutreach",
+      "description": "Suggest leads to contact based on motivation and status",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "outreach"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.analyze_source",
+      "name": "analyzeLeadSource",
+      "description": "Analyze performance of different lead sources",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "analytics",
+        "source"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.segment_leads",
+      "name": "segmentLeads",
+      "description": "Segment leads by motivation, status, source, or recency",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "segmentation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.predict_conversion",
+      "name": "predictLeadConversion",
+      "description": "Predict likelihood of lead converting to deal",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "prediction",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.generate_report",
+      "name": "generateLeadReport",
+      "description": "Generate a summary report for leads",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "report"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.identify_hot",
+      "name": "identifyHotLeads",
+      "description": "Find leads with high motivation scores",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "hot",
+        "priority"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.track_engagement",
+      "name": "trackLeadEngagement",
+      "description": "Track engagement history for a lead",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "engagement"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.suggest_nurturing",
+      "name": "suggestLeadNurturing",
+      "description": "Suggest nurturing plan for a lead",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "nurturing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.merge_leads",
+      "name": "mergeLeadRecords",
+      "description": "Merge duplicate lead records",
+      "category": "crm",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "crm",
+        "leads",
+        "merge",
+        "cleanup"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "crm.export_leads",
+      "name": "exportLeadData",
+      "description": "Export lead data in JSON or CSV format",
+      "category": "crm",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "crm",
+        "leads",
+        "export"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.insights",
+      "name": "Generate Insights",
+      "description": "Generate AI-powered insights from your data",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "dashboard",
+        "insights",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.goals",
+      "name": "Goal Tracking",
+      "description": "Track progress towards your goals",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "goals",
+        "tracking"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.performance",
+      "name": "Performance Summary",
+      "description": "Get a summary of your performance metrics",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "performance",
+        "summary"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.report",
+      "name": "Generate Report",
+      "description": "Generate automated analytics reports",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 10,
+      "tags": [
+        "dashboard",
+        "report",
+        "automated"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.anomalies",
+      "name": "Anomaly Detection",
+      "description": "Detect unusual patterns in your metrics",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "anomaly",
+        "detection"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.trends",
+      "name": "Dashboard Trends",
+      "description": "Analyze trends across your key metrics",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "trends"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.activity",
+      "name": "Activity Summary",
+      "description": "Summarize your recent activity",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "activity"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.funnel",
+      "name": "Conversion Funnel",
+      "description": "Analyze your deal conversion funnel",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "funnel",
+        "conversion"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.compare_periods",
+      "name": "Compare Periods",
+      "description": "Compare metrics between two time periods",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "compare"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.alerts",
+      "name": "Get Alerts",
+      "description": "Get current alerts and notifications",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 60,
+      "tags": [
+        "dashboard",
+        "alerts"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.recommendations",
+      "name": "Get Recommendations",
+      "description": "Get AI-powered action recommendations",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 20,
+      "tags": [
+        "dashboard",
+        "recommendations",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "dashboard.kpis",
+      "name": "KPI Status",
+      "description": "Get current KPI status and progress",
+      "category": "reporting",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "dashboard",
+        "kpi"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal_analysis.analyze",
+      "name": "Analyze Deal",
+      "description": "Perform comprehensive analysis of a wholesale deal including ARV, MAO, and profit calculations",
+      "category": "deal_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "analysis",
+        "deal",
+        "arv",
+        "mao"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal_analysis.calculate_mao",
+      "name": "Calculate MAO",
+      "description": "Calculate Maximum Allowable Offer based on ARV, repairs, and desired margins",
+      "category": "deal_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 100,
+      "rateLimit": 100,
+      "tags": [
+        "mao",
+        "calculation",
+        "offer"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal_analysis.score",
+      "name": "Score Deal",
+      "description": "Generate a deal score based on multiple factors including motivation, equity, and market conditions",
+      "category": "deal_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 50,
+      "tags": [
+        "score",
+        "deal",
+        "ranking"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.create",
+      "name": "createDeal",
+      "description": "Create a new deal in the pipeline",
+      "category": "deal_pipeline",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "deal",
+        "create",
+        "pipeline"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.update_stage",
+      "name": "updateDealStage",
+      "description": "Move a deal to a different pipeline stage",
+      "category": "deal_pipeline",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "deal",
+        "stage",
+        "update"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.analyze_progress",
+      "name": "analyzeDealProgress",
+      "description": "Analyze deal progress and identify bottlenecks",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "analysis",
+        "progress"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.generate_offer_strategy",
+      "name": "generateOfferStrategy",
+      "description": "Calculate tiered offer prices (optimal, target, max, walk-away)",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "offer",
+        "strategy",
+        "pricing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.assign_buyer",
+      "name": "assignBuyerToDeal",
+      "description": "Assign a buyer to a deal and move to assigned stage",
+      "category": "deal_pipeline",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "deal",
+        "buyer",
+        "assignment"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.get_timeline",
+      "name": "getDealTimeline",
+      "description": "Get activity timeline for a deal",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "timeline",
+        "activities"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.predict_outcome",
+      "name": "predictDealOutcome",
+      "description": "Predict likelihood of deal closing successfully",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "prediction",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.generate_summary",
+      "name": "generateDealSummary",
+      "description": "Generate a comprehensive summary of a deal",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "summary",
+        "report"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.compare_to_portfolio",
+      "name": "compareDealToPortfolio",
+      "description": "Compare deal metrics to portfolio averages",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "compare",
+        "portfolio"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.suggest_actions",
+      "name": "suggestDealActions",
+      "description": "Suggest next actions for a deal",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "actions",
+        "suggestions"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.calculate_metrics",
+      "name": "calculateDealMetrics",
+      "description": "Calculate financial metrics for a deal",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "metrics",
+        "financial"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "deal.flag_issues",
+      "name": "flagDealIssues",
+      "description": "Identify deals with issues that need attention",
+      "category": "deal_pipeline",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "deal",
+        "issues",
+        "alerts"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "docs.generate_offer_letter",
+      "name": "Generate Offer Letter",
+      "description": "Generate a professional offer letter for a property with customizable terms.",
+      "category": "document_generation",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 20,
+      "tags": [
+        "documents",
+        "offer",
+        "letter"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "docs.generate_deal_summary",
+      "name": "Generate Deal Summary",
+      "description": "Generate a comprehensive deal summary with comps, financials, and timeline.",
+      "category": "document_generation",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 8000,
+      "rateLimit": 15,
+      "tags": [
+        "documents",
+        "deal",
+        "summary",
+        "report"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "docs.generate_comp_report",
+      "name": "Generate Comp Report",
+      "description": "Generate a comparable sales report for a property.",
+      "category": "document_generation",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 6000,
+      "rateLimit": 20,
+      "tags": [
+        "documents",
+        "comps",
+        "report",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.suggest",
+      "name": "suggestFilters",
+      "description": "Analyze user goals and recommend filter combinations",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "suggest",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.explain",
+      "name": "explainFilter",
+      "description": "Describe what a filter does with usage examples",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "explain",
+        "help"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.optimize",
+      "name": "optimizeFilterCombination",
+      "description": "Analyze filter set, identify redundancies, suggest improvements",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "optimize"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.create",
+      "name": "createCustomFilter",
+      "description": "Create filter from natural language description",
+      "category": "property_search",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "create"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.compare",
+      "name": "compareFilters",
+      "description": "Compare two filter sets and recommend which to use",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "compare"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.performance",
+      "name": "getFilterPerformance",
+      "description": "Track filter usage and lead-to-deal conversion",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "performance",
+        "analytics"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.refine",
+      "name": "suggestFilterRefinements",
+      "description": "Analyze results and suggest tightening/loosening filters",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "refine"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.export",
+      "name": "exportFilterDefinition",
+      "description": "Export filter as shareable format",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "export",
+        "share"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.import",
+      "name": "importFilter",
+      "description": "Import filter from definition",
+      "category": "property_search",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "import"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.recommendations",
+      "name": "getFilterRecommendations",
+      "description": "Get filter recommendations based on success patterns",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "recommendations",
+        "ai"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "filter.validate",
+      "name": "validateFilterCriteria",
+      "description": "Check filter for logical errors and impossible combinations",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "filter",
+        "validate"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.analyze_area",
+      "name": "Analyze Area",
+      "description": "Analyze a geographic area for investment opportunities based on market data",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "area",
+        "analysis",
+        "opportunity"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.competition_analysis",
+      "name": "Competition Analysis",
+      "description": "Analyze competition levels in a specific area",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "competition",
+        "market"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.detect_opportunities",
+      "name": "Detect Opportunities",
+      "description": "Detect high-opportunity areas based on specified criteria",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "heat-map",
+        "opportunity",
+        "detection"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.price_trends",
+      "name": "Price Trend Analysis",
+      "description": "Analyze price trends in an area",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "price",
+        "trend"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.distress_indicator",
+      "name": "Distress Indicator",
+      "description": "Identify distressed property concentrations",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "distress",
+        "foreclosure"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.equity_analysis",
+      "name": "Equity Analysis",
+      "description": "Analyze equity levels in an area",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "equity"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.absentee_owners",
+      "name": "Absentee Owner Analysis",
+      "description": "Identify absentee owner concentrations",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "absentee",
+        "owner"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.rental_yield",
+      "name": "Rental Yield Analysis",
+      "description": "Calculate rental yields in an area",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "rental",
+        "yield"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.inventory",
+      "name": "Inventory Analysis",
+      "description": "Analyze current inventory levels",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "inventory"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.days_on_market",
+      "name": "Days on Market Analysis",
+      "description": "Analyze average days on market",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "dom"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.flip_potential",
+      "name": "Flip Potential Analysis",
+      "description": "Analyze flip potential in an area",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "flip",
+        "renovation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.school_impact",
+      "name": "School District Impact",
+      "description": "Analyze school district impact on values",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "school",
+        "education"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.crime_impact",
+      "name": "Crime Impact Analysis",
+      "description": "Analyze crime impact on property values",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "crime",
+        "safety"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "heat_mapping.development",
+      "name": "Development Activity",
+      "description": "Track development and construction activity",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "heat-map",
+        "development",
+        "construction"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "sync.crm_export",
+      "name": "Export to CRM",
+      "description": "Export leads, contacts, or deals to external CRM systems.",
+      "category": "integrations",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "estimatedDuration": 10000,
+      "rateLimit": 5,
+      "tags": [
+        "integration",
+        "crm",
+        "export",
+        "sync"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "sync.calendar_integration",
+      "name": "Calendar Integration",
+      "description": "Create, update, or manage calendar events for property viewings and meetings.",
+      "category": "integrations",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "integration",
+        "calendar",
+        "scheduling",
+        "events"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "intel.competitor_activity",
+      "name": "Analyze Competitor Activity",
+      "description": "Analyze investor/flipper activity in zip codes using permit data.",
+      "category": "intelligence",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 8000,
+      "rateLimit": 10,
+      "tags": [
+        "intelligence",
+        "competitors",
+        "market",
+        "permits"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "intel.market_saturation",
+      "name": "Analyze Market Saturation",
+      "description": "Analyze market saturation using real market data and permit activity.",
+      "category": "intelligence",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "intelligence",
+        "market",
+        "saturation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "intel.market_velocity",
+      "name": "Analyze Market Velocity",
+      "description": "Comprehensive market velocity analysis for investment timing decisions.",
+      "category": "intelligence",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 20,
+      "tags": [
+        "intelligence",
+        "market",
+        "velocity",
+        "timing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.draw_search_area",
+      "name": "Draw Search Area",
+      "description": "Create a search area on the map by defining a center point and radius, or drawing a polygon. Returns the bounds and property count within the area.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "map",
+        "search",
+        "area",
+        "polygon"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.compare_areas",
+      "name": "Compare Areas",
+      "description": "Compare multiple geographic areas based on real estate metrics like average price, days on market, inventory levels, and appreciation rates.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "map",
+        "compare",
+        "analysis",
+        "metrics"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.show_commute_time",
+      "name": "Show Commute Time",
+      "description": "Display isochrone (travel time) polygons on the map showing areas reachable within a specified time using Mapbox Isochrone API.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "map",
+        "commute",
+        "isochrone",
+        "travel"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.toggle_style",
+      "name": "Toggle Map Style",
+      "description": "Switch between different map visual styles: streets, satellite, satellite-streets, light, or dark mode.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 60,
+      "tags": [
+        "map",
+        "style",
+        "visualization"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.spatial_query",
+      "name": "Spatial Query",
+      "description": "Query points of interest (POIs) near a location using Mapbox Tilequery API. Find schools, restaurants, shops, and other amenities.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 25,
+      "tags": [
+        "map",
+        "spatial",
+        "poi",
+        "query"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "map.compare_neighborhoods",
+      "name": "Compare Neighborhoods",
+      "description": "Compare multiple neighborhoods based on livability factors like schools, walkability, transit access, and amenities using POI density analysis.",
+      "category": "map",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 6000,
+      "rateLimit": 10,
+      "tags": [
+        "map",
+        "neighborhoods",
+        "compare",
+        "livability"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.trends",
+      "name": "Market Trend Analysis",
+      "description": "Analyze market trends and momentum",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "trend",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.forecast",
+      "name": "Price Forecasting",
+      "description": "Forecast future property prices",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 20,
+      "tags": [
+        "market",
+        "forecast",
+        "price"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.compare",
+      "name": "Market Comparison",
+      "description": "Compare multiple markets side by side",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2500,
+      "rateLimit": 20,
+      "tags": [
+        "market",
+        "compare",
+        "benchmark"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.seasonality",
+      "name": "Seasonality Analysis",
+      "description": "Analyze seasonal patterns in the market",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "seasonality",
+        "timing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.supply_demand",
+      "name": "Supply/Demand Analysis",
+      "description": "Analyze market supply and demand dynamics",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "supply",
+        "demand"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.economic",
+      "name": "Economic Indicators",
+      "description": "Analyze economic factors affecting the market",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "economic",
+        "jobs"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.roi",
+      "name": "Investment ROI Calculator",
+      "description": "Calculate investment returns",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 100,
+      "tags": [
+        "market",
+        "roi",
+        "investment"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.neighborhood",
+      "name": "Neighborhood Scoring",
+      "description": "Score neighborhood quality factors",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "neighborhood",
+        "score"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.rental",
+      "name": "Rental Market Analysis",
+      "description": "Analyze rental market conditions",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "rental",
+        "landlord"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_analysis.timing",
+      "name": "Market Timing Indicator",
+      "description": "Get market timing signals",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "market",
+        "timing",
+        "signal"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.get_velocity",
+      "name": "Get Market Velocity",
+      "description": "Get the Market Velocity Index for a specific location. The velocity index\n    measures buyer demand intensity on a 0-100 scale. Higher scores mean properties sell\n    faster and wholesalers can assign contracts more confidently. Use this when users ask\n    about market heat, buyer demand, how fast things are selling, or whether an area is\n    good for wholesaling.",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 30,
+      "tags": [
+        "velocity",
+        "market",
+        "demand",
+        "wholesaling",
+        "heat"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.find_hot_markets",
+      "name": "Find Hot Markets",
+      "description": "Find markets with high buyer velocity/demand. Use when users say things\n    like ",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 20,
+      "tags": [
+        "velocity",
+        "hot",
+        "markets",
+        "demand",
+        "wholesaling"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.find_cold_markets",
+      "name": "Find Cold Markets",
+      "description": "Find markets with low buyer velocity - useful for identifying areas to\n    avoid or for finding deep value plays (though risky for wholesaling). Use when users\n    ask about slow markets, cold areas, or places to avoid.",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 20,
+      "tags": [
+        "velocity",
+        "cold",
+        "markets",
+        "slow",
+        "avoid"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.compare_markets",
+      "name": "Compare Market Velocity",
+      "description": "Compare market velocity between multiple locations. Use when users want\n    to compare markets, decide between areas, or understand relative demand. Examples:\n    ",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "velocity",
+        "compare",
+        "markets",
+        "rank"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.explain_score",
+      "name": "Explain Velocity Score",
+      "description": "Explain why a specific area has its velocity score. Breaks down the\n    component factors (DOM, absorption, inventory, permit activity). Use when users ask\n    ",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 3000,
+      "rateLimit": 30,
+      "tags": [
+        "velocity",
+        "explain",
+        "breakdown",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.get_trend",
+      "name": "Get Velocity Trend",
+      "description": "Get the historical trend of market velocity for an area. Shows whether\n    the market is heating up, cooling down, or stable. Use when users ask ",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "velocity",
+        "trend",
+        "history",
+        "forecast"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.get_rankings",
+      "name": "Get Velocity Rankings",
+      "description": "Get ranked list of markets by velocity. Use when users want to see\n    ",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "velocity",
+        "rankings",
+        "top",
+        "bottom"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "market_velocity.get_for_bounds",
+      "name": "Get Velocity for Map Bounds",
+      "description": "Get velocity data for a geographic bounding box. Used internally for\n    heat map rendering.",
+      "category": "market_analysis",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 30,
+      "tags": [
+        "velocity",
+        "bounds",
+        "heatmap",
+        "map"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.send_sms",
+      "name": "sendSMS",
+      "description": "Send an SMS message to a phone number",
+      "category": "communication",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "sms",
+        "communication",
+        "notification"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.send_email",
+      "name": "sendEmail",
+      "description": "Send an email to a recipient",
+      "category": "communication",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "email",
+        "communication",
+        "notification"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.send_from_template",
+      "name": "sendFromTemplate",
+      "description": "Send a message using a pre-defined template",
+      "category": "communication",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "template",
+        "communication",
+        "notification"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.generate_ai_message",
+      "name": "generateAIMessage",
+      "description": "Generate a personalized message using AI",
+      "category": "communication",
+      "requiredPermission": "execute",
+      "requiresConfirmation": false,
+      "tags": [
+        "ai",
+        "message",
+        "generation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.get_inbox",
+      "name": "getInboxMessages",
+      "description": "Get messages from the unified inbox",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "inbox",
+        "messages",
+        "communication"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.mark_as_read",
+      "name": "markAsRead",
+      "description": "Mark messages as read",
+      "category": "communication",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "tags": [
+        "inbox",
+        "messages",
+        "read"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.list_templates",
+      "name": "listTemplates",
+      "description": "List available message templates",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "templates",
+        "communication"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.get_status",
+      "name": "getCommunicationStatus",
+      "description": "Check if SMS and email services are configured",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "status",
+        "configuration"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.check_opt_out",
+      "name": "checkOptOut",
+      "description": "Check if a contact has opted out of communications",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "opt-out",
+        "compliance"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "notification.get_history",
+      "name": "getMessageHistory",
+      "description": "Get message history for a specific contact",
+      "category": "communication",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "history",
+        "messages",
+        "contact"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.history",
+      "name": "getPermitHistory",
+      "description": "Get complete permit history for a property address. Use when user asks about permits, renovations, or construction history.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "history",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.details",
+      "name": "getPermitDetails",
+      "description": "Get detailed information about a specific permit by ID.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "details",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.search",
+      "name": "searchPermitsByArea",
+      "description": "Search for permits in a geographic area with filters. Use for finding renovation activity in neighborhoods.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "search",
+        "area",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.metrics",
+      "name": "getPermitMetrics",
+      "description": "Get aggregated permit metrics for a property. Shows total permits, values, and activity patterns.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "metrics",
+        "analysis",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.analyze_patterns",
+      "name": "analyzePermitPatterns",
+      "description": "Analyze permit history to identify seller motivation signals and property condition.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "analysis",
+        "motivation",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.check_system_age",
+      "name": "checkSystemAge",
+      "description": "Check the age of major systems (roof, HVAC, plumbing, electrical) based on permit history.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "systems",
+        "age",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.deferred_maintenance",
+      "name": "identifyDeferredMaintenance",
+      "description": "Find properties with no recent permits, indicating potential deferred maintenance.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "deferred",
+        "maintenance",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "permit.stalled",
+      "name": "findStalledPermits",
+      "description": "Find properties with stalled or expired permits - indicates abandoned projects or motivated sellers.",
+      "category": "permits",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "permit",
+        "stalled",
+        "expired",
+        "shovels"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "portfolio.performance_summary",
+      "name": "Portfolio Performance Summary",
+      "description": "Get a comprehensive summary of portfolio performance from actual deal data.",
+      "category": "portfolio",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 20,
+      "tags": [
+        "portfolio",
+        "performance",
+        "summary",
+        "analytics"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "portfolio.roi_by_strategy",
+      "name": "ROI by Strategy",
+      "description": "Analyze ROI performance by investment strategy from actual deal data.",
+      "category": "portfolio",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "portfolio",
+        "roi",
+        "strategy",
+        "analytics"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "portfolio.geographic_concentration",
+      "name": "Geographic Concentration Analysis",
+      "description": "Analyze portfolio geographic concentration and diversification from actual data.",
+      "category": "portfolio",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 20,
+      "tags": [
+        "portfolio",
+        "geographic",
+        "diversification",
+        "risk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.seller_motivation",
+      "name": "Predict Seller Motivation",
+      "description": "Analyze property and owner data using stratified scoring models. Uses different scoring logic based on owner type: Individual (long ownership = HIGH motivation), Investor/Entity (long ownership = LOW motivation), Institutional (process-focused). Optionally includes AI-enhanced DealFlow IQ score.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 20,
+      "tags": [
+        "predictive",
+        "motivation",
+        "seller",
+        "analysis",
+        "stratified-scoring"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.deal_close_probability",
+      "name": "Predict Deal Close Probability",
+      "description": "Predict the likelihood of a deal closing using market velocity and property data.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 20,
+      "tags": [
+        "predictive",
+        "deals",
+        "probability",
+        "risk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.optimal_offer_price",
+      "name": "Calculate Optimal Offer Price",
+      "description": "Calculate optimal offer price using real ARV from RentCast and market data.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 5000,
+      "rateLimit": 15,
+      "tags": [
+        "predictive",
+        "pricing",
+        "offer",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.time_to_close",
+      "name": "Predict Time to Close",
+      "description": "Predict deal timeline using market velocity data and deal type analysis.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 4000,
+      "rateLimit": 25,
+      "tags": [
+        "predictive",
+        "timeline",
+        "deals"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.classify_owner",
+      "name": "Classify Owner Type",
+      "description": "Classify a property owner into categories: Individual (owner-occupied/absentee), Investor/Entity (LLC, corporation, trust), or Institutional (bank REO, government, estate). Uses pattern matching on owner name and optional signals.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 500,
+      "rateLimit": 50,
+      "tags": [
+        "predictive",
+        "owner",
+        "classification",
+        "entity-detection"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.batch_motivation",
+      "name": "Batch Score Seller Motivation",
+      "description": "Calculate seller motivation scores for multiple properties at once. Returns scores, owner classifications, and recommendations for up to 20 properties. Useful for prioritizing lead lists.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 30000,
+      "rateLimit": 5,
+      "tags": [
+        "predictive",
+        "motivation",
+        "batch",
+        "lead-scoring"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "predict.compare_motivation",
+      "name": "Compare Motivation Scores",
+      "description": "Compare seller motivation scores across multiple properties to prioritize outreach. Ranks properties and provides analysis of which to contact first.",
+      "category": "predictive",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 15000,
+      "rateLimit": 10,
+      "tags": [
+        "predictive",
+        "motivation",
+        "comparison",
+        "prioritization"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.valuation",
+      "name": "getPropertyValuation",
+      "description": "Get AI-powered property valuation with ARV estimate",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "valuation",
+        "arv"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.comps",
+      "name": "getComparables",
+      "description": "Find comparable sold properties with adjustments",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "comps",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.motivation",
+      "name": "calculateMotivationScore",
+      "description": "Calculate seller motivation score with reasoning",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "motivation",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.summary",
+      "name": "generatePropertySummary",
+      "description": "Generate AI-written property description for different audiences",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "summary",
+        "content"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.deal_potential",
+      "name": "analyzeDealPotential",
+      "description": "Calculate potential profit margins and assess risk factors",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "deal",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.ownership",
+      "name": "getOwnershipHistory",
+      "description": "Retrieve ownership timeline and identify patterns",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "ownership",
+        "history"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.repairs",
+      "name": "estimateRepairCosts",
+      "description": "Generate repair estimate with category breakdown",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "repairs",
+        "estimate"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.time_on_market",
+      "name": "predictTimeOnMarket",
+      "description": "Predict days to sell based on market and property characteristics",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "market",
+        "prediction"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.neighborhood",
+      "name": "getNeighborhoodInsights",
+      "description": "Analyze surrounding area including crime, schools, and market trends",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "neighborhood",
+        "analysis"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.portfolio_compare",
+      "name": "compareToPortfolio",
+      "description": "Compare property to user past deals and predict success",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "portfolio",
+        "comparison"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.offer_price",
+      "name": "generateOfferPrice",
+      "description": "Calculate optimal offer price with justification",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "offer",
+        "pricing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.rental",
+      "name": "assessRentalPotential",
+      "description": "Estimate rental income and calculate cap rate",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "rental",
+        "investment"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property.issues",
+      "name": "flagPropertyIssues",
+      "description": "Identify potential red flags including title issues, liens, and violations",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "property",
+        "issues",
+        "risk"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property_search.search",
+      "name": "Search Properties",
+      "description": "Search for properties matching specified criteria including location, price, property type, and motivation indicators",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "search",
+        "properties",
+        "filter"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "property_search.get_details",
+      "name": "Get Property Details",
+      "description": "Get detailed information about a specific property including owner info and comparable sales",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1500,
+      "rateLimit": 60,
+      "tags": [
+        "property",
+        "details",
+        "comps"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.by_description",
+      "name": "searchPropertiesByDescription",
+      "description": "Search for properties using natural language description",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "natural-language"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.execute_filter",
+      "name": "executeFilter",
+      "description": "Execute a saved search filter",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "filter"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.save_filter",
+      "name": "saveSearchAsFilter",
+      "description": "Save search criteria as a reusable filter",
+      "category": "property_search",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "save"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.recent",
+      "name": "getRecentSearches",
+      "description": "Get recent search history",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "history"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.refine",
+      "name": "refineSearch",
+      "description": "Refine search based on natural language",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "refine"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.compare",
+      "name": "compareSearchResults",
+      "description": "Compare two search result sets",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "compare"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.export",
+      "name": "exportSearchResults",
+      "description": "Export search results to CSV/JSON",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "export"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.schedule",
+      "name": "scheduleSearch",
+      "description": "Schedule a recurring search",
+      "category": "property_search",
+      "requiredPermission": "write",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "schedule"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.suggestions",
+      "name": "getSearchSuggestions",
+      "description": "Get AI-based search suggestions",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "suggestions"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "search.analyze",
+      "name": "analyzeSearchPerformance",
+      "description": "Analyze search-to-deal conversion",
+      "category": "property_search",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "search",
+        "analytics"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.trace_lead",
+      "name": "skipTraceLead",
+      "description": "Skip trace a lead to find phone numbers, emails, and addresses",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "estimatedDuration": 5000,
+      "tags": [
+        "skip-trace",
+        "contact",
+        "enrichment"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.batch_trace",
+      "name": "batchSkipTrace",
+      "description": "Queue multiple leads for skip tracing",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "skip-trace",
+        "batch",
+        "enrichment"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.get_status",
+      "name": "getSkipTraceStatus",
+      "description": "Check the status of a skip trace request",
+      "category": "data_enrichment",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "skip-trace",
+        "status"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.validate_phone",
+      "name": "validatePhoneNumber",
+      "description": "Validate and get info about a phone number",
+      "category": "data_enrichment",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "skip-trace",
+        "phone",
+        "validation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.validate_email",
+      "name": "validateEmail",
+      "description": "Validate an email address",
+      "category": "data_enrichment",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "skip-trace",
+        "email",
+        "validation"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.enrich_lead",
+      "name": "enrichLeadData",
+      "description": "Enrich lead with demographics, property, or financial data",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "skip-trace",
+        "enrichment",
+        "data"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.find_related",
+      "name": "findRelatedContacts",
+      "description": "Find relatives, associates, or neighbors of a lead",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "skip-trace",
+        "contacts",
+        "relatives"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.reverse_phone",
+      "name": "reversePhoneLookup",
+      "description": "Look up owner information by phone number",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "skip-trace",
+        "phone",
+        "lookup"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.reverse_address",
+      "name": "reverseAddressLookup",
+      "description": "Look up owner information by property address",
+      "category": "data_enrichment",
+      "requiredPermission": "execute",
+      "requiresConfirmation": true,
+      "tags": [
+        "skip-trace",
+        "address",
+        "lookup"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "skip_trace.get_credits",
+      "name": "getSkipTraceCredits",
+      "description": "Check remaining skip trace credits",
+      "category": "data_enrichment",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "skip-trace",
+        "credits",
+        "billing"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "utility.geocode",
+      "name": "Geocode Address",
+      "description": "Convert a street address or place name to geographic coordinates (latitude/longitude) using Mapbox Geocoding API.",
+      "category": "utility",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 50,
+      "tags": [
+        "utility",
+        "geocode",
+        "address",
+        "coordinates"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "utility.reverse_geocode",
+      "name": "Reverse Geocode",
+      "description": "Convert geographic coordinates (latitude/longitude) to a human-readable address using Mapbox Geocoding API.",
+      "category": "utility",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 1000,
+      "rateLimit": 50,
+      "tags": [
+        "utility",
+        "geocode",
+        "reverse",
+        "address"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "utility.format_currency",
+      "name": "Format Currency",
+      "description": "Format a numeric amount as a currency string with proper locale-specific formatting, symbols, and notation.",
+      "category": "utility",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 50,
+      "rateLimit": 100,
+      "tags": [
+        "utility",
+        "format",
+        "currency",
+        "money"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "utility.calculate_distance",
+      "name": "Calculate Distance",
+      "description": "Calculate the straight-line (Haversine) distance between two points. Accepts coordinates or addresses.",
+      "category": "utility",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "estimatedDuration": 2000,
+      "rateLimit": 30,
+      "tags": [
+        "utility",
+        "distance",
+        "calculation",
+        "geo"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "vertical.get_active",
+      "name": "getActiveVertical",
+      "description": "Get the user\\",
+      "category": "verticals",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "vertical",
+        "active",
+        "configuration"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "vertical.switch",
+      "name": "switchVertical",
+      "description": "Switch the user\\",
+      "category": "verticals",
+      "requiredPermission": "write",
+      "requiresConfirmation": true,
+      "tags": [
+        "vertical",
+        "switch",
+        "change"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "vertical.filters",
+      "name": "getVerticalFilters",
+      "description": "Get the available filters for a business vertical.",
+      "category": "verticals",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "vertical",
+        "filters"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    },
+    {
+      "id": "vertical.insights",
+      "name": "getVerticalInsights",
+      "description": "Get vertical-specific insights and opportunities for a property.",
+      "category": "verticals",
+      "requiredPermission": "read",
+      "requiresConfirmation": false,
+      "tags": [
+        "vertical",
+        "insights",
+        "property"
+      ],
+      "inputFields": [],
+      "outputFields": []
+    }
+  ]
+}

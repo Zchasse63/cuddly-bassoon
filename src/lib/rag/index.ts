@@ -76,3 +76,47 @@ export {
   type RateLimitConfig,
   type RateLimitResult,
 } from './rate-limiter';
+
+// Query Reformulation (Phase 1)
+export {
+  reformulateForRAG,
+  extractConcepts,
+  getSuggestedCategories,
+  type ReformulatedQuery,
+  type ReformulationOptions,
+} from './query-reformulator';
+
+// Tool-Aware RAG Hints (Phase 2)
+export {
+  TOOL_RAG_HINTS,
+  getRAGHintsForTools,
+  predictLikelyTools,
+  getToolAwareCategories,
+  getHighPriorityHints,
+  type ToolRAGHint,
+} from './tool-rag-hints';
+
+// Conversation Context (Phase 3)
+export {
+  getConversationState,
+  updateConversationState,
+  summarizeConversation,
+  generateContextAwareQuery,
+  clearConversationState,
+  isSessionActive,
+  type ConversationRAGState,
+  type ConversationSummary,
+  type ContextAwareQuery,
+} from './conversation-context';
+
+// Dynamic Re-Retrieval (Phase 4)
+export {
+  RETRIEVAL_TRIGGERS,
+  analyzeToolResult,
+  dynamicRetrieve,
+  mightNeedReRetrieval,
+  getTriggerTermsByUrgency,
+  type RetrievalTrigger,
+  type ToolResultAnalysis,
+  type DynamicRetrievalResult,
+} from './dynamic-retrieval';

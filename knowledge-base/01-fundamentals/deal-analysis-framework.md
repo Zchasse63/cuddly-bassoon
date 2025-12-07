@@ -4,7 +4,7 @@ title: Complete Deal Analysis Framework for Real Estate Wholesaling
 category: Fundamentals
 subcategory: Deal Evaluation
 tags: [deal-analysis, ARV, repair-estimates, MAO-calculation, wholesaling-formulas, property-evaluation, due-diligence]
-related_docs: [arv-calculation-methods, repair-cost-estimation, building-cash-buyers-list, making-offers, exit-strategies]
+related_docs: [arv-calculation-methods, repair-cost-estimation, building-cash-buyers-list, making-offers, exit-strategies, tool-deal-analysis-analyze, tool-deal-analysis-score, data-sources-overview]
 difficulty_level: intermediate
 estimated_reading_time: 14 minutes
 last_updated: 2025-12-02

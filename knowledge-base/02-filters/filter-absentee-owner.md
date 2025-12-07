@@ -4,7 +4,7 @@ title: "Absentee Owner Filter: Complete Guide to Finding Distant Property Owners
 category: Filter System
 subcategory: Owner Status Filters
 tags: [absentee owner, motivated seller, rental property, landlord fatigue, property filter, lead generation, out of state owner]
-related_docs: [filter-high-equity, filter-tax-delinquent, filter-long-term-ownership, list-stacking-strategies, skip-tracing-guide]
+related_docs: [filter-high-equity, filter-tax-delinquent, filter-long-term-ownership, list-stacking-strategies, skip-tracing-guide, tool-motivation-score-owner, tool-owner-classify]
 difficulty_level: intermediate
 estimated_reading_time: 12 minutes
 last_updated: 2025-12-02
