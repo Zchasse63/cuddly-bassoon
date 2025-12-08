@@ -177,6 +177,20 @@
   /* Note: corner-smoothing is a webkit-only property */
 }
 
+/* Glass Card - Primary container style for elevated content */
+.glass-card {
+  background: var(--surface-glass-high);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-bottom-color: var(--border-shadow);
+  border-right-color: var(--border-shadow);
+  border-radius: var(--radius-fluid-standard);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    GLASS SHIMMER ANIMATION (Loading States)
    ═══════════════════════════════════════════════════════════════════ */

@@ -16,3 +16,8 @@ export { EnhancedChatInterface } from './EnhancedChatInterface';
 export { AIContextBar, ContextBadge } from './AIContextBar';
 export { QuickActions, InlineQuickActions } from './QuickActions';
 export { ProactiveInsights } from './ProactiveInsights';
+
+// Scout AI Components
+export { ScoutOrb } from './ScoutOrb';
+export { ScoutMessage } from './ScoutMessage';
+export type { ScoutMessageProps } from './ScoutMessage';
