@@ -37,7 +37,7 @@ export function VelocityLayerToggle({
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button
-            className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded transition-colors"
+            className="flex items-center gap-2 hover:bg-muted/50 p-1 rounded transition-colors"
             aria-label="Market Velocity settings"
           >
             <Flame
