@@ -37,10 +37,12 @@ export const MAP_CONFIG = {
     dark: 'mapbox://styles/mapbox/dark-v11',
     streets: 'mapbox://styles/mapbox/streets-v12',
     satellite: 'mapbox://styles/mapbox/satellite-streets-v12',
+    // Colorful navigation style - vibrant and modern
+    navigation: 'mapbox://styles/mapbox/navigation-day-v1',
   },
 
-  // Default style
-  style: 'mapbox://styles/mapbox/light-v11',
+  // Default style - using streets for colorful, vibrant look
+  style: 'mapbox://styles/mapbox/streets-v12',
 
   // Performance optimizations
   performance: {

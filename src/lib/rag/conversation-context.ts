@@ -7,7 +7,7 @@
  * Uses Redis for session state management with automatic TTL.
  */
 
-import { redis, CACHE_PREFIXES, CACHE_TTL } from '@/lib/cache/redis';
+import { redis, CachePrefix, CacheTTL } from '@/lib/cache/redis';
 import type { CoreMessage } from 'ai';
 
 export interface ConversationRAGState {
@@ -34,13 +34,14 @@ export interface ContextAwareQuery {
 }
 
 // Session TTL: 30 minutes of inactivity
-const SESSION_TTL = CACHE_TTL.RAG_QUERY * 30; // 30 * 1hr = 30 hrs, we'll use 30 min
+// eslint-disable-next-line unused-imports/no-unused-vars
+const SESSION_TTL = CacheTTL.MEDIUM; // 30 minutes
 
 /**
  * Get the Redis key for a session
  */
 function getSessionKey(sessionId: string): string {
-  return `${CACHE_PREFIXES.RAG_QUERY}:session:${sessionId}`;
+  return `${CachePrefix.RAG_QUERY}session:${sessionId}`;
 }
 
 /**
@@ -172,7 +173,7 @@ export async function summarizeConversation(
 
   // Identify concepts that might need explanation (not already fetched)
   const fetchedCategories = new Set(existingState?.fetchedCategories || []);
-  const conceptsNeeded = currentTopics.filter(topic => {
+  const conceptsNeeded = currentTopics.filter(_topic => {
     // If we haven't fetched from related categories, might need context
     const relatedCategories = ['Fundamentals', 'AI Tools', 'Data Interpretation'];
     return !relatedCategories.some(cat => fetchedCategories.has(cat));

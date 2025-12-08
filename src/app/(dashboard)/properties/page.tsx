@@ -1,9 +1,9 @@
-import { PropertySearchClient } from './search-client';
+import { PropertySearchSplitView } from './split-view-client';
 
 export const metadata = {
   title: 'Property Search',
 };
 
 export default function PropertiesPage() {
-  return <PropertySearchClient />;
+  return <PropertySearchSplitView />;
 }

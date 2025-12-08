@@ -16,19 +16,26 @@ export const test = base.extend<{
   authenticatedPage: Page;
 }>({
   authenticatedPage: async ({ page }, use) => {
-    // Navigate to login
-    await page.goto('/login');
+    // Navigate to landing page (will show auth modal)
+    await page.goto('/');
 
-    // Fill in credentials
+    // Open login modal (if not already open)
+    const loginButton = page.locator('button:has-text("Sign In")').first();
+    if (await loginButton.isVisible()) {
+      await loginButton.click();
+    }
+
+    // Fill in credentials in modal
     await page.fill('input[name="email"], input[type="email"]', TEST_USER.email);
     await page.fill('input[name="password"], input[type="password"]', TEST_USER.password);
 
     // Submit form
     await page.click('button[type="submit"]');
 
-    // Wait for redirect to dashboard
-    await page.waitForURL(/\/(dashboard|properties|deals)/, { timeout: 10000 });
+    // Wait for redirect to /properties (new default landing)
+    await page.waitForURL(/\/(properties|dashboard|deals)/, { timeout: 10000 });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(page);
   },
 });
@@ -39,11 +46,18 @@ export { expect } from '@playwright/test';
  * Helper to login programmatically (for tests that need fresh auth)
  */
 export async function login(page: Page, email?: string, password?: string) {
-  await page.goto('/login');
+  await page.goto('/');
+
+  // Open login modal
+  const loginButton = page.locator('button:has-text("Sign In")').first();
+  if (await loginButton.isVisible()) {
+    await loginButton.click();
+  }
+
   await page.fill('input[name="email"], input[type="email"]', email || TEST_USER.email);
   await page.fill('input[name="password"], input[type="password"]', password || TEST_USER.password);
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/(dashboard|properties|deals)/, { timeout: 10000 });
+  await page.waitForURL(/\/(properties|dashboard|deals)/, { timeout: 10000 });
 }
 
 /**

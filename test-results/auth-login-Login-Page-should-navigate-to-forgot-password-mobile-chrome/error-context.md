@@ -1,0 +1,42 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: Welcome Back
+      - generic [ref=e5]: Sign in to your account to continue
+    - generic [ref=e6]:
+      - button "Continue with Google" [ref=e7]:
+        - img
+        - text: Continue with Google
+      - generic [ref=e12]: Or continue with
+      - generic [ref=e13]:
+        - tablist [ref=e14]:
+          - tab "Password" [selected] [ref=e15]
+          - tab "Magic Link" [ref=e16]
+        - tabpanel "Password" [ref=e17]:
+          - generic [ref=e18]:
+            - generic [ref=e19]:
+              - generic [ref=e20]: Email
+              - textbox "Email" [ref=e21]:
+                - /placeholder: you@example.com
+            - generic [ref=e22]:
+              - generic [ref=e23]:
+                - generic [ref=e24]: Password
+                - link "Forgot password?" [ref=e25] [cursor=pointer]:
+                  - /url: /forgot-password
+              - textbox "Password" [ref=e26]:
+                - /placeholder: ••••••••
+            - generic [ref=e27]:
+              - checkbox "Remember me for 30 days" [ref=e28]
+              - checkbox
+              - generic [ref=e29]: Remember me for 30 days
+            - button "Sign In" [ref=e30]
+    - paragraph [ref=e32]:
+      - text: Don't have an account?
+      - link "Sign up" [ref=e33] [cursor=pointer]:
+        - /url: /signup
+  - alert [ref=e34]
+  - region "Notifications alt+T"
+```

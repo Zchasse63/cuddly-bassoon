@@ -15,13 +15,13 @@ test.describe('Login Page', () => {
     await loginPage.goto();
   });
 
-  test('should display login form', async ({ page }) => {
+  test('should display login form', async ({ page: _page }) => {
     await expect(loginPage.emailInput).toBeVisible();
     await expect(loginPage.passwordInput).toBeVisible();
     await expect(loginPage.submitButton).toBeVisible();
   });
 
-  test('should show error for invalid credentials', async ({ page }) => {
+  test('should show error for invalid credentials', async ({ page: _page }) => {
     await loginPage.login('invalid@email.com', 'wrongpassword');
 
     // Wait for error message
@@ -58,8 +58,8 @@ test.describe('Login Page', () => {
     await loginPage.login(TEST_USER.email, TEST_USER.password);
     await loginPage.waitForLogin();
 
-    // Should redirect to dashboard
-    await expect(page).toHaveURL(/dashboard|properties|search/);
+    // Should redirect to /properties (new default landing)
+    await expect(page).toHaveURL(/properties|dashboard/);
   });
 });
 

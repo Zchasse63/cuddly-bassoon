@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8]
+  - alert [ref=e11]
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - generic [ref=e14]: Create Account
+      - generic [ref=e15]: Get started with your real estate platform
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - button "Continue with Google" [ref=e18]:
+          - img
+          - text: Continue with Google
+        - generic [ref=e23]: Or continue with
+        - generic [ref=e24]:
+          - generic [ref=e25]: Full Name
+          - textbox "Full Name" [ref=e26]:
+            - /placeholder: John Doe
+        - generic [ref=e27]:
+          - generic [ref=e28]: Email
+          - textbox "Email" [ref=e29]:
+            - /placeholder: you@example.com
+        - generic [ref=e30]:
+          - generic [ref=e31]: Password
+          - textbox "Password" [ref=e32]:
+            - /placeholder: ••••••••
+        - generic [ref=e33]:
+          - generic [ref=e34]: Confirm Password
+          - textbox "Confirm Password" [ref=e35]:
+            - /placeholder: ••••••••
+        - generic [ref=e36]:
+          - checkbox "I agree to the Terms of Service and Privacy Policy" [ref=e37]
+          - checkbox
+          - generic [ref=e38]:
+            - text: I agree to the
+            - link "Terms of Service" [ref=e39] [cursor=pointer]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=e40] [cursor=pointer]:
+              - /url: /privacy
+      - generic [ref=e41]:
+        - button "Create Account" [disabled]
+        - paragraph [ref=e42]:
+          - text: Already have an account?
+          - link "Sign in" [ref=e43] [cursor=pointer]:
+            - /url: /login
+  - region "Notifications alt+T"
+```

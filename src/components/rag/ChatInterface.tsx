@@ -89,33 +89,38 @@ export function ChatInterface({
   );
 
   return (
-    <div className={cn('flex flex-col h-full', className)}>
-      {/* Messages area */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        {messages.length === 0 ? (
-          <EmptyState
-            suggestedQuestions={suggestedQuestions}
-            onSelectQuestion={handleSuggestedQuestion}
-          />
-        ) : (
-          <div className="flex flex-col gap-4">
-            {messages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                message={message}
-                onCopy={(content) => handleCopy(content, message.id)}
-                isCopied={copiedId === message.id}
-              />
-            ))}
-            {isStreaming && (
-              <div className="flex items-center gap-2 text-muted-foreground text-sm pl-11">
-                <Loader2 className="size-4 animate-spin" />
-                <span>Thinking...</span>
-              </div>
-            )}
-          </div>
-        )}
-      </ScrollArea>
+    <div className={cn('flex flex-col h-full overflow-hidden', className)}>
+      {/* Messages area - scrollable */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/40"
+      >
+        <div className="p-4">
+          {messages.length === 0 ? (
+            <EmptyState
+              suggestedQuestions={suggestedQuestions}
+              onSelectQuestion={handleSuggestedQuestion}
+            />
+          ) : (
+            <div className="flex flex-col gap-4">
+              {messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                  onCopy={(content) => handleCopy(content, message.id)}
+                  isCopied={copiedId === message.id}
+                />
+              ))}
+              {isStreaming && (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm pl-11">
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Thinking...</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Error display */}
       {error && (
@@ -127,10 +132,14 @@ export function ChatInterface({
       {/* Quick Actions */}
       <InlineQuickActions onActionClick={sendMessage} />
 
-      {/* Input area */}
-      <div className="border-t p-4">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <div className="relative flex-1">
+      {/* Input area - ChatGPT-style */}
+      <div className="border-t bg-background p-4">
+        <form onSubmit={handleSubmit} className="relative">
+          <div className={cn(
+            'flex items-end gap-2 rounded-2xl border bg-muted/50 px-4 py-3',
+            'focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50',
+            'transition-all duration-200'
+          )}>
             <textarea
               ref={inputRef}
               value={input}
@@ -140,28 +149,52 @@ export function ChatInterface({
               disabled={isLoading}
               rows={1}
               className={cn(
-                'w-full resize-none rounded-lg border bg-background px-4 py-3 pr-12',
+                'flex-1 resize-none bg-transparent text-sm',
                 'placeholder:text-muted-foreground',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                'disabled:opacity-50 disabled:cursor-not-allowed'
+                'focus:outline-none',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'max-h-[150px] min-h-[24px]'
               )}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            {isLoading ? (
-              <Button type="button" size="icon" variant="destructive" onClick={cancel}>
-                <Square className="size-4" />
-              </Button>
-            ) : (
-              <Button type="submit" size="icon" disabled={!input.trim()}>
-                <Send className="size-4" />
-              </Button>
-            )}
-            {messages.length > 0 && (
-              <Button type="button" size="icon" variant="ghost" onClick={reset} title="Clear chat">
-                <RotateCcw className="size-4" />
-              </Button>
-            )}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {messages.length > 0 && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={reset}
+                  title="Clear chat"
+                  className="size-8 text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="size-4" />
+                </Button>
+              )}
+              {isLoading ? (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={cancel}
+                  className="size-8 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                >
+                  <Square className="size-4" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="icon"
+                  disabled={!input.trim()}
+                  className={cn(
+                    'size-8 rounded-lg',
+                    input.trim()
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      : 'bg-muted text-muted-foreground'
+                  )}
+                >
+                  <Send className="size-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </div>
@@ -185,28 +218,35 @@ function EmptyState({
   const questions = suggestedQuestions ?? defaultQuestions;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[300px] gap-6 text-center">
-      <div className="flex items-center justify-center size-16 rounded-full bg-primary/10">
-        <Sparkles className="size-8 text-primary" />
+    <div className="flex flex-col items-center justify-center h-full min-h-[200px] gap-4 text-center px-4">
+      {/* ChatGPT-style minimal greeting */}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center size-10 rounded-full bg-gradient-to-br from-primary to-primary/70">
+          <Sparkles className="size-5 text-white" />
+        </div>
       </div>
-      <div>
-        <h3 className="text-lg font-semibold mb-1">Ask about Real Estate Wholesaling</h3>
-        <p className="text-muted-foreground text-sm max-w-md">
-          Get expert answers powered by our knowledge base of 96+ documents on wholesaling
-          strategies, deal analysis, and more.
+      <div className="space-y-1">
+        <h3 className="text-xl font-semibold text-foreground">How can I help you today?</h3>
+        <p className="text-muted-foreground text-sm">
+          Ask about properties, deals, or real estate wholesaling strategies.
         </p>
       </div>
-      <div className="flex flex-wrap justify-center gap-2 max-w-lg">
-        {questions.map((q, idx) => (
-          <Button
+      {/* Suggested prompts - ChatGPT style grid */}
+      <div className="grid grid-cols-1 gap-2 w-full max-w-sm mt-2">
+        {questions.slice(0, 4).map((q, idx) => (
+          <button
             key={idx}
-            variant="outline"
-            size="sm"
-            className="text-xs"
             onClick={() => onSelectQuestion(q)}
+            className={cn(
+              'text-left text-sm px-4 py-3 rounded-xl',
+              'bg-muted/50 hover:bg-muted',
+              'border border-transparent hover:border-border',
+              'transition-all duration-200',
+              'text-foreground/80 hover:text-foreground'
+            )}
           >
             {q}
-          </Button>
+          </button>
         ))}
       </div>
     </div>

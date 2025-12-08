@@ -72,8 +72,9 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isAuthRoute && !isAuthCallback) {
     // User is authenticated and trying to access auth routes (but not callbacks)
+    // Redirect to /properties (new default landing)
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = '/properties';
     return NextResponse.redirect(url);
   }
 

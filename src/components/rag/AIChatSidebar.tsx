@@ -5,8 +5,9 @@ import { MessageSquare, PanelRightClose, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { ChatInterface } from './ChatInterface';
+import { EnhancedChatInterface } from '@/components/ai/EnhancedChatInterface';
 import { AIContextBar, ContextBadge } from '@/components/ai/AIContextBar';
+import { ResizableSidebar } from '@/components/layout/ResizableSidebar';
 
 const AI_SIDEBAR_COOKIE = 'ai-sidebar-state';
 
@@ -64,10 +65,11 @@ export function AIChatSidebar({ defaultOpen = true }: AIChatSidebarProps) {
                 AI Assistant
               </SheetTitle>
             </SheetHeader>
-            <ChatInterface
+            <EnhancedChatInterface
               className="flex-1"
               persistKey="ai-chat-sidebar"
               placeholder="Ask me anything about your properties, deals, or buyers..."
+              showOnboarding={false}
             />
           </SheetContent>
         </Sheet>
@@ -75,30 +77,33 @@ export function AIChatSidebar({ defaultOpen = true }: AIChatSidebarProps) {
     );
   }
 
-  // Desktop: Integrated with AppShell grid layout
+  // Desktop: Integrated with AppShell grid layout with resizable sidebar
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* Header */}
-      <div className="chat-header">
-        <div className="chat-header__title">
-          <Sparkles className="size-5 text-primary" />
-          <span>AI Assistant</span>
-          <ContextBadge />
+    <ResizableSidebar side="right" className="border-l bg-background">
+      <div className="flex h-full flex-col">
+        {/* Header */}
+        <div className="chat-header flex-shrink-0">
+          <div className="chat-header__title">
+            <Sparkles className="size-5 text-primary" />
+            <span>AI Assistant</span>
+            <ContextBadge />
+          </div>
+          <Button size="icon" variant="ghost" onClick={toggleSidebar}>
+            <PanelRightClose className="size-5" />
+          </Button>
         </div>
-        <Button size="icon" variant="ghost" onClick={toggleSidebar}>
-          <PanelRightClose className="size-5" />
-        </Button>
+
+        {/* Context Bar - shows current entity and quick actions */}
+        <AIContextBar />
+
+        {/* Chat interface */}
+        <EnhancedChatInterface
+          className="flex-1 min-h-0 overflow-hidden"
+          persistKey="ai-chat-sidebar"
+          placeholder="Ask me anything about your properties, deals, or buyers..."
+          showOnboarding={false}
+        />
       </div>
-
-      {/* Context Bar - shows current entity and quick actions */}
-      <AIContextBar />
-
-      {/* Chat interface */}
-      <ChatInterface
-        className="flex-1 min-h-0"
-        persistKey="ai-chat-sidebar"
-        placeholder="Ask me anything about your properties, deals, or buyers..."
-      />
-    </div>
+    </ResizableSidebar>
   );
 }

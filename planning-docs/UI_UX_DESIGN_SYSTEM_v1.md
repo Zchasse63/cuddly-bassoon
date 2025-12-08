@@ -1,9 +1,17 @@
 # AI-First Real Estate Wholesaling Platform
 ## Complete UI/UX Design System Specification
 
-**Version:** 1.0  
-**Last Updated:** December 3, 2025  
+**Version:** 1.1
+**Last Updated:** December 7, 2025
 **Status:** Implementation Ready
+
+### Changelog v1.1
+- Added Split-View Layout Pattern for Property Search (Map Left, List Right)
+- Added Floating AI Chat Dialog variant for map-centric pages
+- Updated Section 3 (Layout System) with split-view specifications
+- Updated Section 9 (AI Chat Interface) with floating dialog variant
+- Updated Section 11 (Page Templates) with new Property Search layout
+- Updated Section 14 (Responsive Design) with split-view breakpoints
 
 ---
 
@@ -413,6 +421,270 @@ const layoutConfig = {
   grid-template-columns: repeat(12, 1fr);
   gap: var(--spacing-6);
 }
+```
+
+### Split-View Layout Pattern (Property Search)
+
+The Property Search page uses a specialized split-view layout with **map on the left** and **property list on the right**. This follows Zillow/Airbnb patterns validated by Baymard Institute UX research showing 95% user engagement with side-by-side map+list layouts.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    SPLIT-VIEW LAYOUT (Property Search)                       │
+├─────────────┬──────────────────────────────────────────────────────────────┤
+│             │  ┌─────────── HORIZONTAL FILTER BAR ─────────────────────┐   │
+│             │  │ [🔍 Search] [Beds ▼] [Price ▼] [More Filters ▼] [Sort]│   │
+│  LEFT       │  └───────────────────────────────────────────────────────┘   │
+│  SIDEBAR    ├────────────────────────────┬─────────────────────────────────┤
+│             │                            │                                  │
+│  240px      │     INTERACTIVE MAP        │      PROPERTY LIST              │
+│  (Nav)      │     (flexible width)       │      (380px - 480px)            │
+│             │                            │                                  │
+│             │        📍                  │  ┌────────────────────────────┐ │
+│             │    📍      📍              │  │  [Property Card 1]         │ │
+│             │         📍                 │  │  3bd | 2ba | $285,000      │ │
+│             │      📍       📍           │  └────────────────────────────┘ │
+│             │              📍            │  ┌────────────────────────────┐ │
+│             │        📍                  │  │  [Property Card 2]         │ │
+│             │                            │  │  4bd | 3ba | $342,000      │ │
+│             │    Map markers sync with   │  └────────────────────────────┘ │
+│             │    list on hover/click     │  ┌────────────────────────────┐ │
+│             │                            │  │  [Property Card 3]         │ │
+│             │                            │  │  2bd | 1ba | $198,000      │ │
+│             │                            │  └────────────────────────────┘ │
+│             ├────────────────────────────┴─────────────────────────────────┤
+│             │        ┌──────────────────────────────────────────────┐      │
+│             │        │   💬  Ask AI about properties...    [Expand]  │      │
+│             │        └──────────────────────────────────────────────┘      │
+│             │                  FLOATING AI CHAT (bottom center)            │
+└─────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+### Split-View Layout Specifications
+
+```typescript
+const splitViewConfig = {
+  // Container fills main content area (no right sidebar)
+  container: {
+    display: 'grid',
+    gridTemplateRows: 'auto 1fr auto',  // filter bar, content, AI dialog
+    height: '100%',
+  },
+
+  // Horizontal Filter Bar
+  filterBar: {
+    height: '56px',
+    padding: '8px 16px',
+    background: 'var(--surface-card)',
+    borderBottom: '1px solid var(--color-gray-200)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+  },
+
+  // Split Content Area
+  splitContent: {
+    display: 'grid',
+    gridTemplateColumns: '1fr minmax(380px, 480px)',  // Map | List
+    height: 'calc(100vh - 56px - 80px)',  // minus filter bar and AI dialog
+    overflow: 'hidden',
+  },
+
+  // Map Panel (Left)
+  mapPanel: {
+    position: 'relative',
+    minWidth: '400px',
+    overflow: 'hidden',
+  },
+
+  // Property List Panel (Right)
+  listPanel: {
+    width: 'minmax(380px, 480px)',
+    overflowY: 'auto',
+    borderLeft: '1px solid var(--color-gray-200)',
+    background: 'var(--surface-card)',
+    padding: '16px',
+  },
+
+  // Floating AI Dialog Area
+  aiDialogArea: {
+    height: '80px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '16px',
+  },
+};
+```
+
+### Split-View CSS Implementation
+
+```css
+/* Split-View Layout for Property Search */
+.split-view-layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Horizontal Filter Bar */
+.split-view__filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  height: 56px;
+  padding: 0 var(--spacing-4);
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--color-gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.filter-bar__search {
+  flex: 1;
+  max-width: 400px;
+}
+
+.filter-bar__filters {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.filter-bar__filter-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--surface-card);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-bar__filter-btn:hover {
+  border-color: var(--color-gray-400);
+  background: var(--color-gray-50);
+}
+
+.filter-bar__filter-btn.active {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-50);
+  color: var(--color-brand-700);
+}
+
+/* Split Content Grid */
+.split-view__content {
+  display: grid;
+  grid-template-columns: 1fr minmax(380px, 480px);
+  overflow: hidden;
+}
+
+/* Map Panel (Left) */
+.split-view__map {
+  position: relative;
+  min-width: 400px;
+  background: var(--color-gray-100);
+}
+
+.split-view__map .mapboxgl-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Property List Panel (Right) */
+.split-view__list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-left: 1px solid var(--color-gray-200);
+  background: var(--surface-card);
+}
+
+.split-view__list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  background: var(--surface-card);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.split-view__list-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+}
+
+.split-view__list-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.split-view__list-items {
+  padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+/* Floating AI Dialog Area */
+.split-view__ai-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-4);
+  background: linear-gradient(to top, var(--surface-page), transparent);
+  pointer-events: none;
+}
+
+.split-view__ai-area > * {
+  pointer-events: auto;
+}
+```
+
+### Map-List Synchronization
+
+```typescript
+const mapListSyncBehavior = {
+  // When user hovers a property card
+  onCardHover: {
+    action: 'Highlight corresponding map marker',
+    marker: {
+      scale: 1.3,
+      zIndex: 'bring to front',
+      pulseAnimation: true,
+    },
+  },
+
+  // When user clicks a map marker
+  onMarkerClick: {
+    action: 'Scroll list to corresponding property card',
+    card: {
+      scrollBehavior: 'smooth',
+      highlightDuration: '2s',
+      borderColor: 'var(--color-brand-500)',
+    },
+  },
+
+  // When user pans/zooms the map
+  onMapBoundsChange: {
+    action: 'Filter list to show only visible properties',
+    behavior: 'debounce 300ms',
+    showCount: 'Update header with "X properties in view"',
+  },
+
+  // When user applies filters
+  onFilterChange: {
+    action: 'Update both map markers and list simultaneously',
+    animation: 'fade out removed, fade in added',
+  },
+};
 ```
 
 ---
@@ -1826,6 +2098,283 @@ The persistent AI chat lives in the right sidebar and follows the user throughou
 }
 ```
 
+### Floating AI Chat Dialog (Map-Centric Pages)
+
+For pages where the map is the primary focus (Property Search), the AI chat appears as a **floating dialog** at the bottom center instead of a sidebar. This maximizes map and list real estate while keeping AI accessible.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     FLOATING AI CHAT DIALOG                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  COLLAPSED STATE (Default)                                                   │
+│  ═════════════════════════                                                   │
+│                                                                              │
+│          ┌────────────────────────────────────────────────────┐             │
+│          │  ✨  Ask AI about properties...           [Expand] │             │
+│          └────────────────────────────────────────────────────┘             │
+│                          ▲                                                   │
+│                     Bottom center of viewport                                │
+│                     Width: 480px (desktop), 90% (mobile)                     │
+│                                                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  EXPANDED STATE (On click or keyboard shortcut)                             │
+│  ═══════════════════════════════════════════════                             │
+│                                                                              │
+│          ┌────────────────────────────────────────────────────┐             │
+│          │  ╔════════════════════════════════════════════════╗│             │
+│          │  ║  ✨ AI Assistant                    [−] [×]    ║│             │
+│          │  ╠════════════════════════════════════════════════╣│             │
+│          │  ║                                                 ║│             │
+│          │  ║  [Message history scrollable area]             ║│             │
+│          │  ║                                                 ║│             │
+│          │  ║  ┌─────────────────────────────────────────┐   ║│             │
+│          │  ║  │ AI: I found 47 properties matching...   │   ║│             │
+│          │  ║  └─────────────────────────────────────────┘   ║│             │
+│          │  ║                                                 ║│             │
+│          │  ╠════════════════════════════════════════════════╣│             │
+│          │  ║  [💬 Type your message...              ] [➤]   ║│             │
+│          │  ╚════════════════════════════════════════════════╝│             │
+│          └────────────────────────────────────────────────────┘             │
+│                          ▲                                                   │
+│                     Expanded: 600px wide, 400px tall (max 60vh)             │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Floating Dialog Specifications
+
+```typescript
+const floatingAIDialogConfig = {
+  // Positioning
+  position: {
+    placement: 'bottom-center',
+    marginBottom: '24px',
+    zIndex: 'var(--z-popover)',  // Above content, below modals
+  },
+
+  // Collapsed State (Trigger)
+  collapsed: {
+    width: '480px',
+    height: '48px',
+    borderRadius: '24px',  // Pill shape
+    background: 'var(--surface-card)',
+    boxShadow: 'var(--shadow-lg)',
+    border: '1px solid var(--color-gray-200)',
+  },
+
+  // Expanded State (Dialog)
+  expanded: {
+    width: '600px',
+    minHeight: '300px',
+    maxHeight: '60vh',
+    borderRadius: '16px',
+    background: 'var(--surface-card)',
+    boxShadow: 'var(--shadow-2xl)',
+    animation: 'dialogExpand 200ms var(--ease-out)',
+  },
+
+  // Responsive
+  mobile: {
+    width: '90vw',
+    maxWidth: '100%',
+    marginBottom: '16px',
+  },
+
+  // Keyboard Shortcuts
+  shortcuts: {
+    toggle: 'Cmd+/',  // Toggle open/close
+    focus: 'Cmd+K',   // Focus input
+    escape: 'Escape', // Close dialog
+  },
+};
+```
+
+### Floating Dialog CSS
+
+```css
+/* Floating AI Dialog Container */
+.floating-ai-dialog {
+  position: fixed;
+  bottom: var(--spacing-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-popover);
+  transition: all var(--transition-normal) var(--ease-out);
+}
+
+/* Collapsed State (Trigger Button) */
+.floating-ai-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 480px;
+  height: 48px;
+  padding: 0 var(--spacing-4);
+  background: var(--surface-card);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--border-radius-full);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.floating-ai-trigger:hover {
+  border-color: var(--color-brand-300);
+  box-shadow: var(--shadow-xl), 0 0 0 3px var(--color-brand-100);
+}
+
+.floating-ai-trigger__icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-brand-500);
+}
+
+.floating-ai-trigger__placeholder {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  text-align: left;
+}
+
+.floating-ai-trigger__expand {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-400);
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--color-gray-100);
+  border-radius: var(--border-radius-md);
+}
+
+/* Expanded State (Dialog) */
+.floating-ai-content {
+  width: 600px;
+  max-height: 60vh;
+  background: var(--surface-card);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-2xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dialogExpand var(--transition-normal) var(--ease-out);
+}
+
+@keyframes dialogExpand {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dialog Header */
+.floating-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.floating-ai-header__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-800);
+}
+
+.floating-ai-header__actions {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.floating-ai-header__btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.floating-ai-header__btn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+/* Dialog Messages Area */
+.floating-ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-4);
+  min-height: 200px;
+  max-height: calc(60vh - 120px);
+}
+
+/* Dialog Input Area */
+.floating-ai-input-area {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--color-gray-100);
+  background: var(--color-gray-50);
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+  .floating-ai-trigger {
+    width: 90vw;
+    max-width: 400px;
+  }
+
+  .floating-ai-content {
+    width: 95vw;
+    max-width: 100%;
+    max-height: 70vh;
+  }
+
+  .floating-ai-dialog {
+    bottom: var(--spacing-4);
+  }
+}
+```
+
+### AI Chat Positioning Strategy
+
+The AI chat component adapts its position based on the current page context:
+
+```typescript
+type AIPosition = 'sidebar' | 'floating';
+
+const aiPositionByRoute: Record<string, AIPosition> = {
+  // Floating dialog for map-centric pages
+  '/properties': 'floating',  // Split-view property search
+  '/search': 'floating',      // If combined with map
+
+  // Sidebar for all other pages
+  '/dashboard': 'sidebar',
+  '/deals': 'sidebar',
+  '/buyers': 'sidebar',
+  '/analytics': 'sidebar',
+  '/settings': 'sidebar',
+  '/property/:id': 'sidebar', // Property detail pages
+};
+
+// AppShell conditionally renders based on route
+const useAIPosition = (): AIPosition => {
+  const pathname = usePathname();
+  return aiPositionByRoute[pathname] || 'sidebar';
+};
+```
+
 ---
 
 ## 10. User Flows
@@ -2004,44 +2553,70 @@ const interactionPatterns = {
 └────────────┴──────────────────────────────────────────────────┴─────────────┘
 ```
 
-### Property Search Page
+### Property Search Page (v1.1 - Split-View with Floating AI)
+
+**Key Changes in v1.1:**
+- Map positioned on LEFT (was right) for primary focus
+- Property list on RIGHT (scrollable cards)
+- NO right AI sidebar (uses floating dialog instead)
+- Horizontal filter bar replaces vertical sidebar filters
+- Floating AI chat dialog at bottom center
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         PROPERTY SEARCH                                      │
-├────────────┬──────────────────────────────────────────────────┬─────────────┤
-│            │                                                   │             │
-│  SIDEBAR   │  ┌──────────── SEARCH BAR ─────────────────────┐  │  AI CHAT   │
-│            │  │  🔍 "3 bed homes in Tampa, 50%+ equity..."  │  │             │
-│            │  └─────────────────────────────────────────────┘  │  ┌────────┐│
-│            │                                                   │  │Search  ││
-│            │  ┌───── FILTER BAR (Optional) ─────────────────┐  │  │Context ││
-│            │  │  [Beds ▼] [Baths ▼] [Price ▼] [+Filters]   │  │  └────────┘│
-│            │  └─────────────────────────────────────────────┘  │             │
-│            │                                                   │  "Found 127 │
-│            │  ┌──────────────────────────────────────────────┐ │  properties │
-│            │  │                                              │ │  matching   │
-│            │  │        SPLIT VIEW: LIST + MAP                │ │  your       │
-│            │  │                                              │ │  criteria"  │
-│            │  │  ┌────────────┬───────────────────────────┐ │ │             │
-│            │  │  │            │                           │ │ │  Suggested: │
-│            │  │  │  PROPERTY  │                           │ │ │             │
-│            │  │  │   LIST     │         MAP VIEW          │ │ │  [Narrow   ]│
-│            │  │  │            │                           │ │ │  [results  ]│
-│            │  │  │  [Card]    │    📍     📍              │ │ │             │
-│            │  │  │  [Card]    │        📍                 │ │ │  [Save     ]│
-│            │  │  │  [Card]    │     📍       📍           │ │ │  [search   ]│
-│            │  │  │  [Card]    │                   📍      │ │ │             │
-│            │  │  │  [Card]    │                           │ │ │  [Export   ]│
-│            │  │  │            │                           │ │ │  [list     ]│
-│            │  │  └────────────┴───────────────────────────┘ │ │             │
-│            │  │                                              │ │             │
-│            │  │  [◀] Page 1 of 13 [▶]      [Grid] [List]    │ │  ┌────────┐│
-│            │  │                                              │ │  │ Input  ││
-│            │  └──────────────────────────────────────────────┘ │  └────────┘│
-│            │                                                   │             │
-└────────────┴──────────────────────────────────────────────────┴─────────────┘
+│                    PROPERTY SEARCH (Split-View Layout)                       │
+├─────────────┬───────────────────────────────────────────────────────────────┤
+│             │  ┌─────────────── HORIZONTAL FILTER BAR ─────────────────────┐│
+│  LEFT NAV   │  │ 🔍 [Tampa, FL       ] [Beds▼] [Price▼] [Equity▼] [+More] ││
+│  SIDEBAR    │  │                                          [Sort▼] [127 ✓] ││
+│  (240px)    │  └───────────────────────────────────────────────────────────┘│
+│             ├────────────────────────────────┬──────────────────────────────┤
+│             │                                │                              │
+│  Dashboard  │       INTERACTIVE MAP          │      PROPERTY LIST          │
+│  Properties │       (flexible width)         │      (380-480px)            │
+│  Deals      │                                │                              │
+│  Buyers     │                                │  ┌────────────────────────┐ │
+│  Analytics  │        📍                      │  │ 🏠 123 Oak Street      │ │
+│  ...        │    📍      📍                  │  │ Tampa, FL 33609        │ │
+│             │         📍                     │  │ 3bd · 2ba · 1,850 sqft │ │
+│             │      📍       📍               │  │ $285,000 · 62% equity  │ │
+│             │              📍                │  │ [Hot Lead] [Skip Trace]│ │
+│             │        📍                      │  └────────────────────────┘ │
+│             │                                │  ┌────────────────────────┐ │
+│             │  ┌────────────────────────┐    │  │ 🏠 456 Pine Avenue     │ │
+│             │  │ Cluster: 12 properties │    │  │ Tampa, FL 33610        │ │
+│             │  └────────────────────────┘    │  │ 4bd · 3ba · 2,200 sqft │ │
+│             │                                │  │ $342,000 · 55% equity  │ │
+│             │  Map syncs with list:          │  │ [Absentee] [Long Own]  │ │
+│             │  • Hover card → highlight pin  │  └────────────────────────┘ │
+│             │  • Click pin → scroll to card  │  ┌────────────────────────┐ │
+│             │  • Pan/zoom → filter list      │  │ 🏠 789 Maple Drive     │ │
+│             │                                │  │ ...                    │ │
+│             │                                │  └────────────────────────┘ │
+│             │                                │                              │
+│             ├────────────────────────────────┴──────────────────────────────┤
+│             │                                                               │
+│             │        ┌─────────────────────────────────────────────┐        │
+│             │        │  ✨ Ask AI about properties...     [Expand] │        │
+│             │        └─────────────────────────────────────────────┘        │
+│             │                  FLOATING AI DIALOG (bottom center)           │
+│             │                                                               │
+└─────────────┴───────────────────────────────────────────────────────────────┘
 ```
+
+**Layout Rationale (Baymard UX Research):**
+- 95% of users engage with map in split-view layouts
+- Map on LEFT provides primary visual anchor for spatial browsing
+- Property list on RIGHT allows natural left-to-right scanning (map → details)
+- Floating AI avoids taking real estate from map or list
+- Horizontal filters prevent sidebar crowding (Baymard pitfall #2)
+
+**Interaction Behaviors:**
+1. **Map-List Sync**: Hovering a property card highlights its map marker with pulse animation
+2. **Marker Click**: Clicking a map marker smooth-scrolls the list to that property card
+3. **Map Pan/Zoom**: Filtering the list to show only properties visible in current map bounds
+4. **Card Actions**: Each card has quick action buttons (Skip Trace, Add to Deal, etc.)
+5. **AI Dialog**: Expands upward into a 600x400px dialog for AI conversations
 
 ### Property Detail Page
 
@@ -2570,6 +3145,239 @@ const breakpoints = {
     color: var(--color-brand-500);
   }
 }
+```
+
+### Split-View Responsive Behavior (Property Search)
+
+The split-view layout (map left, list right) has specific responsive breakpoints:
+
+```css
+/* ═══════════════════════════════════════════════════════════════════
+   SPLIT-VIEW: DESKTOP (1280px+) - Full side-by-side layout
+   ═══════════════════════════════════════════════════════════════════ */
+@media (min-width: 1280px) {
+  .split-view__content {
+    grid-template-columns: 1fr minmax(380px, 480px);
+  }
+
+  .split-view__map {
+    min-width: 500px;
+  }
+
+  .split-view__list {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .floating-ai-dialog {
+    width: 600px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPLIT-VIEW: LARGE TABLET (1024px - 1279px) - Narrower list panel
+   ═══════════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .split-view__content {
+    grid-template-columns: 1fr 340px;
+  }
+
+  .split-view__list {
+    max-width: 340px;
+  }
+
+  /* Compact property cards */
+  .property-card--split-view {
+    padding: var(--spacing-3);
+  }
+
+  .property-card__image {
+    height: 120px;
+  }
+
+  .floating-ai-dialog {
+    width: 480px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPLIT-VIEW: TABLET (768px - 1023px) - Toggle between map and list
+   ═══════════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .split-view__content {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  /* Map takes full width */
+  .split-view__map {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* List becomes a slide-over panel from right */
+  .split-view__list {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 360px;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal) var(--ease-out);
+    box-shadow: var(--shadow-2xl);
+    z-index: 50;
+  }
+
+  .split-view__list.open {
+    transform: translateX(0);
+  }
+
+  /* Toggle button for list panel */
+  .split-view__list-toggle {
+    display: flex;
+    position: absolute;
+    right: var(--spacing-4);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: var(--surface-card);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius-full);
+    box-shadow: var(--shadow-lg);
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+  }
+
+  .split-view__list-toggle.list-open {
+    right: calc(360px + var(--spacing-4));
+  }
+
+  .floating-ai-dialog {
+    width: 90vw;
+    max-width: 400px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPLIT-VIEW: MOBILE (< 768px) - Stacked with tab navigation
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .split-view-layout {
+    grid-template-rows: auto auto 1fr auto;
+  }
+
+  /* View toggle tabs */
+  .split-view__tabs {
+    display: flex;
+    height: 44px;
+    background: var(--surface-card);
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .split-view__tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-600);
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-fast);
+  }
+
+  .split-view__tab.active {
+    color: var(--color-brand-600);
+    border-bottom-color: var(--color-brand-500);
+  }
+
+  /* Content area shows one view at a time */
+  .split-view__content {
+    grid-template-columns: 1fr;
+    overflow: hidden;
+  }
+
+  .split-view__map,
+  .split-view__list {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Hide inactive view */
+  .split-view__map.hidden,
+  .split-view__list.hidden {
+    display: none;
+  }
+
+  /* Filter bar becomes scrollable */
+  .split-view__filter-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .split-view__filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-bar__filters {
+    flex-wrap: nowrap;
+    min-width: max-content;
+  }
+
+  /* Floating AI dialog - full width */
+  .floating-ai-dialog {
+    width: calc(100% - var(--spacing-8));
+    max-width: none;
+    bottom: calc(64px + var(--spacing-4)); /* Above mobile nav */
+  }
+
+  .floating-ai-content {
+    width: 100%;
+    max-height: 50vh;
+  }
+}
+```
+
+### Split-View Mobile Interaction Pattern
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    MOBILE SPLIT-VIEW (< 768px)                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  🔍 [Tampa, FL] [Beds▼] [Price▼] [More▼]  ← Horizontal scroll       │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │    [🗺️ Map]              [📋 List (47)]                             │    │
+│  │    ═══════                                                           │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                                                                      │    │
+│  │                                                                      │    │
+│  │                    ACTIVE VIEW (Map or List)                         │    │
+│  │                                                                      │    │
+│  │                    Swipe left/right to switch                        │    │
+│  │                                                                      │    │
+│  │                                                                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  ✨ Ask AI about properties...                            [Expand]  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │  [🏠]      [🔍]      [💼]      [📊]      [⚙️]                       │    │
+│  │  Home     Search    Deals   Analytics  Settings                      │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---

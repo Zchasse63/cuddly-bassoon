@@ -20,3 +20,4 @@ export { EnhancedChatInterface } from './EnhancedChatInterface';
 export { AIContextBar, ContextBadge } from './AIContextBar';
 export { QuickActions, InlineQuickActions } from './QuickActions';
 export { ProactiveInsights } from './ProactiveInsights';
+export { FloatingAIDialog } from './FloatingAIDialog';

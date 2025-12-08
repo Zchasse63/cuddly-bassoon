@@ -2,8 +2,12 @@
 
 /**
  * RAG Chat Hook
- * Client-side hook for streaming RAG-powered chat interactions
- * Uses the /api/rag/ask endpoint with SSE streaming
+ * Client-side hook for streaming AI chat interactions with RAG + Tools
+ *
+ * Uses the unified /api/ai/chat endpoint which includes:
+ * - RAG integration for domain knowledge
+ * - 212 AI tools for real estate operations
+ * - xAI Grok model with auto-routing
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -128,12 +132,25 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
       abortControllerRef.current = new AbortController();
 
       try {
-        const response = await fetch('/api/rag/ask', {
+        // Build messages array for API (include history for context)
+        const apiMessages = messages
+          .filter((m) => m.content.trim())
+          .map((m) => ({
+            role: m.role,
+            content: m.content,
+          }));
+        // Add current user message
+        apiMessages.push({ role: 'user' as const, content: messageContent });
+
+        // Call the unified /api/ai/chat endpoint (RAG + Tools)
+        const response = await fetch('/api/ai/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            query: messageContent,
-            context: systemContext, // Pass view context to API
+            messages: apiMessages,
+            systemPrompt: systemContext,
+            enableTools: true,
+            autoRoute: true,
           }),
           signal: abortControllerRef.current.signal,
         });
@@ -148,75 +165,36 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
 
         const decoder = new TextDecoder();
         let accumulatedContent = '';
-        let sources: RAGSource[] = [];
-        let classification: RAGClassification | undefined;
-        let cached = false;
 
         setIsStreaming(true);
 
+        // The /api/ai/chat endpoint returns a plain text stream from streamText()
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
           const chunk = decoder.decode(value);
-          const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
+          accumulatedContent += chunk;
 
-          for (const line of lines) {
-            try {
-              const jsonStr = line.slice(6).trim();
-              if (!jsonStr) continue;
-
-              const data = JSON.parse(jsonStr);
-
-              switch (data.type) {
-                case 'classification':
-                  classification = data.content as RAGClassification;
-                  setLastClassification(classification);
-                  break;
-
-                case 'sources':
-                  sources = data.content as RAGSource[];
-                  break;
-
-                case 'text':
-                  accumulatedContent += data.content;
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantId
-                        ? { ...m, content: accumulatedContent, sources, classification }
-                        : m
-                    )
-                  );
-                  break;
-
-                case 'cached':
-                  cached = data.content === true;
-                  break;
-
-                case 'done':
-                  // Final update with all metadata
-                  const finalMessage: RAGMessage = {
-                    id: assistantId,
-                    role: 'assistant',
-                    content: accumulatedContent,
-                    sources,
-                    classification,
-                    cached,
-                    timestamp: new Date(),
-                  };
-                  setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMessage : m)));
-                  onFinish?.(finalMessage);
-                  break;
-
-                case 'error':
-                  throw new Error(data.content);
-              }
-            } catch (parseError) {
-              // Skip invalid JSON lines
-              console.warn('Failed to parse SSE data:', parseError);
-            }
-          }
+          // Update the assistant message with accumulated content
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? { ...m, content: accumulatedContent }
+                : m
+            )
+          );
         }
+
+        // Final update
+        const finalMessage: RAGMessage = {
+          id: assistantId,
+          role: 'assistant',
+          content: accumulatedContent,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMessage : m)));
+        onFinish?.(finalMessage);
       } catch (err) {
         if ((err as Error).name === 'AbortError') {
           // User cancelled - remove the empty assistant message
@@ -238,7 +216,7 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
         abortControllerRef.current = null;
       }
     },
-    [input, onFinish, onError, systemContext]
+    [input, messages, onFinish, onError, systemContext]
   );
 
   const handleSubmit = useCallback(

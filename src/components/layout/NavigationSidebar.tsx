@@ -59,13 +59,13 @@ interface NavGroup {
 }
 
 // Main navigation - primary workflows
+// Properties is now the primary entry point (split-view with map + list)
 const mainNavItems: NavItem[] = [
+  { title: 'Properties', href: '/properties', icon: Building2 }, // Primary - split-view search
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { title: 'Properties', href: '/properties', icon: Building2 },
   { title: 'Deals', href: '/deals', icon: Handshake, badge: 3, badgeVariant: 'default' },
   { title: 'Buyers', href: '/buyers', icon: Users },
   { title: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { title: 'Map', href: '/map', icon: Map },
 ];
 
 // Tools group - secondary features

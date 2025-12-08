@@ -343,8 +343,10 @@ export async function POST(request: NextRequest) {
 
     // Log RAG usage with enhanced info
     if (ragSources.length > 0) {
+      // eslint-disable-next-line no-console
       console.log(`[AI Chat] RAG context loaded: ${ragSources.map(s => s.title).join(', ')}`);
       if (ragResult.reformulatedQuery !== userQuery) {
+        // eslint-disable-next-line no-console
         console.log(`[AI Chat] Query reformulated: "${userQuery}" -> "${ragResult.reformulatedQuery}"`);
       }
     }
@@ -382,15 +384,17 @@ export async function POST(request: NextRequest) {
             'type' in part && part.type === 'tool-call'
         );
         if (toolCalls.length > 0) {
+          // eslint-disable-next-line no-console
           console.log(`[AI Chat] Tool calls completed:`, toolCalls.map(tc => tc.toolName));
 
           // Phase 4: Analyze tool results for dynamic re-retrieval
           for (const toolCall of toolCalls) {
             // Quick check if re-retrieval might be needed
-            const toolResult = stepResult.content.find(
-              (part): part is { type: 'tool-result'; toolCallId: string; result: unknown } =>
-                'type' in part && part.type === 'tool-result' && part.toolCallId === toolCall.toolCallId
+            const toolResultPart = stepResult.content.find(
+              (part) =>
+                'type' in part && part.type === 'tool-result' && 'toolCallId' in part && part.toolCallId === toolCall.toolCallId
             );
+            const toolResult = toolResultPart && 'output' in toolResultPart ? { result: toolResultPart.output } : null;
 
             if (toolResult && mightNeedReRetrieval(toolResult.result)) {
               // Full analysis
@@ -401,12 +405,14 @@ export async function POST(request: NextRequest) {
               );
 
               if (analysis.shouldRetrieve && analysis.urgency !== 'low') {
+                // eslint-disable-next-line no-console
                 console.log(`[AI Chat] Dynamic re-retrieval triggered for: ${analysis.unexpectedTerms.join(', ')}`);
 
                 // Fetch additional context (non-blocking for now, could be enhanced later)
                 dynamicRetrieve(analysis, fetchedDocIds, { limit: 2 })
                   .then(result => {
                     if (result.additionalContext) {
+                      // eslint-disable-next-line no-console
                       console.log(`[AI Chat] Dynamic retrieval added: ${result.sources.map(s => s.title).join(', ')}`);
                       // Note: In a future enhancement, this context could be injected
                       // into the conversation state for the next turn
