@@ -9,6 +9,12 @@
  * - Empty state with quick actions
  * - Tool transparency showing which tools were used
  * - Slash command (/) inline tool palette
+ *
+ * Phase 3.5 Updates (Fluid OS):
+ * - ScoutOrb replaces Loader2 for streaming state
+ * - ScoutMessage replaces ChatMessage for glass-styled bubbles
+ * - AIContextBar shows current page/entity context
+ * - GenUI widgets render rich content inline
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react';
@@ -30,7 +36,6 @@ import { cn } from '@/lib/utils';
 import { useRagChat } from '@/hooks/use-rag-chat';
 import { useOnboardingState } from '@/hooks/useInsertPrompt';
 import { useViewContextSafe } from '@/contexts/ViewContext';
-import { ChatMessage } from '@/components/rag/ChatMessage';
 import { InlineQuickActions } from '@/components/ai/QuickActions';
 import { OnboardingModal } from './OnboardingModal';
 import { AIToolPalette, useAIToolPalette } from './AIToolPalette';
@@ -40,6 +45,11 @@ import { ToolWorkflows } from './ToolWorkflows';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { usePromptEnhancement } from '@/hooks/usePromptEnhancement';
 import type { ToolWorkflow } from '@/types/tool-preferences';
+
+// Fluid OS Scout Components (Phase 3.5)
+import { ScoutOrb } from './ScoutOrb';
+import { ScoutMessage } from './ScoutMessage';
+import { AIContextBar } from './AIContextBar';
 
 interface EnhancedChatInterfaceProps {
   className?: string;
@@ -233,6 +243,13 @@ export function EnhancedChatInterface({
 
   return (
     <div className={cn('flex flex-col h-full', className)}>
+      {/* AI Context Bar - Shows current page/entity context (Phase 3.5) */}
+      <AIContextBar
+        className="mx-4 mt-4"
+        isProcessing={isLoading || isStreaming}
+        activeTools={toolTransparency.toolCalls.map((t) => t.displayName)}
+      />
+
       {/* Messages area */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         {messages.length === 0 ? (
@@ -241,8 +258,12 @@ export function EnhancedChatInterface({
           <div className="flex flex-col gap-4">
             {messages.map((message, idx) => (
               <div key={message.id}>
-                <ChatMessage
-                  message={message}
+                {/* Use ScoutMessage for glass-styled bubbles (Phase 3.5) */}
+                <ScoutMessage
+                  role={message.role}
+                  content={message.content}
+                  sources={message.sources}
+                  isStreaming={isStreaming && idx === messages.length - 1 && message.role === 'assistant'}
                   onCopy={(content) => handleCopy(content, message.id)}
                   isCopied={copiedId === message.id}
                 />
@@ -251,15 +272,16 @@ export function EnhancedChatInterface({
                   <ToolTransparency
                     toolCalls={toolTransparency.toolCalls}
                     isStreaming={isStreaming}
-                    className="ml-11"
+                    className="ml-11 mt-2"
                   />
                 )}
               </div>
             ))}
-            {isStreaming && (
-              <div className="flex items-center gap-2 text-muted-foreground text-sm pl-11">
-                <Loader2 className="size-4 animate-spin" />
-                <span>Thinking...</span>
+            {/* Scout thinking indicator with ScoutOrb (Phase 3.5) */}
+            {isStreaming && messages[messages.length - 1]?.role !== 'assistant' && (
+              <div className="flex items-center gap-3 text-muted-foreground text-sm">
+                <ScoutOrb state="thinking" size="md" />
+                <span className="text-[var(--fluid-text-secondary)]">Scout is thinking...</span>
               </div>
             )}
           </div>

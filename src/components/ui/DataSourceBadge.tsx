@@ -13,17 +13,17 @@ interface DataSourceBadgeProps {
 const SOURCE_CONFIG = {
   rentcast: {
     label: 'RentCast',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+    color: 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)] dark:bg-[var(--fluid-primary)]/20',
     icon: '🏠',
   },
   shovels: {
     label: 'Shovels',
-    color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+    color: 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)] dark:bg-[var(--fluid-warning)]/20',
     icon: '🔨',
   },
   combined: {
     label: 'Combined',
-    color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+    color: 'bg-[var(--fluid-accent)]/10 text-[var(--fluid-accent)] dark:bg-[var(--fluid-accent)]/20',
     icon: '🔗',
   },
 };

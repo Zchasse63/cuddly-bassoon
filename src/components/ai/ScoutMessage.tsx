@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScoutOrb } from './ScoutOrb';
-import { springPresets, fadeUpVariants } from '@/lib/animations';
+import { springPresets } from '@/lib/animations';
 
 /* PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
    TYPES

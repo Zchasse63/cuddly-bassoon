@@ -162,8 +162,8 @@ export function PropertySearchSplitView() {
         bedrooms: property.bedrooms,
         bathrooms: property.bathrooms,
         squareFootage: property.sqft,
-        estimatedValue: property.estimatedValue,
-        lastSalePrice: property.lastSalePrice,
+        estimatedValue: property.estimatedValue as number | null | undefined,
+        lastSalePrice: property.lastSalePrice as number | null | undefined,
         lastSaleDate: null,
         ownerName: null,
         ownerOccupied: null,
@@ -185,7 +185,7 @@ export function PropertySearchSplitView() {
         gatedCommunity: null,
         seniorCommunity: null,
         equityPercent: property.estimatedValue && property.lastSalePrice
-          ? ((property.estimatedValue - property.lastSalePrice) / property.estimatedValue) * 100
+          ? (((property.estimatedValue as number) - (property.lastSalePrice as number)) / (property.estimatedValue as number)) * 100
           : null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

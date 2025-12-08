@@ -106,7 +106,8 @@ function createSmartFetch(originalFetch: typeof fetch) {
       const mockFactory = serviceMocks[service];
       if (mockFactory) {
         const mock = mockFactory();
-        return mock(url, options);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (mock as any)(url, options);
       }
     }
 
@@ -192,7 +193,6 @@ export function itLive(
   fn: () => void | Promise<void>,
   timeout?: number
 ) {
-  const isLive = shouldUseLiveApi(service);
   const status = getServiceStatus();
   const label = `[${status[service].toUpperCase()}] ${name}`;
 
@@ -251,7 +251,9 @@ export function itOnlyMock(
 /**
  * Get the current mock for a specific service (for assertions)
  */
-export function getServiceMock(service: ServiceName) {
+export function getServiceMock(_service: ServiceName) {
+  // Note: _service is reserved for future per-service mock retrieval
+  void _service;
   return smartFetchMock;
 }
 
@@ -322,8 +324,9 @@ function createRentCastMock() {
 }
 
 function createXaiMock() {
-  return vi.fn().mockImplementation((url: string, options?: RequestInit) => {
+  return vi.fn().mockImplementation((_url: string, options?: RequestInit) => {
     // Parse the request to understand what's being asked
+    void _url; // URL not used in mock
     const body = options?.body ? JSON.parse(options.body as string) : {};
 
     return Promise.resolve({
@@ -364,7 +367,8 @@ function createXaiMock() {
 }
 
 function createCensusMock() {
-  return vi.fn().mockImplementation((url: string) => {
+  return vi.fn().mockImplementation((_url: string) => {
+    void _url; // URL not used in mock
     return Promise.resolve({
       ok: true,
       json: () =>
@@ -377,7 +381,8 @@ function createCensusMock() {
 }
 
 function createTwilioMock() {
-  return vi.fn().mockImplementation((url: string, options?: RequestInit) => {
+  return vi.fn().mockImplementation((url: string, _options?: RequestInit) => {
+    void _options; // Options not used in mock
     const urlStr = url.toString();
 
     // SMS send
@@ -418,7 +423,9 @@ function createTwilioMock() {
 }
 
 function createSendGridMock() {
-  return vi.fn().mockImplementation((url: string, options?: RequestInit) => {
+  return vi.fn().mockImplementation((_url: string, _options?: RequestInit) => {
+    void _url; // URL not used in mock
+    void _options; // Options not used in mock
     return Promise.resolve({
       ok: true,
       status: 202,

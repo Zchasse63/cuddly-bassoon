@@ -175,7 +175,8 @@ export const mockRentCastMarketData = {
  * Mock fetch for RentCast API endpoints
  */
 export function mockRentCastApis() {
-  return vi.fn().mockImplementation((url: string, options?: RequestInit) => {
+  return vi.fn().mockImplementation((url: string, _options?: RequestInit) => {
+    void _options; // Options not used in mock
     const urlStr = url.toString();
 
     // Ensure it's a RentCast URL

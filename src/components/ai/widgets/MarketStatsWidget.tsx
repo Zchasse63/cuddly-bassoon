@@ -9,7 +9,7 @@
  * Used when Scout provides market analysis or comparisons.
  */
 
-import { TrendingUp, TrendingDown, Minus, BarChart3, Home, DollarSign, Clock } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, BarChart3, Home, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GenUIWidget } from './GenUIWidget';
 

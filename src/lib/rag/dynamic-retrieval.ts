@@ -10,7 +10,7 @@
  * tool results.
  */
 
-import { searchDocuments, type SearchResult } from './search';
+import { searchDocuments } from './search';
 
 export interface RetrievalTrigger {
   terms: string[];
@@ -113,10 +113,12 @@ export interface ToolResultAnalysis {
  * Analyze a tool result for terms that warrant additional RAG retrieval
  */
 export function analyzeToolResult(
-  toolName: string,
+  _toolName: string,
   toolOutput: unknown,
   existingCategories: string[] = []
 ): ToolResultAnalysis {
+  // Note: _toolName is reserved for future tool-specific analysis logic
+  void _toolName;
   // Convert tool output to searchable string
   const outputStr = typeof toolOutput === 'string'
     ? toolOutput.toLowerCase()

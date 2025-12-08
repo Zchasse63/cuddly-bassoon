@@ -1,0 +1,287 @@
+/**
+ * Bento Grid Layout System
+ *
+ * Source: Fluid_Real_Estate_OS_Design_System.md Section 4.2
+ * Philosophy: Non-linear scanning - users look at "Profit" first, then "Owner," then "Photos"
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   BENTO GRID CONTAINER
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bento-grid {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Desktop Layout (3 columns) */
+@media (min-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "hero    hero    hero"
+      "stats   stats   scout"
+      "value   owner   scout"
+      "comps   comps   actions";
+  }
+}
+
+/* Tablet Layout (2 columns) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "hero    hero"
+      "stats   scout"
+      "value   owner"
+      "comps   comps"
+      "actions actions";
+  }
+}
+
+/* Mobile Layout (single column) */
+@media (max-width: 767px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "hero"
+      "stats"
+      "value"
+      "owner"
+      "scout"
+      "comps"
+      "actions";
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BENTO CELL BASE STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bento-cell {
+  background: var(--surface-glass-high);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-bottom-color: var(--border-shadow);
+  border-right-color: var(--border-shadow);
+  border-radius: var(--radius-fluid-standard);
+  padding: 20px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-cell:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAMED GRID AREAS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bento-hero { grid-area: hero; }
+.bento-stats { grid-area: stats; }
+.bento-value { grid-area: value; }
+.bento-owner { grid-area: owner; }
+.bento-scout { grid-area: scout; }
+.bento-comps { grid-area: comps; }
+.bento-actions { grid-area: actions; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   CELL-SPECIFIC STYLES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Hero Cell - Full width image carousel */
+.bento-hero {
+  padding: 0;
+  min-height: 280px;
+  position: relative;
+}
+
+.bento-hero .hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-fluid-standard);
+}
+
+/* Stats Cell - Compact pill badges */
+.bento-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Value Cell - Large profit display */
+.bento-value {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bento-value .profit-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--fluid-success);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Owner Cell - Expandable contact info */
+.bento-owner {
+  position: relative;
+}
+
+/* Scout Cell - AI insights */
+.bento-scout {
+  background: linear-gradient(
+    135deg,
+    var(--surface-glass-high) 0%,
+    rgba(0, 113, 227, 0.05) 100%
+  );
+  min-height: 200px;
+}
+
+/* Comps Cell - Mini property cards */
+.bento-comps {
+  overflow-x: auto;
+}
+
+/* Actions Cell - Primary CTAs */
+.bento-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXPANDABLE CELL STATES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bento-cell[data-expanded="true"] {
+  grid-column: 1 / -1;
+  z-index: 10;
+}
+
+.bento-cell .expand-trigger {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-glass-subtle);
+  border-radius: var(--radius-fluid-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bento-cell:hover .expand-trigger {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SKELETON LOADING STATES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bento-skeleton {
+  background: var(--surface-glass-base);
+  border-radius: var(--radius-fluid-standard);
+  overflow: hidden;
+}
+
+.bento-skeleton::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-peak) 50%,
+    var(--shimmer-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: glass-shimmer 1.5s infinite ease-in-out;
+}
+
+.bento-skeleton-hero { min-height: 280px; }
+.bento-skeleton-cell { min-height: 120px; }
+.bento-skeleton-scout { min-height: 200px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   STAT PILL BADGES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--surface-glass-subtle);
+  border-radius: var(--radius-fluid-pill);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fluid-text-primary);
+}
+
+.stat-pill-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--fluid-text-secondary);
+}
+
+.stat-pill-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.dark .bento-cell {
+  background: var(--surface-glass-high);
+  border-color: var(--border-highlight);
+}
+
+.dark .bento-cell:hover {
+  background: rgba(58, 58, 60, 0.85);
+}
+
+.dark .stat-pill {
+  background: rgba(58, 58, 60, 0.6);
+}
+
+.dark .bento-cell-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REDUCED MOTION SUPPORT
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-cell {
+    transition: none;
+  }
+
+  .bento-cell:hover {
+    transform: none;
+  }
+}

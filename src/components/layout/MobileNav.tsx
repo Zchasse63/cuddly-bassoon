@@ -89,7 +89,11 @@ export function MobileBottomNav() {
   return (
     <>
       <nav
-        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border"
+        className={cn(
+          'mobile-bottom-nav fixed bottom-0 left-0 right-0 z-50',
+          'glass-high border-t border-[var(--border-highlight)]',
+          'shadow-[0_-4px_20px_rgba(0,0,0,0.1)]'
+        )}
         role="navigation"
         aria-label="Main navigation"
       >
@@ -104,17 +108,17 @@ export function MobileBottomNav() {
                 key={item.id}
                 onClick={() => handleNavClick(item)}
                 className={cn(
-                  'mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[64px] rounded-lg transition-colors touch-manipulation',
+                  'mobile-nav-item flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[64px] rounded-xl transition-all duration-200 touch-manipulation',
                   active
-                    ? 'text-brand-600 dark:text-brand-400'
-                    : 'text-muted-foreground hover:text-foreground active:bg-accent'
+                    ? 'text-[var(--fluid-brand)] bg-[var(--fluid-brand)]/10'
+                    : 'text-[var(--fluid-text-secondary)] hover:text-[var(--fluid-text-primary)] active:bg-[var(--surface-glass-subtle)]'
                 )}
                 aria-current={active ? 'page' : undefined}
               >
                 <div className="relative">
-                  <Icon className={cn('h-5 w-5', active && 'stroke-[2.5px]')} />
+                  <Icon className={cn('h-5 w-5 transition-transform', active && 'stroke-[2.5px] scale-110')} />
                   {item.badge && item.badge > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--fluid-danger)] text-[10px] font-medium text-white">
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
                   )}

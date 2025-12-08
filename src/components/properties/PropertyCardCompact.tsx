@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, Bed, Bath, Maximize, TrendingUp, Phone, Mail, Star } from 'lucide-react';
+import { Bed, Bath, Maximize, Phone, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -83,9 +83,9 @@ export function PropertyCardCompact({
           <div
             className={cn(
               'flex items-center justify-center size-8 rounded-full text-xs font-semibold',
-              safeScore >= 70 && 'bg-green-100 text-green-700',
-              safeScore >= 40 && safeScore < 70 && 'bg-yellow-100 text-yellow-700',
-              safeScore < 40 && 'bg-gray-100 text-gray-700'
+              safeScore >= 70 && 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
+              safeScore >= 40 && safeScore < 70 && 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)]',
+              safeScore < 40 && 'bg-muted text-muted-foreground'
             )}
           >
             {Math.round(safeScore)}

@@ -12,10 +12,10 @@ interface PermitHistoryPanelProps {
 }
 
 const STATUS_CONFIG = {
-  final: { color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle },
-  active: { color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300', icon: Clock },
-  in_review: { color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300', icon: AlertCircle },
-  inactive: { color: 'bg-gray-100 text-gray-800 dark:bg-gray-800/50 dark:text-gray-300', icon: FileText },
+  final: { color: 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)] dark:bg-[var(--fluid-success)]/20', icon: CheckCircle },
+  active: { color: 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)] dark:bg-[var(--fluid-primary)]/20', icon: Clock },
+  in_review: { color: 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)] dark:bg-[var(--fluid-warning)]/20', icon: AlertCircle },
+  inactive: { color: 'bg-muted text-muted-foreground dark:bg-muted/50', icon: FileText },
 };
 
 /**

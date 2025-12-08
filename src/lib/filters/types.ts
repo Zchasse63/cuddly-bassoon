@@ -209,6 +209,19 @@ export interface PropertyData {
   latitude?: number | null;
   longitude?: number | null;
 
+  // Additional property fields from database
+  arv?: number | null;
+  askingPrice?: number | null;
+  condition?: string | null;
+  isListed?: boolean | null;
+  subdivision?: string | null;
+
+  // Distress indicators
+  isPreForeclosure?: boolean | null;
+  preForeclosureDate?: string | null;
+  isTaxDelinquent?: boolean | null;
+  taxDelinquentAmount?: number | null;
+
   // Shovels-specific fields (from shovels_address_metrics join)
   shovelsAddressId?: string | null;
   totalPermits?: number | null;

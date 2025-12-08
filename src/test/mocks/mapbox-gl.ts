@@ -5,8 +5,6 @@
  * This file is aliased via vitest.component.config.ts.
  */
 
-import { vi } from 'vitest';
-
 // Mock LngLat class
 export class LngLat {
   lng: number;
@@ -61,9 +59,10 @@ export class LngLatBounds {
 }
 
 // Mock Map class
+type ListenerMap = globalThis.Map<string, Function[]>;
 export class Map {
   private _container: HTMLElement;
-  private _listeners: Map<string, Function[]> = new Map();
+  private _listeners: ListenerMap = new globalThis.Map();
 
   constructor(options?: { container?: string | HTMLElement }) {
     this._container = typeof options?.container === 'string'

@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { Send, Square, RotateCcw, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { cn } from '@/lib/utils';
 import { useRagChat } from '@/hooks/use-rag-chat';
 import { ChatMessage } from './ChatMessage';

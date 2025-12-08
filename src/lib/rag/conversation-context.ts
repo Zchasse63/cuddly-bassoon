@@ -33,9 +33,9 @@ export interface ContextAwareQuery {
   boostConcepts: string[];       // Concepts to boost in search
 }
 
-// Session TTL: 30 minutes of inactivity
-// eslint-disable-next-line unused-imports/no-unused-vars
-const SESSION_TTL = CacheTTL.MEDIUM; // 30 minutes
+// Session TTL: 30 minutes of inactivity (reserved for future Redis session expiry)
+const _SESSION_TTL = CacheTTL.MEDIUM; // 30 minutes
+void _SESSION_TTL; // Suppress unused variable warning
 
 /**
  * Get the Redis key for a session
@@ -56,7 +56,11 @@ export async function getConversationState(
 
     if (!data) return null;
 
-    return JSON.parse(data) as ConversationRAGState;
+    // Handle both string and object responses from Redis
+    if (typeof data === 'string') {
+      return JSON.parse(data) as ConversationRAGState;
+    }
+    return data as ConversationRAGState;
   } catch (error) {
     console.error('[ConversationContext] Error getting state:', error);
     return null;
@@ -235,8 +239,11 @@ export function generateContextAwareQuery(
     'rental': ['Market Analysis', 'Buyer Intelligence'],
   };
 
-  if (summary.currentTopic && topicCategoryMap[summary.currentTopic]) {
-    categories.push(...topicCategoryMap[summary.currentTopic]);
+  if (summary.currentTopic) {
+    const topicCategories = topicCategoryMap[summary.currentTopic];
+    if (topicCategories) {
+      categories.push(...topicCategories);
+    }
   }
 
   // If concepts need explanation, add Fundamentals

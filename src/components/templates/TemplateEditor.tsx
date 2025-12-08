@@ -110,8 +110,8 @@ export function TemplateEditor({ template, onSave, onCancel, className }: Templa
   // Render preview with sample data
   const renderPreview = useCallback(
     (text: string) => {
-      return text.replace(/\{\{(\w+)\}\}/g, (_, varName) => {
-        return sampleData[varName] || `{{${varName}}}`;
+      return text.replace(/\{\{(\w+)\}\}/g, (_, varName: string) => {
+        return (sampleData as Record<string, string>)[varName] || `{{${varName}}}`;
       });
     },
     [sampleData]

@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import type { MapProperty } from '@/components/map/MapProperty';
+import type { MapProperty } from '@/components/map';
 
 interface RentcastSearchParams {
   city?: string;

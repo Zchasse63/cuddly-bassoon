@@ -14,7 +14,8 @@
 @import './shadows.css';
 @import './animations.css';
 @import './fluid-glass.css';
-/* Fluid Real Estate OS Glass Materials */
+@import '../bento-grid.css';
+/* Fluid Real Estate OS Glass Materials + Bento Grid Layout */
 
 /* ═══════════════════════════════════════════════════════════════════
    SEMANTIC MAPPINGS
