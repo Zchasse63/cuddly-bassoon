@@ -1,22 +1,24 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileBottomNav, MobileActionFAB, MobileChatSheet } from './MobileNav';
+import { motion, AnimatePresence } from 'framer-motion';
+import { springPresets } from '@/lib/animations';
 
 /**
- * AppShell - Three-column CSS Grid layout (Desktop) / Single column (Mobile)
+ * Fluid Real Estate OS - AppShell (Tri-Pane Layout)
  *
- * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 3
+ * Source: Fluid_Real_Estate_OS_Design_System.md Section 3 & 4
  *
- * Desktop Layout: [Left Sidebar (240px)] [Main Content (1fr)] [Right Sidebar (360px)]
- * Mobile Layout: Full-width content with bottom navigation
+ * Architecture:
+ * 1. Command Rail (Left): 60px/240px glass rail
+ * 2. Canvas (Center): Main workspace
+ * 3. Scout Pane (Right): 320px persistent AI sidebar
  *
- * AI Positioning Strategy (v1.1):
- * - /properties: Floating AI dialog (bottom center)
- * - All other pages: Right sidebar (360px)
+ * Philosophy: "Liquid Glass" - Layout floats on a blurred background
  */
 
 interface AppShellContextValue {
@@ -31,19 +33,7 @@ interface AppShellContextValue {
   setMobileMenuOpen: (open: boolean) => void;
   mobileChatOpen: boolean;
   setMobileChatOpen: (open: boolean) => void;
-  /** Whether AI should be rendered as floating dialog (true) or sidebar (false) */
-  useFloatingAI: boolean;
-}
-
-/**
- * Determine if current route should use floating AI dialog
- *
- * UPDATED: All pages now use persistent AI sidebar for consistency.
- * The floating dialog pattern is deprecated in favor of always-visible chat.
- */
-function shouldUseFloatingAI(_pathname: string): boolean {
-  // All pages now use persistent sidebar, no floating AI
-  return false;
+  scoutVisible: boolean;
 }
 
 const AppShellContext = createContext<AppShellContextValue | null>(null);
@@ -64,11 +54,10 @@ interface AppShellProviderProps {
 
 export function AppShellProvider({
   children,
-  defaultLeftCollapsed = false,
+  defaultLeftCollapsed = true, // Default to collapsed command rail
   defaultRightCollapsed = false,
 }: AppShellProviderProps) {
   const isMobile = useIsMobile();
-  const pathname = usePathname();
   const [leftCollapsed, setLeftCollapsed] = useState(defaultLeftCollapsed);
   const [rightCollapsed, setRightCollapsed] = useState(defaultRightCollapsed);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -76,9 +65,6 @@ export function AppShellProvider({
 
   const toggleLeft = useCallback(() => setLeftCollapsed((prev) => !prev), []);
   const toggleRight = useCallback(() => setRightCollapsed((prev) => !prev), []);
-
-  // Determine AI positioning based on current route
-  const useFloatingAI = shouldUseFloatingAI(pathname);
 
   return (
     <AppShellContext.Provider
@@ -94,7 +80,7 @@ export function AppShellProvider({
         setMobileMenuOpen,
         mobileChatOpen,
         setMobileChatOpen,
-        useFloatingAI,
+        scoutVisible: !rightCollapsed && !isMobile,
       }}
     >
       {children}
@@ -111,129 +97,94 @@ interface AppShellProps {
 
 export function AppShell({ children, leftSidebar, rightSidebar, className }: AppShellProps) {
   const router = useRouter();
-  const {
-    leftCollapsed,
-    rightCollapsed,
-    isMobile,
-    mobileChatOpen,
-    setMobileChatOpen,
-    useFloatingAI,
-  } = useAppShell();
+  const { leftCollapsed, isMobile, mobileChatOpen, setMobileChatOpen, scoutVisible } =
+    useAppShell();
 
-  // Mobile layout
+  // Mobile layout - Bottom Navigation Paradigm
   if (isMobile) {
     return (
-      <div className={cn('app-shell-mobile min-h-screen bg-background', className)}>
+      <div className={cn('app-shell-mobile min-h-[100dvh] bg-background', className)}>
         {/* Main Content with bottom padding for nav */}
-        <main className="main-content-mobile pb-20">{children}</main>
+        <main className="main-content-mobile flex-1 pb-20 overflow-y-auto overscroll-y-contain">
+          {children}
+        </main>
 
-        {/* Mobile Bottom Navigation */}
-        <MobileBottomNav />
+        {/* Mobile Bottom Navigation (Glass) */}
+        <div className="fixed bottom-0 left-0 right-0 z-50">
+          <MobileBottomNav />
+        </div>
 
-        {/* Mobile FAB for quick actions */}
+        {/* Mobile FAB for quick actions (Scout trigger) */}
         <MobileActionFAB
           onOpenChat={() => setMobileChatOpen(true)}
-          onAddProperty={() => {
-            // Navigate to add property - can be customized per page
-            router.push('/properties/new');
-          }}
+          onAddProperty={() => router.push('/properties/new')}
         />
 
-        {/* Mobile Chat Sheet */}
-        {rightSidebar && (
-          <MobileChatSheet open={mobileChatOpen} onOpenChange={setMobileChatOpen}>
-            {rightSidebar}
-          </MobileChatSheet>
-        )}
+        {/* Mobile Scout Sheet (Slide Up) */}
+        <AnimatePresence>
+          {mobileChatOpen && rightSidebar && (
+            <MobileChatSheet open={mobileChatOpen} onOpenChange={setMobileChatOpen}>
+              {rightSidebar}
+            </MobileChatSheet>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
 
-  // Desktop layout
+  // Desktop Layout - Liquid Glass Tri-Pane
   return (
     <div
       className={cn(
-        'app-shell',
-        leftCollapsed && 'left-collapsed',
-        rightCollapsed && 'right-collapsed',
-        useFloatingAI && 'floating-ai', // Add class when using floating AI
+        'app-shell layer-base min-h-screen overflow-hidden bg-background',
+        // Grid setup defined in CSS for performance, classes toggle state
+        leftCollapsed ? 'left-collapsed' : 'left-expanded',
+        !scoutVisible ? 'right-collapsed' : 'right-expanded',
         className
       )}
+      style={
+        {
+          '--sidebar-left-width': '240px',
+          '--sidebar-left-collapsed-width': '60px',
+          '--sidebar-right-width': '320px',
+        } as React.CSSProperties
+      }
     >
-      {/* Left Sidebar */}
-      {leftSidebar && <aside className="sidebar-left">{leftSidebar}</aside>}
-
-      {/* Main Content */}
-      <main className="main-content">{children}</main>
-
-      {/* Right Sidebar (AI Chat) - Only render if NOT using floating AI */}
-      {rightSidebar && !useFloatingAI && (
-        <aside className="sidebar-right">{rightSidebar}</aside>
+      {/* 1. Command Rail (Left) */}
+      {leftSidebar && (
+        <aside
+          className={cn(
+            'sidebar-left glass-base transition-all duration-300 ease-spring-standard',
+            leftCollapsed ? 'w-[60px]' : 'w-[240px]'
+          )}
+        >
+          {leftSidebar}
+        </aside>
       )}
+
+      {/* 2. Canvas (Center) */}
+      <main className="main-content flex-1 relative overflow-hidden bg-gray-50/50 dark:bg-gray-900/50">
+        {/* Background decorative elements could go here */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-noise" />
+
+        {/* Actual page content */}
+        <div className="relative z-10 w-full h-full overflow-y-auto">{children}</div>
+      </main>
+
+      {/* 3. Scout Pane (Right) */}
+      <AnimatePresence mode="wait">
+        {scoutVisible && rightSidebar && (
+          <motion.aside
+            initial={{ x: 320, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 320, opacity: 0 }}
+            transition={springPresets.standard}
+            className="sidebar-right w-[320px] glass-high border-l border-white/20 shadow-2xl z-20"
+          >
+            {rightSidebar}
+          </motion.aside>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
-// CSS to add to globals.css or a separate layout.css
-export const appShellStyles = `
-/* App Shell - Three Column CSS Grid Layout */
-.app-shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-left-width) 1fr auto;
-  grid-template-rows: 100vh;
-  height: 100vh;
-  overflow: hidden;
-  transition: grid-template-columns var(--transition-normal) var(--ease-in-out);
-}
-
-/* Floating AI mode - no right sidebar */
-.app-shell.floating-ai {
-  grid-template-columns: var(--sidebar-left-width) 1fr;
-}
-
-.app-shell.floating-ai.left-collapsed {
-  grid-template-columns: var(--sidebar-left-collapsed-width) 1fr;
-}
-
-/* Collapsed states */
-.app-shell.left-collapsed {
-  grid-template-columns: var(--sidebar-left-collapsed-width) 1fr auto;
-}
-
-.app-shell.right-collapsed {
-  grid-template-columns: var(--sidebar-left-width) 1fr 0px;
-}
-
-.app-shell.left-collapsed.right-collapsed {
-  grid-template-columns: var(--sidebar-left-collapsed-width) 1fr 0px;
-}
-
-/* Sidebar containers */
-.sidebar-left {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  border-right: 1px solid var(--border);
-  background: var(--sidebar);
-}
-
-.sidebar-right {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  background: var(--background);
-}
-
-/* Main content area - no scroll, children handle their own scrolling */
-.main-content {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  background: var(--color-gray-50, #F7FAFC);
-}
-
-.dark .main-content {
-  background: var(--color-gray-900, #171923);
-}
-`;

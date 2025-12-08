@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { PropertySearchResultItem } from '@/lib/filters/types';
 import { getFilterById } from '@/lib/filters/registry';
+import { motion } from 'framer-motion';
 
 interface PropertyCardProps {
   result: PropertySearchResultItem;
@@ -32,76 +33,130 @@ export function PropertyCard({ result, onClick, isSelected }: PropertyCardProps)
   const scoreVariant = getScoreVariant(combinedScore);
 
   return (
-    <div className={cn('property-card', isSelected && 'selected')} onClick={onClick}>
+    <motion.div
+      whileHover={{ y: -4, scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      className={cn(
+        'group relative overflow-hidden transition-all duration-300',
+        'glass-card squircle p-4',
+        isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:glass-high',
+        'cursor-pointer'
+      )}
+      onClick={onClick}
+    >
       {/* Header with Address and Score */}
-      <div className="property-card__content">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="property-card__address truncate">{property.address}</h3>
-            <p className="property-card__location">
-              {property.city}, {property.state} {property.zip}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-xs text-muted-foreground">#{rank}</span>
-            <div className={cn('score-badge', `score-badge--${scoreVariant}`)}>
-              {Math.round(combinedScore)}
-            </div>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-base text-foreground truncate">{property.address}</h3>
+          <p className="text-sm text-muted-foreground truncate">
+            {property.city}, {property.state} {property.zip}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xs font-mono text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full">
+            #{rank}
+          </span>
+          <div
+            className={cn(
+              'flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold text-white shadow-sm',
+              scoreVariant === 'high' && 'bg-emerald-500 shadow-emerald-500/20',
+              scoreVariant === 'medium' && 'bg-amber-500 shadow-amber-500/20',
+              scoreVariant === 'low' && 'bg-rose-500 shadow-rose-500/20'
+            )}
+          >
+            {Math.round(combinedScore)}
           </div>
         </div>
-
-        {/* Property Stats */}
-        <div className="property-card__stats">
-          <div className="property-card__stat">
-            <div className="property-card__stat-value">
-              {formatCurrency(property.estimatedValue)}
-            </div>
-            <div className="property-card__stat-label">Value</div>
-          </div>
-          <div className="property-card__stat">
-            <div className="property-card__stat-value">
-              {property.equityPercent !== null && property.equityPercent !== undefined
-                ? `${property.equityPercent.toFixed(0)}%`
-                : 'N/A'}
-            </div>
-            <div className="property-card__stat-label">Equity</div>
-          </div>
-          <div className="property-card__stat">
-            <div className="property-card__stat-value">{property.propertyType || 'N/A'}</div>
-            <div className="property-card__stat-label">Type</div>
-          </div>
-        </div>
-
-        {/* Property Specs */}
-        <div className="flex gap-4 text-sm text-muted-foreground mt-3">
-          {property.bedrooms && <span>{property.bedrooms} bed</span>}
-          {property.bathrooms && <span>{property.bathrooms} bath</span>}
-          {property.squareFootage && <span>{property.squareFootage.toLocaleString()} sqft</span>}
-          {property.yearBuilt && <span>Built {property.yearBuilt}</span>}
-        </div>
-
-        {/* Matched Filters */}
-        {matchedFilters.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-3">
-            {matchedFilters.map((filterId) => {
-              const filter = getFilterById(filterId);
-              return (
-                <Badge key={filterId} variant="secondary" className="text-xs">
-                  {filter?.name || filterId}
-                </Badge>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Owner Info */}
-        {property.ownerName && (
-          <div className="text-xs text-muted-foreground border-t pt-3 mt-3">
-            <span className="font-medium">Owner:</span> {property.ownerName}
-            {property.ownerType && ` (${property.ownerType})`}
-          </div>
-        )}
       </div>
-    </div>
+
+      {/* Property Stats Grid */}
+      <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-border/10 bg-white/5 rounded-lg mb-4">
+        <div className="text-center px-1">
+          <div className="text-sm font-bold text-foreground">
+            {formatCurrency(property.estimatedValue)}
+          </div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+            Value
+          </div>
+        </div>
+        <div className="text-center px-1 border-l border-border/10">
+          <div className="text-sm font-bold text-foreground">
+            {property.equityPercent !== null && property.equityPercent !== undefined
+              ? `${property.equityPercent.toFixed(0)}%`
+              : '-'}
+          </div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+            Equity
+          </div>
+        </div>
+        <div className="text-center px-1 border-l border-border/10">
+          <div className="text-sm font-bold text-foreground truncate">
+            {property.propertyType || '-'}
+          </div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-0.5">
+            Type
+          </div>
+        </div>
+      </div>
+
+      {/* Property Specs */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mb-4">
+        {property.bedrooms && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-foreground">{property.bedrooms}</span> bed
+          </span>
+        )}
+        {property.bathrooms && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-foreground">{property.bathrooms}</span> bath
+          </span>
+        )}
+        {property.squareFootage && (
+          <span className="flex items-center gap-1">
+            <span className="font-medium text-foreground">
+              {property.squareFootage.toLocaleString()}
+            </span>{' '}
+            sqft
+          </span>
+        )}
+        {property.yearBuilt && <span>Built {property.yearBuilt}</span>}
+      </div>
+
+      {/* Matched Filters (Pills) */}
+      {matchedFilters.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {matchedFilters.slice(0, 3).map((filterId) => {
+            const filter = getFilterById(filterId);
+            return (
+              <Badge
+                key={filterId}
+                variant="secondary"
+                className="bg-secondary/40 hover:bg-secondary/60 text-[10px] px-2 py-0.5"
+              >
+                {filter?.name || filterId}
+              </Badge>
+            );
+          })}
+          {matchedFilters.length > 3 && (
+            <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-dashed">
+              +{matchedFilters.length - 3} more
+            </Badge>
+          )}
+        </div>
+      )}
+
+      {/* Owner Info & Actions */}
+      <div className="flex items-center justify-between text-xs pt-2 mt-auto border-t border-border/5">
+        <div className="text-muted-foreground truncate max-w-[70%]">
+          {property.ownerName ? (
+            <>
+              <span className="font-medium text-foreground/80">Owner:</span> {property.ownerName}
+            </>
+          ) : (
+            <span className="italic opacity-50">No owner info</span>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }

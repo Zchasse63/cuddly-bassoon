@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { CustomGlassTooltip } from './CustomGlassTooltip';
 
 interface ActivityDataPoint {
   date: string;
@@ -57,13 +58,8 @@ export function ActivityChart({ data, height = 300, showLegend = true }: Activit
           <XAxis dataKey="displayDate" stroke="var(--color-text-muted)" fontSize={12} />
           <YAxis stroke="var(--color-text-muted)" fontSize={12} />
           <Tooltip
-            contentStyle={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              boxShadow: 'var(--shadow-md)',
-            }}
-            labelStyle={{ color: 'var(--color-text)' }}
+            content={<CustomGlassTooltip />}
+            cursor={{ fill: 'var(--color-surface-hover)', opacity: 0.1 }}
           />
           {showLegend && <Legend />}
           <Area

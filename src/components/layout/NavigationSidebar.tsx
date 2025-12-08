@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
@@ -11,8 +11,6 @@ import {
   Handshake,
   Settings,
   LogOut,
-  ChevronLeft,
-  ChevronDown,
   Search,
   FileText,
   BarChart3,
@@ -20,14 +18,15 @@ import {
   HelpCircle,
   List,
   Filter,
-  Map,
   Wrench,
   Command,
+  ChevronRight,
+  MessageSquare,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -36,13 +35,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAppShell } from './AppShell';
 
 /**
- * Navigation items organized into groups per UI_UX_DESIGN_SYSTEM_v1.md Section 5
- * Reduced cognitive load with grouped categories
+ * Fluid Real Estate OS - Command Rail
+ *
+ * Source: Fluid_Real_Estate_OS_Design_System.md Section 4 & 5
+ *
+ * Behavior:
+ * - Default: Micro-collapsed (60px)
+ * - Interaction: Hover intent expands to full (240px)
+ * - Material: Glass Base
  */
+
 interface NavItem {
   title: string;
   href: string;
@@ -55,14 +60,13 @@ interface NavGroup {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   items: NavItem[];
-  defaultOpen?: boolean;
 }
 
 // Main navigation - primary workflows
-// Properties is now the primary entry point (split-view with map + list)
 const mainNavItems: NavItem[] = [
-  { title: 'Properties', href: '/properties', icon: Building2 }, // Primary - split-view search
+  { title: 'Properties', href: '/properties', icon: Building2 }, // Primary
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { title: 'Inbox', href: '/inbox', icon: MessageSquare, badge: 2, badgeVariant: 'default' },
   { title: 'Deals', href: '/deals', icon: Handshake, badge: 3, badgeVariant: 'default' },
   { title: 'Buyers', href: '/buyers', icon: Users },
   { title: 'Analytics', href: '/analytics', icon: BarChart3 },
@@ -78,7 +82,6 @@ const toolsGroup: NavGroup = {
     { title: 'Documents', href: '/documents', icon: FileText },
     { title: 'Team', href: '/team', icon: Users },
   ],
-  defaultOpen: false,
 };
 
 const bottomNavItems: NavItem[] = [
@@ -99,59 +102,89 @@ interface NavigationSidebarProps {
 
 export function NavigationSidebar({ user }: NavigationSidebarProps) {
   const pathname = usePathname();
-  const { leftCollapsed, toggleLeft } = useAppShell();
-  const [toolsOpen, setToolsOpen] = useState(toolsGroup.defaultOpen);
+  const { setLeftCollapsed, leftCollapsed } = useAppShell();
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const userInitials = user.email?.slice(0, 2).toUpperCase() ?? 'U';
 
-  // Check if any tools item is active
-  const isToolsActive = toolsGroup.items.some(
-    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
-  );
+  // Expansion Logic (Hover Intent)
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    // 300ms delay before expanding to prevent accidental triggering
+    hoverTimeoutRef.current = setTimeout(() => {
+      setLeftCollapsed(false);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setLeftCollapsed(true);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    };
+  }, []);
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Building2 className="h-4 w-4" />
+    <div
+      className="flex h-full flex-col overflow-hidden"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Header / Brand */}
+      <div className="flex h-16 items-center px-3.5 border-b border-white/10 shrink-0">
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg text-white shrink-0">
+            <Building2 className="h-5 w-5" />
           </div>
-          {!leftCollapsed && <span className="text-lg font-semibold">REI Platform</span>}
+          <AnimatePresence>
+            {!leftCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="text-base font-bold text-foreground whitespace-nowrap overflow-hidden"
+              >
+                Fluid OS
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Link>
-        <Button variant="ghost" size="icon" onClick={toggleLeft} className="h-8 w-8">
-          <ChevronLeft
-            className={cn('h-4 w-4 transition-transform', leftCollapsed && 'rotate-180')}
-          />
-        </Button>
       </div>
 
-      {/* Quick Search Hint */}
-      {!leftCollapsed && (
-        <div className="px-3 py-2">
-          <button
-            className="flex w-full items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors"
-            onClick={() => {
-              // Trigger command palette
-              const event = new KeyboardEvent('keydown', {
-                key: 'k',
-                metaKey: true,
-                bubbles: true,
-              });
-              document.dispatchEvent(event);
-            }}
-          >
-            <Search className="h-4 w-4" />
-            <span className="flex-1 text-left">Quick search...</span>
-            <kbd className="flex items-center gap-0.5 rounded bg-background px-1.5 py-0.5 text-xs border">
-              <Command className="h-3 w-3" />K
-            </kbd>
-          </button>
-        </div>
-      )}
+      {/* Quick Search */}
+      <div className="px-2 py-4 shrink-0">
+        <button
+          className={cn(
+            'flex items-center gap-3 rounded-xl border border-transparent bg-white/50 dark:bg-black/20 text-muted-foreground hover:bg-white/80 dark:hover:bg-white/10 hover:border-white/20 transition-all duration-200 group h-10 w-full overflow-hidden',
+            leftCollapsed ? 'justify-center px-0' : 'px-3'
+          )}
+          onClick={() => {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+          }}
+        >
+          <Search className="h-4 w-4 shrink-0 group-hover:text-primary transition-colors" />
+          {!leftCollapsed && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-1 items-center justify-between overflow-hidden"
+            >
+              <span className="text-sm">Search...</span>
+              <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded bg-background/50 px-1.5 py-0.5 text-[10px] font-medium opacity-50">
+                <Command className="h-3 w-3" />K
+              </kbd>
+            </motion.div>
+          )}
+        </button>
+      </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2">
-        {/* Primary Navigation Items */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 space-y-6">
+        {/* Primary App Links */}
         <ul className="space-y-1">
           {mainNavItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -160,29 +193,51 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
                 <Link
                   href={item.href}
                   className={cn(
-                    'nav-item',
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 group overflow-hidden',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
                 >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <item.icon
+                    className={cn(
+                      'h-5 w-5 shrink-0 transition-colors',
+                      isActive ? 'text-primary' : 'group-hover:text-foreground'
+                    )}
+                  />
                   {!leftCollapsed && (
-                    <>
-                      <span className="flex-1">{item.title}</span>
-                      {item.badge && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex-1 truncate"
+                    >
+                      {item.title}
+                    </motion.span>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeNavIndicator"
+                      className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
+                    />
+                  )}
+                  {item.badge && (
+                    <div
+                      className={cn(
+                        'absolute top-2.5 flex items-center justify-center',
+                        leftCollapsed ? 'right-2' : 'right-3'
+                      )}
+                    >
+                      {leftCollapsed ? (
+                        <span className="h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                      ) : (
                         <Badge
-                          variant={item.badgeVariant || 'secondary'}
-                          className="nav-badge h-5 min-w-5 px-1.5 text-xs"
+                          variant={item.badgeVariant as any}
+                          className="h-5 px-1.5 text-[10px]"
                         >
                           {item.badge}
                         </Badge>
                       )}
-                    </>
-                  )}
-                  {leftCollapsed && item.badge && (
-                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+                    </div>
                   )}
                 </Link>
               </li>
@@ -190,153 +245,112 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
           })}
         </ul>
 
-        {/* Tools Group - Collapsible */}
-        {!leftCollapsed && (
-          <Collapsible
-            open={toolsOpen || isToolsActive}
-            onOpenChange={setToolsOpen}
-            className="mt-4"
-          >
-            <CollapsibleTrigger asChild>
-              <button
-                className={cn(
-                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isToolsActive
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                )}
-              >
-                <Wrench className="h-5 w-5 flex-shrink-0" />
-                <span className="flex-1 text-left">Tools</span>
-                <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform',
-                    (toolsOpen || isToolsActive) && 'rotate-180'
-                  )}
-                />
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <ul className="mt-1 ml-4 space-y-1 border-l pl-4">
-                {toolsGroup.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                          isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                        )}
+        {/* Tools Section */}
+        <div>
+          {!leftCollapsed && (
+            <motion.h3
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+            >
+              Tools
+            </motion.h3>
+          )}
+          <ul className="space-y-1">
+            {toolsGroup.items.map((item) => {
+              const isActive = pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors group overflow-hidden',
+                      isActive
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                    )}
+                  >
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    {!leftCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="truncate"
                       >
-                        <item.icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-
-        {/* Collapsed Tools - Show as single icon */}
-        {leftCollapsed && (
-          <div className="mt-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={cn(
-                    'flex w-full items-center justify-center rounded-lg p-2 transition-colors',
-                    isToolsActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  )}
-                >
-                  <Wrench className="h-5 w-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="right" align="start">
-                {toolsGroup.items.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link href={item.href} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      {item.title}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+                        {item.title}
+                      </motion.span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </nav>
 
-      {/* Bottom Navigation */}
-      <div className="border-t p-2">
-        <ul className="space-y-1">
-          {bottomNavItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'nav-item relative',
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                  )}
-                >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {!leftCollapsed && (
-                    <>
-                      <span className="flex-1">{item.title}</span>
-                      {item.badge && (
-                        <Badge
-                          variant={item.badgeVariant || 'secondary'}
-                          className="nav-badge h-5 min-w-5 px-1.5 text-xs"
-                        >
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </>
-                  )}
-                  {leftCollapsed && item.badge && (
-                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
-                  )}
-                </Link>
-              </li>
-            );
-          })}
+      {/* Bottom Actions */}
+      <div className="p-2 border-t border-white/10 bg-white/5 dark:bg-black/5 shrink-0">
+        <ul className="space-y-1 mb-2">
+          {bottomNavItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors group overflow-hidden"
+              >
+                <item.icon className="h-5 w-5 shrink-0" />
+                {!leftCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="truncate"
+                  >
+                    {item.title}
+                  </motion.span>
+                )}
+              </Link>
+            </li>
+          ))}
         </ul>
-      </div>
 
-      {/* User Menu */}
-      <div className="border-t p-2">
+        {/* User Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               className={cn(
-                'flex w-full items-center gap-2 rounded-lg p-2 hover:bg-accent',
-                leftCollapsed && 'justify-center'
+                'flex items-center gap-3 w-full rounded-xl p-2 hover:bg-white/50 dark:hover:bg-black/20 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                leftCollapsed ? 'justify-center' : 'justify-start'
               )}
             >
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground">
+              <Avatar className="h-8 w-8 shrink-0 ring-2 ring-white/20 dark:ring-white/10">
+                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white font-medium">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
               {!leftCollapsed && (
-                <div className="flex-1 text-left text-sm">
-                  <p className="font-medium truncate">{user.email}</p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex flex-col items-start overflow-hidden text-left"
+                >
+                  <span className="text-sm font-medium truncate w-32 block text-foreground">
+                    {user.email?.split('@')[0]}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate w-32 block">
+                    Pro Plan
+                  </span>
+                </motion.div>
+              )}
+              {!leftCollapsed && (
+                <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground opacity-50" />
               )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuContent
+            align="start"
+            side="right"
+            className="w-56 glass-high"
+            sideOffset={10}
+          >
             <DropdownMenuItem asChild>
               <Link href="/settings">
                 <Settings className="mr-2 h-4 w-4" />
@@ -344,8 +358,11 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <form action="/auth/signout" method="post">
+            <DropdownMenuItem
+              asChild
+              className="text-red-500 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20"
+            >
+              <form action="/auth/signout" method="post" className="w-full">
                 <button type="submit" className="flex w-full items-center">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out

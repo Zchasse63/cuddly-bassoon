@@ -9,15 +9,10 @@
 export { OnboardingModal } from './OnboardingModal';
 export { AIToolPalette, useAIToolPalette } from './AIToolPalette';
 export { EmptyChatState, SuggestedPrompts } from './EmptyChatState';
-export {
-  ToolTransparency,
-  useToolTransparency,
-  createToolCallRecord,
-} from './ToolTransparency';
+export { ToolTransparency, useToolTransparency, createToolCallRecord } from './ToolTransparency';
 export { EnhancedChatInterface } from './EnhancedChatInterface';
 
 // Existing AI Components
 export { AIContextBar, ContextBadge } from './AIContextBar';
 export { QuickActions, InlineQuickActions } from './QuickActions';
 export { ProactiveInsights } from './ProactiveInsights';
-export { FloatingAIDialog } from './FloatingAIDialog';

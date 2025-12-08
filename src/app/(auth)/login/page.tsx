@@ -103,18 +103,54 @@ function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Welcome Back</CardTitle>
-        <CardDescription>Sign in to your account to continue</CardDescription>
+    <Card className="glass-card border-white/20 shadow-2xl backdrop-blur-3xl">
+      <CardHeader className="text-center pb-2">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-600 shadow-inner">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-8 w-8"
+          >
+            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+            <path d="M9 18c-4.51 2-5-2-7-2" />
+          </svg>
+        </div>
+        <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+        <CardDescription>Sign in to your Fluid account</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 pt-6">
         {error && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+          <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" x2="12" y1="8" y2="12" />
+              <line x1="12" x2="12.01" y1="16" y2="16" />
+            </svg>
+            {error}
+          </div>
         )}
 
         {/* Google OAuth Button */}
-        <Button type="button" variant="outline" className="w-full" onClick={handleGoogleLogin}>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-11 relative overflow-hidden group border-muted hover:border-brand-500/30 hover:bg-brand-500/5 transition-all"
+          onClick={handleGoogleLogin}
+        >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               fill="currentColor"
@@ -136,12 +172,14 @@ function LoginForm() {
           Continue with Google
         </Button>
 
-        <div className="relative">
+        <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full border-t border-border/50" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-background/50 backdrop-blur px-2 text-muted-foreground font-medium">
+              Or continue with
+            </span>
           </div>
         </div>
 
@@ -161,6 +199,7 @@ function LoginForm() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white/50 border-border/50 focus:bg-background h-10 transition-all font-medium"
                   required
                 />
               </div>
@@ -177,6 +216,7 @@ function LoginForm() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="bg-white/50 border-border/50 focus:bg-background h-10 transition-all font-medium"
                   required
                 />
               </div>
@@ -190,7 +230,11 @@ function LoginForm() {
                   Remember me for 30 days
                 </Label>
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full btn-gradient h-11 shadow-lg shadow-brand-500/20 rounded-lg hover:shadow-brand-500/30 transition-all"
+                disabled={loading}
+              >
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...
@@ -245,24 +289,25 @@ function LoginForm() {
 
 function LoginSkeleton() {
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <Skeleton className="mx-auto h-8 w-40" />
-        <Skeleton className="mx-auto mt-2 h-4 w-56" />
+    <Card className="glass-card border-white/20 shadow-xl">
+      <CardHeader className="text-center pt-8">
+        <Skeleton className="mx-auto h-16 w-16 rounded-2xl glass-shimmer" />
+        <Skeleton className="mx-auto mt-4 h-8 w-40 glass-shimmer" />
+        <Skeleton className="mx-auto mt-2 h-4 w-56 glass-shimmer" />
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Skeleton className="h-10 w-full" />
+      <CardContent className="space-y-6">
+        <Skeleton className="h-10 w-full glass-shimmer" />
         <div className="space-y-2">
-          <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-4 w-12 glass-shimmer" />
+          <Skeleton className="h-10 w-full glass-shimmer" />
         </div>
         <div className="space-y-2">
-          <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-4 w-16 glass-shimmer" />
+          <Skeleton className="h-10 w-full glass-shimmer" />
         </div>
       </CardContent>
-      <CardFooter>
-        <Skeleton className="h-10 w-full" />
+      <CardFooter className="pb-8">
+        <Skeleton className="h-11 w-full glass-shimmer rounded-lg" />
       </CardFooter>
     </Card>
   );

@@ -4,7 +4,7 @@
  * Central import for all design token files.
  * Import this file in globals.css to apply the design system.
  * 
- * Source: UI_UX_DESIGN_SYSTEM_v1.md
+ * Source: UI_UX_DESIGN_SYSTEM_v1.md + Fluid_Real_Estate_OS_Design_System.md
  */
 
 /* Import all token files in dependency order */
@@ -13,6 +13,8 @@
 @import './spacing.css';
 @import './shadows.css';
 @import './animations.css';
+@import './fluid-glass.css';
+/* Fluid Real Estate OS Glass Materials */
 
 /* ═══════════════════════════════════════════════════════════════════
    SEMANTIC MAPPINGS

@@ -83,6 +83,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-family-primary);
@@ -115,34 +116,37 @@
   grid-template-columns: var(--sidebar-left-collapsed-width) 1fr 0px;
 }
 
-/* Sidebar containers */
+/* Sidebar containers - Fluid OS Glass Ready */
 .sidebar-left {
   position: relative;
   height: 100vh;
   overflow: hidden;
-  border-right: 1px solid var(--border);
-  background: var(--sidebar);
+  /* Background handled by utility classes (glass-base) */
+  border-right: 1px solid var(--border-highlight);
+  z-index: 20;
 }
 
 .sidebar-right {
   position: relative;
   height: 100vh;
   overflow: hidden;
-  border-left: 1px solid var(--border);
-  background: var(--background);
+  /* Background handled by utility classes (glass-high) */
+  border-left: 1px solid var(--border-highlight);
+  z-index: 20;
 }
 
-/* Main content area */
+/* Main content area - The Canvas */
 .main-content {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   height: 100vh;
-  background: var(--color-gray-50, #f7fafc);
+  /* Fluid OS Canvas Gradient */
+  background: linear-gradient(135deg, var(--color-gray-50) 0%, #ffffff 100%);
 }
 
 .dark .main-content {
-  background: var(--color-gray-900, #171923);
+  background: linear-gradient(135deg, #000000 0%, var(--color-gray-900) 100%);
 }
 
 /* Content container with max-width */
@@ -232,13 +236,15 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  min-height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+  min-height: 100dvh;
+  /* Use dynamic viewport height for mobile browsers */
 }
 
 .main-content-mobile {
   flex: 1;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth scrolling on iOS */
 }
 
 /* Safe area padding for notched devices */
@@ -409,7 +415,8 @@
   input[type='password'],
   textarea,
   select {
-    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    font-size: 16px !important;
+    /* Prevents iOS zoom on focus */
     min-height: 44px;
   }
 
@@ -434,6 +441,7 @@
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -449,6 +457,7 @@
   100% {
     box-shadow: 0 4px 12px rgba(117, 81, 255, 0.3);
   }
+
   50% {
     box-shadow: 0 4px 20px rgba(117, 81, 255, 0.5);
   }
@@ -677,44 +686,57 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   CARD COMPONENTS
-   Per UI_UX_DESIGN_SYSTEM_v1.md Section 7
+   CARD COMPONENTS - FLUID GLASS UPGRADE
+   Per UI_UX_DESIGN_SYSTEM_v1.md Section 7 & Liquid Glass principles
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Card Base - Horizon UI inspired */
+/* Card Base - Fluid Glass */
 .card-elevated {
-  background: var(--surface-card, hsl(var(--card)));
-  border-radius: var(--border-radius-xl, 1rem);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal, 200ms) var(--ease-in-out, ease-in-out);
+  background: var(--surface-glass-base);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-fluid-lg);
+  /* Squircle-ish */
+  box-shadow: var(--shadow-glass);
+  transition: all 400ms var(--ease-spring-standard);
   overflow: hidden;
 }
 
 .card-elevated:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  background: var(--surface-glass-high);
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: var(--shadow-glass-hover);
+  border-color: var(--color-brand-500);
 }
 
 .card-elevated.selected {
   border: 2px solid var(--color-brand-500, #7551ff);
   box-shadow: var(--shadow-brand);
+  background: var(--surface-glass-high);
 }
 
-/* Property Card */
+/* Property Card - Fluid Glass */
 .property-card {
   display: flex;
   flex-direction: column;
-  background: var(--surface-card, hsl(var(--card)));
-  border-radius: var(--border-radius-xl, 1rem);
+  background: var(--surface-glass-base);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-fluid-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal, 200ms) var(--ease-in-out, ease-in-out);
+  box-shadow: var(--shadow-glass);
+  transition: all 400ms var(--ease-spring-standard);
   cursor: pointer;
+  position: relative;
 }
 
 .property-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  background: var(--surface-glass-high);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-glass-hover);
+  z-index: 10;
 }
 
 .property-card__image {
@@ -728,12 +750,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 700ms var(--ease-spring-gentle);
+}
+
+.property-card:hover .property-card__image img {
+  transform: scale(1.05);
 }
 
 .property-card__badge {
   position: absolute;
   top: var(--spacing-2, 0.5rem);
   right: var(--spacing-2, 0.5rem);
+  z-index: 2;
 }
 
 .property-card__content {
@@ -758,7 +786,7 @@
   gap: var(--spacing-2, 0.5rem);
   margin-top: var(--spacing-3, 0.75rem);
   padding-top: var(--spacing-3, 0.75rem);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-highlight);
 }
 
 .property-card__stat {
@@ -774,6 +802,8 @@
 .property-card__stat-label {
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Score Badge */
@@ -802,18 +832,44 @@
   background: var(--color-error-500, #ef4444);
 }
 
-/* Deal Card */
+/* Deal Card - Fluid Glass */
 .deal-card {
-  background: var(--surface-card, hsl(var(--card)));
-  border-radius: var(--border-radius-lg, 0.75rem);
+  background: var(--surface-glass-base);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-fluid-md);
   padding: var(--spacing-3, 0.75rem);
-  box-shadow: var(--shadow-xs);
-  transition: all var(--transition-fast, 150ms) var(--ease-in-out, ease-in-out);
-  cursor: pointer;
+  box-shadow: var(--shadow-glass);
+  transition: all 300ms var(--ease-spring-standard);
+  cursor: grab;
+  position: relative;
+}
+
+.deal-card:active {
+  cursor: grabbing;
 }
 
 .deal-card:hover {
-  box-shadow: var(--shadow-sm);
+  background: var(--surface-glass-high);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-glass-hover);
+  z-index: 10;
+}
+
+.deal-card.dragging {
+  opacity: 0.9;
+  box-shadow: var(--shadow-glass-intense);
+  transform: scale(1.05) rotate(2deg);
+  z-index: 50;
+  cursor: grabbing;
+  background: var(--surface-glass-high);
+  border-color: var(--color-brand-500);
+}
+
+.deal-card.stale {
+  border-color: var(--color-warning-500, #eab308);
+  background: linear-gradient(to bottom right, var(--surface-glass-base), rgba(234, 179, 8, 0.05));
 }
 
 .deal-card.stale {
@@ -885,24 +941,31 @@
 .kpi-card:nth-child(1) {
   animation-delay: 0ms;
 }
+
 .kpi-card:nth-child(2) {
   animation-delay: 50ms;
 }
+
 .kpi-card:nth-child(3) {
   animation-delay: 100ms;
 }
+
 .kpi-card:nth-child(4) {
   animation-delay: 150ms;
 }
+
 .kpi-card:nth-child(5) {
   animation-delay: 200ms;
 }
+
 .kpi-card:nth-child(6) {
   animation-delay: 250ms;
 }
+
 .kpi-card:nth-child(7) {
   animation-delay: 300ms;
 }
+
 .kpi-card:nth-child(8) {
   animation-delay: 350ms;
 }
@@ -912,6 +975,7 @@
     animation: none;
     transition: none;
   }
+
   .kpi-card:hover {
     transform: none;
   }
@@ -1121,18 +1185,23 @@
 .mt-4 {
   margin-top: var(--spacing-4, 1rem);
 }
+
 .mt-6 {
   margin-top: var(--spacing-6, 1.5rem);
 }
+
 .mt-8 {
   margin-top: var(--spacing-8, 2rem);
 }
+
 .mb-4 {
   margin-bottom: var(--spacing-4, 1rem);
 }
+
 .mb-6 {
   margin-bottom: var(--spacing-6, 1.5rem);
 }
+
 .mb-8 {
   margin-bottom: var(--spacing-8, 2rem);
 }
@@ -1253,6 +1322,7 @@ select:focus,
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1268,6 +1338,7 @@ select:focus,
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1284,6 +1355,7 @@ select:focus,
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1298,15 +1370,19 @@ select:focus,
 .stagger-1 {
   animation-delay: 50ms;
 }
+
 .stagger-2 {
   animation-delay: 100ms;
 }
+
 .stagger-3 {
   animation-delay: 150ms;
 }
+
 .stagger-4 {
   animation-delay: 200ms;
 }
+
 .stagger-5 {
   animation-delay: 250ms;
 }
@@ -1343,6 +1419,7 @@ select:focus,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -1379,6 +1456,7 @@ select:focus,
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -1401,6 +1479,7 @@ select:focus,
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1416,6 +1495,7 @@ select:focus,
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

@@ -62,47 +62,65 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <div className={cn('empty-state', className)}>
+    <div
+      className={cn(
+        'empty-state flex flex-col items-center justify-center text-center p-8',
+        className
+      )}
+    >
       {Icon && (
-        <div className="empty-state__icon">
-          <Icon className="h-10 w-10" />
+        <div className="empty-state__icon flex items-center justify-center w-20 h-20 rounded-full bg-brand-500/5 ring-1 ring-brand-500/20 text-brand-500 mb-6 group-hover:scale-110 transition-transform duration-500">
+          <Icon className="h-10 w-10 opacity-80" />
         </div>
       )}
-      <h3 className="empty-state__title">{title}</h3>
-      {description && <p className="empty-state__description">{description}</p>}
+      <h3 className="empty-state__title text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 mb-2">
+        {title}
+      </h3>
+      {description && (
+        <p className="empty-state__description text-muted-foreground max-w-sm mx-auto leading-relaxed">
+          {description}
+        </p>
+      )}
 
       {/* Smart Suggestions */}
       {suggestions && suggestions.length > 0 && (
-        <div className="mt-6 w-full max-w-md space-y-2">
-          <p className="text-sm text-muted-foreground mb-3">Suggested next steps:</p>
+        <div className="mt-8 w-full max-w-md space-y-3">
+          <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-widest mb-4">
+            Suggested next steps
+          </p>
           {suggestions.map((suggestion) => (
             <button
               key={suggestion.id}
               onClick={suggestion.action}
-              className="w-full flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent transition-colors text-left group"
+              className="w-full flex items-center gap-4 p-3 rounded-xl border border-border/40 bg-background/40 hover:bg-background/80 hover:border-brand-500/30 hover:shadow-lg hover:shadow-brand-500/5 transition-all text-left group"
             >
               <div
                 className={cn(
-                  'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                  'w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors',
                   suggestion.priority === 'high'
-                    ? 'bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400'
-                    : 'bg-muted text-muted-foreground'
+                    ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400'
+                    : 'bg-muted/50 text-muted-foreground group-hover:bg-brand-500/5 group-hover:text-brand-500'
                 )}
               >
-                <suggestion.icon className="h-4 w-4" />
+                <suggestion.icon className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm flex items-center gap-2">
+                <div className="font-semibold text-sm flex items-center gap-2 text-foreground/90">
                   {suggestion.title}
                   {suggestion.priority === 'high' && (
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] px-1.5 h-5 bg-brand-500/10 text-brand-600 border-none"
+                    >
                       Recommended
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground truncate">{suggestion.description}</p>
+                <p className="text-xs text-muted-foreground truncate opacity-80 mt-0.5">
+                  {suggestion.description}
+                </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-brand-500 group-hover:translate-x-0.5 transition-all" />
             </button>
           ))}
         </div>
@@ -110,23 +128,36 @@ export function EmptyState({
 
       {/* AI Tip */}
       {aiTip && (
-        <div className="mt-6 w-full max-w-md">
-          <div className="flex items-start gap-2 rounded-lg bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 p-3 text-sm">
-            <Sparkles className="h-4 w-4 text-brand-500 flex-shrink-0 mt-0.5" />
-            <p className="text-muted-foreground">{aiTip}</p>
+        <div className="mt-8 w-full max-w-md">
+          <div className="flex items-start gap-3 rounded-xl glass-subtle border border-brand-500/20 p-4 text-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-brand-500/50" />
+            <Sparkles className="h-5 w-5 text-brand-500 flex-shrink-0 mt-0.5 animate-pulse" />
+            <div className="text-left">
+              <span className="font-bold text-brand-700 dark:text-brand-300 block text-xs mb-0.5 uppercase tracking-wide">
+                Scout Insight
+              </span>
+              <p className="text-muted-foreground leading-relaxed">{aiTip}</p>
+            </div>
           </div>
         </div>
       )}
 
       {(action || secondaryAction) && (
-        <div className="empty-state__actions mt-6">
+        <div className="empty-state__actions mt-8 flex flex-col sm:flex-row gap-3">
           {action && (
-            <Button onClick={action.onClick} className="btn-gradient">
+            <Button
+              onClick={action.onClick}
+              className="btn-gradient shadow-lg shadow-brand-500/20 rounded-full px-6"
+            >
               {action.label}
             </Button>
           )}
           {secondaryAction && (
-            <Button variant="outline" onClick={secondaryAction.onClick}>
+            <Button
+              variant="outline"
+              onClick={secondaryAction.onClick}
+              className="rounded-full px-6 border-border/50 hover:bg-muted/50"
+            >
               {secondaryAction.label}
             </Button>
           )}

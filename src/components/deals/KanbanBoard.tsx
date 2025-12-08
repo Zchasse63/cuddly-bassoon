@@ -39,32 +39,36 @@ function KanbanColumn({ stage, deals, onDealClick }: KanbanColumnProps) {
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col min-w-[280px] max-w-[280px] bg-muted/30 rounded-lg',
-        isOver && 'bg-muted/50 ring-2 ring-primary/20'
+        'flex flex-col min-w-[280px] max-w-[280px] rounded-xl transition-colors duration-200',
+        'glass-subtle border border-transparent',
+        isOver ? 'bg-accent/10 border-brand-500/20 shadow-inner' : 'hover:bg-accent/5'
       )}
     >
-      <div className="p-3 border-b">
+      <div className="p-3 border-b border-border/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn('w-3 h-3 rounded-full', stageConfig.color)} />
-            <h3 className="font-medium text-sm">{stageConfig.label}</h3>
+            <div className={cn('w-2 h-2 rounded-full shadow-sm', stageConfig.color)} />
+            <h3 className="font-semibold text-sm tracking-tight">{stageConfig.label}</h3>
           </div>
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-medium text-muted-foreground bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-sm">
             {deals.length}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">{stageConfig.description}</p>
+        <p className="text-[10px] text-muted-foreground mt-1 line-clamp-1 opacity-80">
+          {stageConfig.description}
+        </p>
       </div>
 
       <ScrollArea className="flex-1 p-2">
         <SortableContext items={deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
+          <div className="space-y-3 min-h-[100px]">
+            {/* Added min-h to make empty columns easier to drop into */}
             {deals.map((deal) => (
               <DealCard key={deal.id} deal={deal} onClick={() => onDealClick?.(deal)} />
             ))}
             {deals.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground text-sm">
-                No deals in this stage
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground/50 border-2 border-dashed border-border/20 rounded-lg m-1">
+                <span className="text-xs">Drag deals here</span>
               </div>
             )}
           </div>

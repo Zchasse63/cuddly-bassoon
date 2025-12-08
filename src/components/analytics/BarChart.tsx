@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { CustomGlassTooltip } from './CustomGlassTooltip';
 
 interface BarDataPoint {
   name: string;
@@ -78,14 +79,8 @@ export function BarChart({
             </>
           )}
           <Tooltip
-            contentStyle={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              boxShadow: 'var(--shadow-md)',
-            }}
-            labelStyle={{ color: 'var(--color-text)' }}
-            formatter={(value: number) => [formatValue(value), '']}
+            content={<CustomGlassTooltip />}
+            cursor={{ fill: 'var(--color-surface-hover)', opacity: 0.1 }}
           />
           {showLegend && <Legend />}
           {bars.map((bar) => (

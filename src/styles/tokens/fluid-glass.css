@@ -1,0 +1,300 @@
+/**
+ * Fluid Real Estate OS - Glass Material Tokens
+ * 
+ * Source: Fluid_Real_Estate_OS_Design_System.md Section 2/17
+ * Philosophy: "Digital Physicality" - Interface feels like fluid, interactive material
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════
+     LIQUID GLASS MATERIALS
+     We do not use flat colors for containers. We use Materials.
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Glass Backgrounds */
+  --surface-glass-base: rgba(255, 255, 255, 0.65);
+  --surface-glass-high: rgba(255, 255, 255, 0.85);
+  --surface-glass-subtle: rgba(255, 255, 255, 0.45);
+
+  /* Glass Blur Effects */
+  --glass-blur-sm: blur(8px) saturate(150%);
+  --glass-blur-md: blur(20px) saturate(180%);
+  --glass-blur-lg: blur(40px) saturate(180%);
+
+  /* Glass Borders (Light Source Simulation) */
+  --border-highlight: rgba(255, 255, 255, 0.4);
+  --border-shadow: rgba(0, 0, 0, 0.05);
+
+  /* ═══════════════════════════════════════════════════════════════════
+     FLUID OS COLORS (Apple-inspired)
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Primary Action */
+  --fluid-primary: #0071e3;
+  --fluid-primary-hover: #0077ed;
+  --fluid-primary-active: #006acc;
+
+  /* Success (Equity/Positive) */
+  --fluid-success: #34c759;
+  --fluid-success-light: rgba(52, 199, 89, 0.12);
+  --fluid-success-dark: #248a3d;
+
+  /* Warning (Distress/Caution) */
+  --fluid-warning: #ff9f0a;
+  --fluid-warning-light: rgba(255, 159, 10, 0.12);
+  --fluid-warning-dark: #c27600;
+
+  /* Danger (Risk/Error) */
+  --fluid-danger: #ff3b30;
+  --fluid-danger-light: rgba(255, 59, 48, 0.12);
+  --fluid-danger-dark: #c41e3a;
+
+  /* Text (Never pure black/white) */
+  --fluid-text-primary: #1d1d1f;
+  --fluid-text-secondary: #6e6e73;
+  --fluid-text-tertiary: #8e8e93;
+
+  /* ═══════════════════════════════════════════════════════════════════
+     EQUITY COLOR SCALE (Map Markers, Badges)
+     ═══════════════════════════════════════════════════════════════════ */
+
+  --equity-low: #ff3b30; /* 0-20% equity */
+  --equity-mid: #ff9f0a; /* 20-50% equity */
+  --equity-high: #34c759; /* 50%+ equity */
+
+  /* ═══════════════════════════════════════════════════════════════════
+     RADII (Squircle-inspired)
+     ═══════════════════════════════════════════════════════════════════ */
+
+  --radius-fluid-sm: 8px;
+  --radius-fluid-md: 12px;
+  --radius-fluid-standard: 16px;
+  --radius-fluid-large: 24px;
+  --radius-fluid-pill: 999px;
+
+  /* ═══════════════════════════════════════════════════════════════════
+     LAYOUT DIMENSIONS
+     ═══════════════════════════════════════════════════════════════════ */
+
+  /* Command Rail */
+  --command-rail-collapsed: 60px;
+  --command-rail-expanded: 240px;
+  --command-rail-hover-delay: 300ms;
+
+  /* Scout Panel */
+  --scout-panel-width: 320px;
+  --scout-panel-width-lg: 400px;
+
+  /* Canvas Split View */
+  --split-snap-0: 0%;
+  --split-snap-60: 60%;
+  --split-snap-100: 100%;
+
+  /* ═══════════════════════════════════════════════════════════════════
+     RESPONSIVE BREAKPOINTS
+     ═══════════════════════════════════════════════════════════════════ */
+
+  --bp-xs: 480px;
+  --bp-sm: 768px;
+  --bp-md: 1024px;
+  --bp-lg: 1440px;
+
+  /* ═══════════════════════════════════════════════════════════════════
+     SCOUT AI COLORS
+     ═══════════════════════════════════════════════════════════════════ */
+
+  --scout-thinking: #0071e3;
+  --scout-success: #34c759;
+  --scout-clarification: #ff9f0a;
+  --scout-orb-glow: rgba(0, 113, 227, 0.3);
+
+  /* ═══════════════════════════════════════════════════════════════════
+     GLASS SHIMMER (Loading States)
+     ═══════════════════════════════════════════════════════════════════ */
+
+  --shimmer-base: rgba(255, 255, 255, 0);
+  --shimmer-peak: rgba(255, 255, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DARK MODE FLUID TOKENS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.dark {
+  /* Glass Backgrounds */
+  --surface-glass-base: rgba(28, 28, 30, 0.6);
+  --surface-glass-high: rgba(44, 44, 46, 0.8);
+  --surface-glass-subtle: rgba(28, 28, 30, 0.4);
+
+  /* Glass Borders */
+  --border-highlight: rgba(255, 255, 255, 0.15);
+  --border-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Text */
+  --fluid-text-primary: #f5f5f7;
+  --fluid-text-secondary: #a1a1a6;
+  --fluid-text-tertiary: #8e8e93;
+
+  /* Shimmer */
+  --shimmer-base: rgba(255, 255, 255, 0);
+  --shimmer-peak: rgba(255, 255, 255, 0.15);
+
+  /* Scout Orb */
+  --scout-orb-glow: rgba(0, 113, 227, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLASS UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.glass-base {
+  background: var(--surface-glass-base);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-bottom-color: var(--border-shadow);
+  border-right-color: var(--border-shadow);
+}
+
+.glass-high {
+  background: var(--surface-glass-high);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-bottom-color: var(--border-shadow);
+  border-right-color: var(--border-shadow);
+}
+
+.glass-subtle {
+  background: var(--surface-glass-subtle);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+}
+
+/* Squircle smoothing (for browsers that support it) */
+.squircle {
+  border-radius: var(--radius-fluid-standard);
+  /* Note: corner-smoothing is a webkit-only property */
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLASS SHIMMER ANIMATION (Loading States)
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.glass-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-peak) 50%,
+    var(--shimmer-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: glass-shimmer 1.5s infinite ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOCUS STATES (Accessibility with Fluid Aesthetic)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.focus-fluid:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background, #fff),
+    0 0 0 4px var(--fluid-primary);
+  border-radius: inherit;
+}
+
+.focus-fluid-glow:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(0, 113, 227, 0.5),
+    0 0 20px rgba(0, 113, 227, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REDUCED MOTION SUPPORT
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-shimmer {
+    animation: none;
+    background: var(--surface-glass-base);
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EQUITY BADGE UTILITIES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.equity-low {
+  background-color: var(--equity-low);
+  color: white;
+}
+
+.equity-mid {
+  background-color: var(--equity-mid);
+  color: white;
+}
+
+.equity-high {
+  background-color: var(--equity-high);
+  color: white;
+}
+
+.equity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-fluid-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOAST GLASS STYLING
+   ═══════════════════════════════════════════════════════════════════ */
+
+.toast-glass {
+  background: var(--surface-glass-high);
+  backdrop-filter: var(--glass-blur-md);
+  -webkit-backdrop-filter: var(--glass-blur-md);
+  border: 1px solid var(--border-highlight);
+  border-bottom-color: var(--border-shadow);
+  border-right-color: var(--border-shadow);
+  border-radius: var(--radius-fluid-standard);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.toast-enter {
+  animation: toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}

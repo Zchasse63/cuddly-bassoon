@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { CustomGlassTooltip } from './CustomGlassTooltip';
 
 interface AreaDataPoint {
   date: string;
@@ -76,14 +77,8 @@ export function AreaChart({
           <XAxis dataKey="displayDate" stroke="var(--color-text-muted)" fontSize={12} />
           <YAxis stroke="var(--color-text-muted)" fontSize={12} tickFormatter={formatValue} />
           <Tooltip
-            contentStyle={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              boxShadow: 'var(--shadow-md)',
-            }}
-            labelStyle={{ color: 'var(--color-text)' }}
-            formatter={(value: number) => [formatValue(value), '']}
+            content={<CustomGlassTooltip />}
+            cursor={{ stroke: 'var(--color-border)', strokeWidth: 1, strokeDasharray: '3 3' }}
           />
           {showLegend && <Legend />}
           {areas.map((area) => (

@@ -7,15 +7,15 @@ import type { MapProperty } from './MapProvider';
 
 /**
  * PropertyMarker Component
- * 
+ *
  * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 11 (Page Templates)
- * 
+ *
  * Custom map marker for properties with:
  * - Price label
  * - Hover scale animation
  * - Pulse effect for highlighted state
  * - Click handler
- * 
+ *
  * Note: Clustering is handled by PropertyMarkers component using Supercluster.
  * This component renders individual property markers.
  */
@@ -47,6 +47,12 @@ export function PropertyMarker({
   onHover,
 }: PropertyMarkerProps) {
   const price = property.estimatedValue || property.lastSalePrice;
+  const equity = (property.equityPercent as number) || 0;
+
+  // Determine color based on equity
+  let markerColorClass = 'bg-slate-500 text-white'; // Default/Low
+  if (equity >= 50) markerColorClass = 'bg-emerald-500 text-white shadow-emerald-500/30';
+  else if (equity >= 20) markerColorClass = 'bg-amber-500 text-white shadow-amber-500/30';
 
   return (
     <Marker
@@ -58,67 +64,61 @@ export function PropertyMarker({
       }}
     >
       <div
-        className="relative cursor-pointer"
+        className="relative cursor-pointer group"
         onMouseEnter={() => onHover?.(property)}
         onMouseLeave={() => onHover?.(null)}
       >
         {/* Pulse effect for highlighted state */}
         {isHighlighted && (
-          <div className="absolute inset-0 -m-2">
-            <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+          <div className="absolute inset-0 -m-3">
+            <div className="absolute inset-0 rounded-full bg-brand-500/30 animate-ping" />
           </div>
         )}
 
         {/* Marker Container */}
         <div
           className={cn(
-            'relative flex flex-col items-center transition-all duration-200',
-            'hover:scale-110',
-            isHighlighted && 'scale-110 z-10'
+            'relative flex flex-col items-center transition-all duration-300 ease-spring-snappy',
+            'group-hover:scale-110 group-hover:-translate-y-1',
+            isHighlighted && 'scale-125 z-20',
+            isSelected && 'scale-125 z-30'
           )}
         >
-          {/* Price Label */}
+          {/* Price Label (Glass) */}
           {price && (
             <div
               className={cn(
-                'px-2 py-1 rounded-md text-xs font-semibold shadow-md',
-                'transition-all duration-200',
-                'bg-white text-gray-900 border border-gray-300',
-                isSelected && 'bg-primary text-primary-foreground border-primary',
-                isHighlighted && !isSelected && 'bg-primary/10 border-primary'
+                'mb-1 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg backdrop-blur-md',
+                'transition-all duration-200 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0',
+                isHighlighted || isSelected ? 'opacity-100 translate-y-0' : '',
+                isSelected
+                  ? 'glass-high text-brand-600 ring-1 ring-brand-500'
+                  : 'glass-base text-foreground/80'
               )}
             >
               {formatPrice(price)}
             </div>
           )}
 
-          {/* Marker Icon */}
+          {/* Marker Icon (Squircle) */}
           <div
             className={cn(
-              'mt-1 flex items-center justify-center',
-              'size-8 rounded-full shadow-lg',
-              'transition-all duration-200',
-              'bg-primary text-primary-foreground',
-              isSelected && 'bg-primary ring-2 ring-primary ring-offset-2',
-              isHighlighted && !isSelected && 'bg-primary/80'
+              'flex items-center justify-center',
+              'size-8 rounded-xl shadow-lg', // Squircle-ish
+              'transition-all duration-300',
+              markerColorClass,
+              isSelected && 'ring-2 ring-white ring-offset-2 ring-offset-transparent'
             )}
           >
             <Home className="size-4" />
           </div>
 
-          {/* Pointer Triangle */}
-          <div
-            className={cn(
-              'w-0 h-0 -mt-1',
-              'border-l-4 border-l-transparent',
-              'border-r-4 border-r-transparent',
-              'border-t-8',
-              'transition-all duration-200',
-              'border-t-primary',
-              isSelected && 'border-t-primary',
-              isHighlighted && !isSelected && 'border-t-primary/80'
-            )}
-          />
+          {/* Equity Badge (Small dot) if high equity */}
+          {equity >= 40 && (
+            <div className="absolute -top-1 -right-1 size-3 bg-white rounded-full flex items-center justify-center shadow-sm">
+              <div className="size-2 rounded-full bg-emerald-500" />
+            </div>
+          )}
         </div>
       </div>
     </Marker>
@@ -127,7 +127,7 @@ export function PropertyMarker({
 
 /**
  * ClusterMarker Component
- * 
+ *
  * Renders a cluster of properties with count badge.
  */
 
@@ -162,4 +162,3 @@ export function ClusterMarker({ longitude, latitude, pointCount, onClick }: Clus
     </Marker>
   );
 }
-

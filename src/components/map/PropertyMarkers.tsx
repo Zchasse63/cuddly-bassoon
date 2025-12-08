@@ -10,7 +10,7 @@ import { Marker } from 'react-map-gl/mapbox';
 import Supercluster from 'supercluster';
 import { useMap, type MapProperty } from './MapProvider';
 import { MAP_CONFIG } from '@/lib/map/config';
-import { Home } from 'lucide-react';
+import { PropertyMarker } from './PropertyMarker';
 
 interface ClusterProperties {
   cluster: boolean;
@@ -105,24 +105,13 @@ export function PropertyMarkers() {
         // Render individual marker
         const property = cluster.properties as MapProperty;
         return (
-          <Marker
+          <PropertyMarker
             key={`property-${property.id}`}
-            longitude={longitude}
-            latitude={latitude}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              selectProperty(property);
-            }}
-          >
-            <div className="cursor-pointer hover:scale-110 transition-transform">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                <Home className="w-4 h-4 text-primary-foreground" />
-              </div>
-            </div>
-          </Marker>
+            property={property}
+            onClick={() => selectProperty(property)}
+          />
         );
       })}
     </>
   );
 }
-
