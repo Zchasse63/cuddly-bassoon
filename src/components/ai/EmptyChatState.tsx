@@ -27,31 +27,28 @@ const QUICK_START_ACTIONS: QuickStartAction[] = [
     label: 'Find Deals',
     icon: Search,
     prompt: 'Find 3 bed houses with tired landlords under $200k',
-    color: 'bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400',
+    color: 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)] hover:bg-[var(--fluid-primary)]/20',
   },
   {
     id: 'analyze',
     label: 'Analyze Deals',
     icon: Calculator,
     prompt: 'Analyze this property for a potential wholesale deal',
-    color:
-      'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400',
+    color: 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)] hover:bg-[var(--fluid-success)]/20',
   },
   {
     id: 'find-buyers',
     label: 'Find Buyers',
     icon: Users,
     prompt: 'Find cash buyers for this property',
-    color:
-      'bg-purple-100 text-purple-600 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400',
+    color: 'bg-[var(--fluid-accent)]/10 text-[var(--fluid-accent)] hover:bg-[var(--fluid-accent)]/20',
   },
   {
     id: 'market-intel',
     label: 'Market Intel',
     icon: TrendingUp,
     prompt: "How's the Tampa market doing?",
-    color:
-      'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400',
+    color: 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)] hover:bg-[var(--fluid-warning)]/20',
   },
 ];
 

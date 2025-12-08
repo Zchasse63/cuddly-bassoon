@@ -176,11 +176,11 @@ function calculateDealMetrics(
 }
 
 const qualityColors = {
-  excellent: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-  good: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  fair: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-  poor: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-  unknown: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+  excellent: 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
+  good: 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
+  fair: 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)]',
+  poor: 'bg-[var(--fluid-danger)]/10 text-[var(--fluid-danger)]',
+  unknown: 'bg-muted text-muted-foreground',
 };
 
 const qualityLabels = {

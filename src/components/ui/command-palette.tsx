@@ -512,11 +512,11 @@ function ResultItem({
         className={cn(
           'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
           result.type === 'property'
-            ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+            ? 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)] dark:bg-[var(--fluid-primary)]/20'
             : result.type === 'deal'
-              ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+              ? 'bg-[var(--fluid-accent)]/10 text-[var(--fluid-accent)] dark:bg-[var(--fluid-accent)]/20'
               : result.type === 'buyer'
-                ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
+                ? 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)] dark:bg-[var(--fluid-success)]/20'
                 : 'bg-muted text-muted-foreground'
         )}
       >

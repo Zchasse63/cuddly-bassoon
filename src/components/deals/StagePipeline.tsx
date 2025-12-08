@@ -37,7 +37,7 @@ export function StagePipeline({ currentStage, onStageClick, compact = false }: S
                 className={cn(
                   'px-2 py-1 text-xs rounded-full transition-colors',
                   status === 'current' && `${config.color} text-white`,
-                  status === 'completed' && 'bg-green-100 text-green-700',
+                  status === 'completed' && 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
                   status === 'available' && 'bg-muted hover:bg-muted/80 cursor-pointer',
                   status === 'future' && 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                 )}
@@ -72,7 +72,7 @@ export function StagePipeline({ currentStage, onStageClick, compact = false }: S
                     'w-10 h-10 rounded-full flex items-center justify-center transition-all',
                     status === 'current' &&
                       `${config.color} text-white ring-4 ring-offset-2 ring-${config.color}/30`,
-                    status === 'completed' && 'bg-green-500 text-white',
+                    status === 'completed' && 'bg-[var(--fluid-success)] text-white',
                     status === 'available' &&
                       'bg-muted hover:bg-muted/80 cursor-pointer border-2 border-dashed',
                     status === 'future' && 'bg-muted/50 text-muted-foreground cursor-not-allowed'
@@ -99,7 +99,7 @@ export function StagePipeline({ currentStage, onStageClick, compact = false }: S
                 <div
                   className={cn(
                     'flex-1 h-0.5 mx-2',
-                    index < currentIndex ? 'bg-green-500' : 'bg-muted'
+                    index < currentIndex ? 'bg-[var(--fluid-success)]' : 'bg-muted'
                   )}
                 />
               )}
@@ -140,7 +140,7 @@ export function StagePipelineVertical({ currentStage, onStageClick }: StagePipel
                 className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center transition-all',
                   status === 'current' && `${config.color} text-white`,
-                  status === 'completed' && 'bg-green-500 text-white',
+                  status === 'completed' && 'bg-[var(--fluid-success)] text-white',
                   status === 'available' &&
                     'bg-muted hover:bg-muted/80 cursor-pointer border-2 border-dashed',
                   status === 'future' && 'bg-muted/50 text-muted-foreground cursor-not-allowed'
@@ -156,7 +156,7 @@ export function StagePipelineVertical({ currentStage, onStageClick }: StagePipel
                 <div
                   className={cn(
                     'w-0.5 h-6 mt-1',
-                    index < currentIndex ? 'bg-green-500' : 'bg-muted'
+                    index < currentIndex ? 'bg-[var(--fluid-success)]' : 'bg-muted'
                   )}
                 />
               )}

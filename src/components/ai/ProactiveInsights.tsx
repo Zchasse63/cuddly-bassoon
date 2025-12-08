@@ -212,10 +212,10 @@ const insightIcons: Record<Insight['type'], typeof Sparkles> = {
 };
 
 const insightColors: Record<Insight['type'], string> = {
-  suggestion: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  alert: 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-  opportunity: 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-  reminder: 'bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  suggestion: 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)]',
+  alert: 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)]',
+  opportunity: 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
+  reminder: 'bg-[var(--fluid-accent)]/10 text-[var(--fluid-accent)]',
 };
 
 export function ProactiveInsights({

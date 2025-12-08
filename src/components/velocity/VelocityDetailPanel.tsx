@@ -20,14 +20,14 @@ interface VelocityDetailPanelProps {
  */
 function getClassificationBgColor(classification: string): string {
   const colors: Record<string, string> = {
-    'On Fire': 'bg-red-500',
+    'On Fire': 'bg-[var(--fluid-danger)]',
     Hot: 'bg-orange-500',
     Warm: 'bg-amber-500',
-    Balanced: 'bg-yellow-500',
-    Cool: 'bg-green-500',
-    Cold: 'bg-blue-500',
+    Balanced: 'bg-[var(--fluid-warning)]',
+    Cool: 'bg-[var(--fluid-success)]',
+    Cold: 'bg-[var(--fluid-primary)]',
   };
-  return colors[classification] || 'bg-gray-500';
+  return colors[classification] || 'bg-muted';
 }
 
 /**
@@ -156,14 +156,14 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
               { label: 'Investment', score: data.investmentConvictionScore, weight: 10 },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2">
-                <div className="w-24 text-xs text-gray-500">{item.label}</div>
-                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="w-24 text-xs text-muted-foreground">{item.label}</div>
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-blue-500 rounded-full"
+                    className="h-full bg-[var(--fluid-primary)] rounded-full"
                     style={{ width: `${item.score}%` }}
                   />
                 </div>
-                <div className="w-8 text-xs text-right text-gray-600">{Math.round(item.score)}</div>
+                <div className="w-8 text-xs text-right text-muted-foreground">{Math.round(item.score)}</div>
               </div>
             ))}
           </div>
@@ -173,13 +173,13 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {data.velocityTrend && (
           <div className="border-t pt-3 mt-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Trend</span>
+              <span className="text-xs text-muted-foreground">Trend</span>
               <span
                 className={cn(
                   'text-sm font-medium',
-                  data.velocityTrend === 'Rising' && 'text-green-600',
-                  data.velocityTrend === 'Falling' && 'text-red-600',
-                  data.velocityTrend === 'Stable' && 'text-gray-600'
+                  data.velocityTrend === 'Rising' && 'text-[var(--fluid-success)]',
+                  data.velocityTrend === 'Falling' && 'text-[var(--fluid-danger)]',
+                  data.velocityTrend === 'Stable' && 'text-muted-foreground'
                 )}
               >
                 {data.velocityTrend}
@@ -196,8 +196,8 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
       </div>
 
       {/* Footer */}
-      <div className="border-t p-3 bg-gray-50">
-        <p className="text-xs text-gray-500">
+      <div className="border-t p-3 bg-muted/50">
+        <p className="text-xs text-muted-foreground">
           {implication.emoji} {implication.text}
         </p>
       </div>

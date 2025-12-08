@@ -43,13 +43,13 @@ export function VelocityLayerToggle({
             <Flame
               className={cn(
                 'h-5 w-5 transition-colors',
-                enabled ? 'text-orange-500' : 'text-gray-400'
+                enabled ? 'text-[var(--fluid-warning)]' : 'text-muted-foreground'
               )}
             />
             <span className="text-sm font-medium">Market Velocity</span>
             <ChevronDown
               className={cn(
-                'h-4 w-4 text-gray-400 transition-transform',
+                'h-4 w-4 text-muted-foreground transition-transform',
                 isOpen && 'rotate-180'
               )}
             />
@@ -67,8 +67,8 @@ export function VelocityLayerToggle({
             {enabled && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Opacity</span>
-                  <span className="text-xs text-gray-500">{Math.round(opacity * 100)}%</span>
+                  <span className="text-sm text-foreground">Opacity</span>
+                  <span className="text-xs text-muted-foreground">{Math.round(opacity * 100)}%</span>
                 </div>
                 <Slider
                   value={[opacity * 100]}
@@ -83,8 +83,8 @@ export function VelocityLayerToggle({
 
             {/* Legend */}
             <div className="border-t pt-3">
-              <span className="text-xs font-medium text-gray-500 uppercase">Legend</span>
-              <p className="text-xs text-gray-400 mt-0.5 mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase">Legend</span>
+              <p className="text-xs text-muted-foreground/70 mt-0.5 mb-2">
                 Higher = Faster Sales, Easier Assignments
               </p>
               <div className="space-y-1.5">
@@ -96,7 +96,7 @@ export function VelocityLayerToggle({
                         className="w-3 h-3 rounded-sm flex-shrink-0"
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-foreground">
                         {item.label} ({item.threshold}
                         {item.threshold === 85 ? '+' : `-${getNextThreshold(item.threshold)}`})
                       </span>
@@ -107,7 +107,7 @@ export function VelocityLayerToggle({
 
             {/* Info */}
             <div className="border-t pt-3">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Market velocity measures buyer demand intensity. Hot markets (red/orange) mean
                 faster contract assignments for wholesalers.
               </p>
@@ -144,12 +144,12 @@ export function VelocityLayerButton({
       className={cn(
         'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
         enabled
-          ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          ? 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)] hover:bg-[var(--fluid-warning)]/20'
+          : 'bg-muted text-muted-foreground hover:bg-muted/80'
       )}
       title={enabled ? 'Hide Market Velocity layer' : 'Show Market Velocity layer'}
     >
-      <Flame className={cn('h-4 w-4', enabled ? 'text-orange-500' : 'text-gray-400')} />
+      <Flame className={cn('h-4 w-4', enabled ? 'text-[var(--fluid-warning)]' : 'text-muted-foreground')} />
       Velocity
     </button>
   );
