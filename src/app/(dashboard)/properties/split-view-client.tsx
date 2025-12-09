@@ -148,8 +148,18 @@ export function PropertySearchSplitView() {
   // Subscribe to AI property search events
   useEffect(() => {
     const unsubscribe = aiEventBus.on('tool:result', (event) => {
+      console.log('[SplitView] Received tool result:', event.toolName);
+
       // Check if this is a property search result
-      if (event.toolName.includes('property') && event.toolName.includes('search')) {
+      // Match: property_search.search, property_search.*, or any tool with property+search
+      const toolName = event.toolName.toLowerCase();
+      const isPropertySearch =
+        toolName.includes('property_search') ||
+        toolName.includes('property.search') ||
+        (toolName.includes('property') && toolName.includes('search'));
+
+      if (isPropertySearch) {
+        console.log('[SplitView] Processing property search result');
         const result = event.result as { properties?: unknown[]; data?: unknown[] };
         const properties = (result?.properties || result?.data || []) as Array<{
           id?: string;

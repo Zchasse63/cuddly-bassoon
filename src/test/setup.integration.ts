@@ -9,7 +9,7 @@ import { vi, beforeAll, afterAll } from 'vitest';
 
 // Required environment variables for live API testing
 const REQUIRED_ENV_VARS = [
-  'NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN',
+  'NEXT_PUBLIC_MAPBOX_TOKEN', // Mapbox public token
   'XAI_API_KEY',
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', // Or SUPABASE_SECRET_KEY for full access
@@ -26,8 +26,9 @@ export const apiCallStats = {
   mapbox: 0,
   grok: 0,
   shovels: 0,
-  rankcast: 0,
+  rentcast: 0,
   supabase: 0,
+  census: 0,
   total: 0,
 };
 
@@ -80,11 +81,12 @@ beforeAll(() => {
 afterAll(() => {
   console.log('\n📊 API Call Statistics');
   console.log('======================');
-  console.log(`  Mapbox:   ${apiCallStats.mapbox} calls`);
   console.log(`  Grok:     ${apiCallStats.grok} calls`);
-  console.log(`  Shovels:  ${apiCallStats.shovels} calls`);
-  console.log(`  Rankcast: ${apiCallStats.rankcast} calls`);
+  console.log(`  RentCast: ${apiCallStats.rentcast} calls`);
   console.log(`  Supabase: ${apiCallStats.supabase} calls`);
+  console.log(`  Mapbox:   ${apiCallStats.mapbox} calls`);
+  console.log(`  Census:   ${apiCallStats.census} calls`);
+  console.log(`  Shovels:  ${apiCallStats.shovels} calls (mocked)`);
   console.log(`  ─────────────────────`);
   console.log(`  Total:    ${apiCallStats.total} calls\n`);
 });

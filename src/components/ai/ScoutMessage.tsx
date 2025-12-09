@@ -20,7 +20,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScoutOrb } from './ScoutOrb';
 import { springPresets } from '@/lib/animations';
-import type { MessagePart, ToolPart } from '@/hooks/use-rag-chat';
+
+// Message part types (from Vercel AI SDK)
+export type MessagePart = { type: 'text'; text: string } | { type: 'step-start' } | ToolPart;
+
+export interface ToolPart {
+  type: string; // 'tool-{toolName}'
+  toolCallId: string;
+  toolName: string;
+  state: 'input-streaming' | 'input-available' | 'output-available' | 'output-error';
+  input?: Record<string, unknown>;
+  output?: unknown;
+  errorText?: string;
+}
 
 /* PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
    TYPES
@@ -29,7 +41,8 @@ import type { MessagePart, ToolPart } from '@/hooks/use-rag-chat';
 export interface ScoutMessageProps {
   role: 'user' | 'assistant';
   content: string;
-  parts?: MessagePart[]; // Tool parts from AI SDK
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parts?: any[]; // Tool parts from AI SDK - using any for compatibility
   sources?: Array<{
     slug: string;
     title: string;
@@ -187,19 +200,19 @@ function ToolResultCard({ part }: { part: ToolPart }) {
 
       return (
         <motion.div
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-2 max-w-full overflow-hidden"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-medium text-muted-foreground">
+          <div className="flex items-center justify-between px-1 min-w-0">
+            <span className="text-xs font-medium text-muted-foreground truncate">
               Found {total} properties
             </span>
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs shrink-0">
               {displayName}
             </Badge>
           </div>
-          <div className="grid gap-2 max-h-[300px] overflow-y-auto">
+          <div className="grid gap-2 max-h-[300px] overflow-y-auto overflow-x-hidden">
             {properties.slice(0, 5).map((property, idx) => (
               <PropertyCard key={property.id || idx} property={property} />
             ))}
@@ -213,22 +226,42 @@ function ToolResultCard({ part }: { part: ToolPart }) {
       );
     }
 
-    // Generic tool result - show as JSON
+    // Generic tool result - show clean summary (no raw JSON)
+    // Extract meaningful info from the output
+    const getResultSummary = (data: Record<string, unknown>): string => {
+      // Check for common success indicators
+      if (data.success === true) return 'Completed successfully';
+      if (data.message && typeof data.message === 'string') return data.message;
+      if (data.status && typeof data.status === 'string') return `Status: ${data.status}`;
+
+      // Count items if it's a list
+      if (Array.isArray(data.data)) return `Found ${data.data.length} items`;
+      if (Array.isArray(data.results)) return `Found ${data.results.length} results`;
+      if (Array.isArray(data.properties)) return `Found ${data.properties.length} properties`;
+      if (Array.isArray(data.deals)) return `Found ${data.deals.length} deals`;
+      if (Array.isArray(data.contacts)) return `Found ${data.contacts.length} contacts`;
+
+      // Check for count fields
+      if (typeof data.count === 'number') return `Found ${data.count} items`;
+      if (typeof data.total === 'number') return `Found ${data.total} items`;
+
+      // Default
+      return 'Completed';
+    };
+
+    const summary = getResultSummary(output);
+
     return (
       <motion.div
-        className="flex flex-col gap-2"
+        className="flex items-center gap-2 p-2 rounded-lg glass-subtle"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center gap-2 px-1">
-          <Badge variant="outline" className="text-xs">
-            {displayName}
-          </Badge>
-          <span className="text-xs text-muted-foreground">completed</span>
+        <Check className="size-4 text-green-500 shrink-0" />
+        <div className="flex-1 min-w-0">
+          <span className="text-sm font-medium truncate block">{displayName}</span>
+          <span className="text-xs text-muted-foreground truncate block">{summary}</span>
         </div>
-        <pre className="p-3 rounded-lg glass-subtle text-xs overflow-x-auto max-h-[200px]">
-          {JSON.stringify(output, null, 2)}
-        </pre>
       </motion.div>
     );
   }
@@ -298,7 +331,11 @@ export const ScoutMessage = memo(function ScoutMessage({
 
   return (
     <motion.div
-      className={cn('flex gap-3 w-full', isAssistant ? 'flex-row' : 'flex-row-reverse', className)}
+      className={cn(
+        'flex gap-3 w-full max-w-full overflow-hidden',
+        isAssistant ? 'flex-row' : 'flex-row-reverse',
+        className
+      )}
       variants={isAssistant ? messageVariants.assistant : messageVariants.user}
       initial="hidden"
       animate="visible"
@@ -316,23 +353,26 @@ export const ScoutMessage = memo(function ScoutMessage({
 
       {/* Message Content Container */}
       <div
-        className={cn('flex flex-col gap-2 max-w-[80%]', isAssistant ? 'items-start' : 'items-end')}
+        className={cn(
+          'flex flex-col gap-2 min-w-0 max-w-[calc(100%-3rem)]',
+          isAssistant ? 'items-start' : 'items-end'
+        )}
       >
         {/* Message Bubble */}
         <div
           className={cn(
-            'rounded-2xl px-4 py-3',
+            'rounded-2xl px-4 py-3 max-w-full overflow-hidden',
             isAssistant
               ? 'glass-card rounded-tl-sm'
               : 'bg-primary text-primary-foreground rounded-tr-sm'
           )}
         >
           {isAssistant ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none prose-code:glass-subtle prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-pre:glass-subtle prose-pre:border prose-pre:border-border/50">
+            <div className="prose prose-sm dark:prose-invert max-w-full overflow-hidden break-words [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_code]:break-all [&_table]:block [&_table]:overflow-x-auto [&_table]:max-w-full prose-code:glass-subtle prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-pre:glass-subtle prose-pre:border prose-pre:border-border/50">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
             </div>
           ) : (
-            <p className="whitespace-pre-wrap text-sm">{content}</p>
+            <p className="whitespace-pre-wrap break-words text-sm">{content}</p>
           )}
         </div>
 

@@ -172,8 +172,15 @@
 /* Page content (scrollable area) */
 .page-content {
   flex: 1;
+  height: 100%;
   overflow-y: auto;
   padding: var(--spacing-6, 1.5rem);
+}
+
+/* Full-bleed spatial layouts (map pages) - remove padding */
+.page-content:has(.split-view-layout) {
+  padding: 0;
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════════════════════════════

@@ -1,8 +1,8 @@
 'use client';
 
-import { AIChatSidebar } from '@/components/rag';
+import { ScoutPane } from '@/components/ai/ScoutPane';
 
 export function AIChatSidebarWrapper() {
-  return <AIChatSidebar defaultOpen={true} />;
+  return <ScoutPane defaultOpen={true} />;
 }
 

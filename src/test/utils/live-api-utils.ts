@@ -10,13 +10,15 @@ import { apiCallStats } from '../setup.integration';
 /**
  * Check if an API is available (has env var set)
  */
-export function isApiAvailable(api: 'mapbox' | 'grok' | 'shovels' | 'rankcast' | 'skipTrace'): boolean {
+export function isApiAvailable(api: 'mapbox' | 'grok' | 'shovels' | 'rentcast' | 'skipTrace' | 'supabase' | 'census'): boolean {
   const envVars = {
-    mapbox: 'NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN',
+    mapbox: 'NEXT_PUBLIC_MAPBOX_TOKEN',
     grok: 'XAI_API_KEY',
     shovels: 'SHOVELS_API_KEY',
-    rankcast: 'RANKCAST_API_KEY',
+    rentcast: 'RENTCAST_API_KEY',
     skipTrace: 'SKIP_TRACE_API_KEY',
+    supabase: 'NEXT_PUBLIC_SUPABASE_URL',
+    census: 'NEXT_PUBLIC_SUPABASE_URL', // Census uses internal API, just need app running
   } as const;
   const envVar = envVars[api];
   return !!process.env[envVar];
@@ -26,7 +28,7 @@ export function isApiAvailable(api: 'mapbox' | 'grok' | 'shovels' | 'rankcast' |
  * Skip test if API is not available
  * Returns true if API is NOT available (test should skip)
  */
-export function skipIfNoApi(api: 'mapbox' | 'grok' | 'shovels' | 'rankcast' | 'skipTrace'): boolean {
+export function skipIfNoApi(api: 'mapbox' | 'grok' | 'shovels' | 'rentcast' | 'skipTrace' | 'supabase' | 'census'): boolean {
   if (!isApiAvailable(api)) {
     console.log(`⚠️  Skipping test - ${api} API not configured`);
     return true;
