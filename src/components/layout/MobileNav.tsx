@@ -45,7 +45,7 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { id: 'dashboard', label: 'Home', icon: Home, href: '/dashboard' },
   { id: 'properties', label: 'Properties', icon: Building2, href: '/properties' },
-  { id: 'deals', label: 'Deals', icon: Handshake, href: '/deals' },
+  { id: 'pipeline', label: 'Pipeline', icon: Handshake, href: '/pipeline' },
   { id: 'buyers', label: 'Buyers', icon: Users, href: '/buyers' },
   { id: 'more', label: 'More', icon: MoreHorizontal, href: '#more' },
 ];
@@ -116,7 +116,12 @@ export function MobileBottomNav() {
                 aria-current={active ? 'page' : undefined}
               >
                 <div className="relative">
-                  <Icon className={cn('h-5 w-5 transition-transform', active && 'stroke-[2.5px] scale-110')} />
+                  <Icon
+                    className={cn(
+                      'h-5 w-5 transition-transform',
+                      active && 'stroke-[2.5px] scale-110'
+                    )}
+                  />
                   {item.badge && item.badge > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--fluid-danger)] text-[10px] font-medium text-white">
                       {item.badge > 9 ? '9+' : item.badge}

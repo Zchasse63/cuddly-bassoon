@@ -19,13 +19,13 @@ export type ViewType =
   | 'property-detail'
   | 'buyers'
   | 'buyer-detail'
-  | 'deals'
-  | 'deal-detail'
+  | 'pipeline'
+  | 'pipeline-detail'
   | 'documents'
   | 'analytics'
   | 'analytics-buyers'
   | 'analytics-communications'
-  | 'analytics-deals'
+  | 'analytics-pipeline'
   | 'analytics-heatmap'
   | 'analytics-markets'
   | 'analytics-reports'
@@ -38,9 +38,7 @@ export type ViewType =
   | 'filters'
   | 'market'
   | 'map'
-  | 'leads'
   | 'inbox'
-  | 'leads'
   | 'onboarding';
 
 export interface EntityContext {
@@ -106,13 +104,13 @@ const VIEW_LABELS: Record<ViewType, string> = {
   'property-detail': 'Property Details',
   buyers: 'Buyers',
   'buyer-detail': 'Buyer Details',
-  deals: 'Deals',
-  'deal-detail': 'Deal Details',
+  pipeline: 'Pipeline',
+  'pipeline-detail': 'Pipeline Details',
   documents: 'Documents',
   analytics: 'Analytics',
   'analytics-buyers': 'Buyer Analytics',
   'analytics-communications': 'Communication Analytics',
-  'analytics-deals': 'Deal Analytics',
+  'analytics-pipeline': 'Pipeline Analytics',
   'analytics-heatmap': 'Heat Map',
   'analytics-markets': 'Market Analytics',
   'analytics-reports': 'Reports',
@@ -126,7 +124,6 @@ const VIEW_LABELS: Record<ViewType, string> = {
   market: 'Market',
   map: 'Map',
   inbox: 'Inbox',
-  leads: 'Leads',
   onboarding: 'Onboarding',
 };
 

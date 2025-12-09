@@ -1,38 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
 /**
  * useMediaQuery Hook
- * 
+ *
  * Listens to a CSS media query and returns whether it matches.
- * 
+ * Uses useSyncExternalStore for proper SSR and hydration handling.
+ *
  * @param query - CSS media query string (e.g., '(min-width: 768px)')
  * @returns boolean indicating if the media query matches
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
-
-  useEffect(() => {
+  const subscribe = (callback: () => void) => {
     const mediaQuery = window.matchMedia(query);
-    
-    // Set initial value
-    setMatches(mediaQuery.matches);
+    mediaQuery.addEventListener('change', callback);
+    return () => mediaQuery.removeEventListener('change', callback);
+  };
 
-    // Create event listener
-    const handler = (event: MediaQueryListEvent) => {
-      setMatches(event.matches);
-    };
+  const getSnapshot = () => {
+    return window.matchMedia(query).matches;
+  };
 
-    // Add listener
-    mediaQuery.addEventListener('change', handler);
+  const getServerSnapshot = () => {
+    return false; // Default to false on server
+  };
 
-    // Cleanup
-    return () => {
-      mediaQuery.removeEventListener('change', handler);
-    };
-  }, [query]);
-
-  return matches;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
-

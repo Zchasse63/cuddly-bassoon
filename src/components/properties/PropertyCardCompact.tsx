@@ -1,19 +1,21 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Bed, Bath, Maximize, Phone, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { springPresets } from '@/lib/animations';
 import type { PropertySearchResultItem } from '@/lib/filters/types';
 
 /**
  * PropertyCardCompact Component
- * 
+ *
  * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 11 (Page Templates)
- * 
+ *
  * Compact property card optimized for split-view list panel.
  * Designed to be narrow (380-480px) and stack vertically.
- * 
+ *
  * Features:
  * - Property image (if available)
  * - Address and location
@@ -60,13 +62,25 @@ export function PropertyCardCompact({
   const safeScore = typeof combinedScore === 'number' && !isNaN(combinedScore) ? combinedScore : 0;
 
   return (
-    <div
+    <motion.div
+      whileHover={{ y: -2, scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      transition={springPresets.snappy}
       className={cn(
-        'group relative rounded-lg border bg-card p-3 transition-all duration-200',
-        'hover:shadow-md hover:border-primary/50 cursor-pointer',
-        isHighlighted && 'ring-2 ring-primary shadow-lg',
-        isSelected && 'border-primary bg-accent',
-        'flex flex-col gap-2'
+        'group relative rounded-xl p-3',
+        // Glass card styling - slightly opaque for readability within glass panel
+        'bg-white/60 dark:bg-black/40 backdrop-blur-sm',
+        'border border-white/20 dark:border-white/10',
+        'shadow-[0_2px_8px_rgba(0,0,0,0.04)]',
+        // Hover state
+        'hover:shadow-lg hover:bg-white/80 dark:hover:bg-black/50',
+        'hover:border-primary/30 cursor-pointer',
+        // Highlight state (map hover sync)
+        isHighlighted && 'ring-2 ring-primary/60 shadow-lg bg-white/90 dark:bg-black/60',
+        // Selected state
+        isSelected && 'border-primary bg-primary/5',
+        'flex flex-col gap-2',
+        'transition-all duration-200'
       )}
       onClick={onClick}
     >
@@ -84,7 +98,9 @@ export function PropertyCardCompact({
             className={cn(
               'flex items-center justify-center size-8 rounded-full text-xs font-semibold',
               safeScore >= 70 && 'bg-[var(--fluid-success)]/10 text-[var(--fluid-success)]',
-              safeScore >= 40 && safeScore < 70 && 'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)]',
+              safeScore >= 40 &&
+                safeScore < 70 &&
+                'bg-[var(--fluid-warning)]/10 text-[var(--fluid-warning)]',
               safeScore < 40 && 'bg-muted text-muted-foreground'
             )}
           >
@@ -126,9 +142,9 @@ export function PropertyCardCompact({
             <div
               className={cn(
                 'text-lg font-bold',
-                equityVariant === 'high' && 'text-green-600',
-                equityVariant === 'medium' && 'text-yellow-600',
-                equityVariant === 'low' && 'text-gray-600'
+                equityVariant === 'high' && 'text-[var(--fluid-success)]',
+                equityVariant === 'medium' && 'text-[var(--fluid-warning)]',
+                equityVariant === 'low' && 'text-muted-foreground'
               )}
             >
               {property.equityPercent.toFixed(0)}%
@@ -181,7 +197,6 @@ export function PropertyCardCompact({
           Save
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }
-

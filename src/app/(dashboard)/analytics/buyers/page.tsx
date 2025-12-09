@@ -241,9 +241,9 @@ function TopBuyersList({
   isLoading: boolean;
 }) {
   const tierColors: Record<string, string> = {
-    A: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    B: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-    C: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+    A: 'bg-[var(--fluid-success-light)] text-[var(--fluid-success)]',
+    B: 'bg-[var(--fluid-warning-light)] text-[var(--fluid-warning)]',
+    C: 'bg-muted text-muted-foreground',
   };
 
   if (isLoading) {

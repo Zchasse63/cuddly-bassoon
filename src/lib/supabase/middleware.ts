@@ -42,7 +42,7 @@ export async function updateSession(request: NextRequest) {
     '/dashboard',
     '/properties',
     '/buyers',
-    '/deals',
+    '/pipeline',
     '/settings',
     '/onboarding',
     '/api/user',

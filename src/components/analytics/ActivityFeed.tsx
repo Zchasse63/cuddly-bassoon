@@ -62,17 +62,17 @@ const activityIcons: Record<Activity['type'], React.ElementType> = {
 };
 
 const activityColors: Record<Activity['type'], string> = {
-  property: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
+  property: 'text-[var(--fluid-primary)] bg-[var(--fluid-primary)]/10',
   deal: 'text-purple-500 bg-purple-50 dark:bg-purple-900/20',
-  buyer: 'text-green-500 bg-green-50 dark:bg-green-900/20',
-  call: 'text-orange-500 bg-orange-50 dark:bg-orange-900/20',
+  buyer: 'text-[var(--fluid-success)] bg-[var(--fluid-success-light)]',
+  call: 'text-[var(--fluid-warning)] bg-[var(--fluid-warning-light)]',
   email: 'text-cyan-500 bg-cyan-50 dark:bg-cyan-900/20',
   sms: 'text-teal-500 bg-teal-50 dark:bg-teal-900/20',
-  search: 'text-gray-500 bg-gray-50 dark:bg-gray-900/20',
+  search: 'text-muted-foreground bg-muted',
   offer: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
   contract: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20',
-  closed: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20',
-  lost: 'text-red-500 bg-red-50 dark:bg-red-900/20',
+  closed: 'text-[var(--fluid-success)] bg-[var(--fluid-success-light)]',
+  lost: 'text-[var(--fluid-danger)] bg-[var(--fluid-danger-light)]',
 };
 
 export function ActivityFeed({

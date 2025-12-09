@@ -4,31 +4,32 @@ import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * SplitViewLayout Component
- * 
- * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 3 (Layout System) & Section 11 (Page Templates)
- * 
- * Main container for split-view property search layout:
- * - Row 1: Horizontal filter bar (auto height)
- * - Row 2: Split content - Map (left) + List (right)
- * - Floating AI dialog positioned at bottom center (rendered separately)
- * 
- * Layout Structure:
+ * SplitViewLayout Component - Fluid OS Spatial Layout
+ *
+ * Source: Fluid_OS_Master_Plan.md & UI_UX_DESIGN_SYSTEM_v1.md
+ *
+ * SPATIAL OPERATING SYSTEM approach:
+ * - Layer 0: Map as FULL background (not trapped in a box)
+ * - Layer 1: Floating glass filter bar at top
+ * - Layer 2: Floating glass list panel on right edge
+ *
+ * The map is the "world" - UI elements float over it with glass materials.
+ *
+ * Layout Structure (Z-Axis):
  * ```
- * ┌─────────────────────────────────────────┐
- * │  Horizontal Filter Bar                  │
- * ├──────────────────┬──────────────────────┤
- * │                  │                      │
- * │  Map Panel       │  Property List Panel │
- * │  (1fr)           │  (380-480px)         │
- * │                  │                      │
- * └──────────────────┴──────────────────────┘
+ * ┌──────────────────────────────────────────────────┐
+ * │  [Layer 0] Full-bleed Map (background)           │
+ * │  ┌──────────────────────────────────────────┐    │
+ * │  │ [Layer 1] Floating Glass Filter Bar       │    │
+ * │  └──────────────────────────────────────────┘    │
+ * │                                    ┌────────────┐│
+ * │                                    │ [Layer 2]  ││
+ * │                                    │ Glass List ││
+ * │                                    │ Panel      ││
+ * │                                    │            ││
+ * │                                    └────────────┘│
+ * └──────────────────────────────────────────────────┘
  * ```
- * 
- * Responsive Breakpoints:
- * - Desktop (1280px+): Side-by-side map + list
- * - Tablet (768-1023px): Slide-over list panel
- * - Mobile (<768px): Tab navigation between map/list
  */
 
 interface SplitViewLayoutProps {
@@ -45,39 +46,38 @@ export function SplitViewLayout({
   className,
 }: SplitViewLayoutProps) {
   return (
-    <div
-      className={cn(
-        'split-view-layout',
-        'h-full flex flex-col overflow-hidden',
-        'bg-muted/30',
-        className
-      )}
-    >
-      {/* Row 1: Filter Bar */}
-      <div className="split-view-layout__filter-bar flex-shrink-0 bg-background border-b shadow-sm">
-        {filterBar}
+    <div className={cn('split-view-layout', 'relative h-full w-full overflow-hidden', className)}>
+      {/* Layer 0: Map as full background */}
+      <div className="absolute inset-0 z-0">{mapPanel}</div>
+
+      {/* Layer 1: Floating Glass Filter Bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-4 pointer-events-none">
+        <div className="pointer-events-auto glass-card rounded-2xl shadow-lg">{filterBar}</div>
       </div>
 
-      {/* Row 2: Split Content (Map + List) */}
-      <div className="split-view-layout__content flex-1 min-h-0 grid grid-cols-[1fr_400px] gap-4 p-4 overflow-hidden">
-        {/* Left: Map Panel */}
-        <div className="split-view-layout__map relative overflow-hidden rounded-xl border bg-card shadow-sm">
-          {mapPanel}
-        </div>
-
-        {/* Right: Property List Panel */}
-        <div className="split-view-layout__list rounded-xl border bg-card shadow-sm overflow-hidden flex flex-col">
-          {listPanel}
-        </div>
+      {/* Layer 2: Floating Glass Property List Panel */}
+      <div
+        className={cn(
+          'absolute top-24 right-4 bottom-4 z-20',
+          'w-[400px] pointer-events-auto',
+          'glass-high rounded-2xl shadow-xl',
+          'border border-white/20',
+          'flex flex-col overflow-hidden',
+          'transition-all duration-300 ease-spring-standard',
+          // Subtle hover lift effect
+          'hover:shadow-2xl hover:translate-y-[-2px]'
+        )}
+      >
+        {listPanel}
       </div>
     </div>
   );
 }
 
 /**
- * Tablet Responsive Variant
- * 
- * For tablet breakpoint (768-1023px), list becomes a slide-over panel.
+ * Tablet Responsive Variant - Fluid OS
+ *
+ * Map as background, floating glass panels
  */
 
 interface SplitViewLayoutTabletProps extends SplitViewLayoutProps {
@@ -97,57 +97,55 @@ export function SplitViewLayoutTablet({
     <div
       className={cn(
         'split-view-layout-tablet',
-        'h-screen flex flex-col',
-        'bg-background',
+        'relative h-screen w-full overflow-hidden',
         className
       )}
     >
-      {/* Filter Bar */}
-      <div className="flex-shrink-0">
-        {filterBar}
+      {/* Layer 0: Full-bleed Map */}
+      <div className="absolute inset-0 z-0">{mapPanel}</div>
+
+      {/* Layer 1: Floating Glass Filter Bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-3 pointer-events-none">
+        <div className="pointer-events-auto glass-card rounded-2xl shadow-lg">{filterBar}</div>
       </div>
 
-      {/* Content: Full-width map with slide-over list */}
-      <div className="flex-1 min-h-0 relative">
-        {/* Map (full width) */}
-        <div className="absolute inset-0">
-          {mapPanel}
-        </div>
-
-        {/* Slide-over List Panel */}
-        <div
-          className={cn(
-            'absolute top-0 right-0 bottom-0',
-            'w-[380px] bg-card border-l shadow-lg',
-            'transform transition-transform duration-300',
-            'overflow-y-auto',
-            isListOpen ? 'translate-x-0' : 'translate-x-full'
-          )}
-        >
-          {listPanel}
-        </div>
-
-        {/* Toggle Button */}
-        <button
-          onClick={onToggleList}
-          className={cn(
-            'absolute top-4 right-4 z-10',
-            'px-4 py-2 rounded-lg',
-            'bg-background border shadow-md',
-            'hover:bg-accent transition-colors'
-          )}
-        >
-          {isListOpen ? 'Hide List' : 'Show List'}
-        </button>
+      {/* Layer 2: Slide-over Glass List Panel */}
+      <div
+        className={cn(
+          'absolute top-20 right-0 bottom-0 z-20',
+          'w-[380px]',
+          'glass-high border-l border-white/20 shadow-2xl',
+          'transform transition-transform duration-300 ease-spring-standard',
+          'overflow-hidden flex flex-col',
+          isListOpen ? 'translate-x-0' : 'translate-x-full'
+        )}
+      >
+        {listPanel}
       </div>
+
+      {/* Toggle Button - Glass Pill */}
+      <button
+        onClick={onToggleList}
+        className={cn(
+          'absolute top-24 z-30',
+          'px-4 py-2 rounded-full',
+          'glass-high border border-white/20 shadow-lg',
+          'text-sm font-medium',
+          'hover:scale-105 active:scale-95',
+          'transition-all duration-200 ease-spring-snappy',
+          isListOpen ? 'right-[396px]' : 'right-4'
+        )}
+      >
+        {isListOpen ? '← Hide' : 'Show List →'}
+      </button>
     </div>
   );
 }
 
 /**
- * Mobile Responsive Variant
- * 
- * For mobile breakpoint (<768px), use tab navigation between map and list.
+ * Mobile Responsive Variant - Fluid OS
+ *
+ * Map as base layer with floating glass elements
  */
 
 interface SplitViewLayoutMobileProps extends SplitViewLayoutProps {
@@ -167,57 +165,66 @@ export function SplitViewLayoutMobile({
     <div
       className={cn(
         'split-view-layout-mobile',
-        'h-screen flex flex-col',
-        'bg-background',
+        'relative h-screen w-full overflow-hidden',
         className
       )}
     >
-      {/* Filter Bar (scrollable) */}
-      <div className="flex-shrink-0 overflow-x-auto">
-        {filterBar}
+      {/* Layer 0: Full-bleed Map (always rendered) */}
+      <div className="absolute inset-0 z-0">{mapPanel}</div>
+
+      {/* Layer 1: Floating Glass Filter Bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-2 pointer-events-none">
+        <div className="pointer-events-auto glass-card rounded-xl shadow-lg overflow-x-auto">
+          {filterBar}
+        </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex-shrink-0 flex border-b">
-        <button
-          onClick={() => onTabChange('map')}
-          className={cn(
-            'flex-1 py-3 text-sm font-medium',
-            'transition-colors',
-            activeTab === 'map'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          Map
-        </button>
-        <button
-          onClick={() => onTabChange('list')}
-          className={cn(
-            'flex-1 py-3 text-sm font-medium',
-            'transition-colors',
-            activeTab === 'list'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          List
-        </button>
+      {/* Layer 2: Glass Tab Navigation - Bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 p-3 pointer-events-none">
+        <div className="pointer-events-auto glass-high rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+          <div className="flex">
+            <button
+              onClick={() => onTabChange('map')}
+              className={cn(
+                'flex-1 py-3 text-sm font-medium',
+                'transition-all duration-200',
+                activeTab === 'map'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
+              )}
+            >
+              Map
+            </button>
+            <button
+              onClick={() => onTabChange('list')}
+              className={cn(
+                'flex-1 py-3 text-sm font-medium',
+                'transition-all duration-200',
+                activeTab === 'list'
+                  ? 'bg-primary/20 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
+              )}
+            >
+              List
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 min-h-0 relative">
-        {/* Map View */}
-        <div className={cn('absolute inset-0', activeTab !== 'map' && 'hidden')}>
-          {mapPanel}
-        </div>
-
-        {/* List View */}
-        <div className={cn('absolute inset-0 overflow-y-auto', activeTab !== 'list' && 'hidden')}>
-          {listPanel}
-        </div>
+      {/* Layer 3: List View Overlay (when active) */}
+      <div
+        className={cn(
+          'absolute inset-x-0 top-16 bottom-20 z-15',
+          'glass-high border-t border-white/20',
+          'overflow-y-auto',
+          'transition-all duration-300 ease-spring-standard',
+          activeTab === 'list'
+            ? 'translate-y-0 opacity-100'
+            : 'translate-y-full opacity-0 pointer-events-none'
+        )}
+      >
+        {listPanel}
       </div>
     </div>
   );
 }
-

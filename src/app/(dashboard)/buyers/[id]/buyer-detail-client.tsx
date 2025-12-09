@@ -19,9 +19,9 @@ interface BuyerDetailClientProps {
 }
 
 const TIER_COLORS: Record<string, string> = {
-  A: 'bg-green-100 text-green-800',
-  B: 'bg-yellow-100 text-yellow-800',
-  C: 'bg-gray-100 text-gray-800',
+  A: 'bg-[var(--fluid-success-light)] text-[var(--fluid-success)]',
+  B: 'bg-[var(--fluid-warning-light)] text-[var(--fluid-warning)]',
+  C: 'bg-muted text-muted-foreground',
 };
 
 export function BuyerDetailClient({ initialBuyer }: BuyerDetailClientProps) {

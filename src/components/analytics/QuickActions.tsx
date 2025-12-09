@@ -23,10 +23,10 @@ interface QuickActionsProps {
 const defaultActions: QuickAction[] = [
   {
     id: 'new-deal',
-    label: 'New Deal',
-    description: 'Create a new deal',
+    label: 'New Opportunity',
+    description: 'Add to pipeline',
     icon: Plus,
-    href: '/deals/new',
+    href: '/pipeline/new',
     variant: 'primary',
   },
   {

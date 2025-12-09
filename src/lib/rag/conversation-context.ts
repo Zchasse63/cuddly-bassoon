@@ -21,16 +21,16 @@ export interface ConversationRAGState {
 
 export interface ConversationSummary {
   currentTopic: string;
-  keyEntities: string[];         // Addresses, property IDs, amounts
-  conceptsNeeded: string[];      // Concepts that might need explanation
-  previousTopics: string[];      // Topics from earlier in conversation
+  keyEntities: string[]; // Addresses, property IDs, amounts
+  conceptsNeeded: string[]; // Concepts that might need explanation
+  previousTopics: string[]; // Topics from earlier in conversation
 }
 
 export interface ContextAwareQuery {
   query: string;
   categories: string[];
   excludeDocIds: string[];
-  boostConcepts: string[];       // Concepts to boost in search
+  boostConcepts: string[]; // Concepts to boost in search
 }
 
 // Session TTL: 30 minutes of inactivity (reserved for future Redis session expiry)
@@ -106,7 +106,8 @@ function extractEntities(messages: CoreMessage[]): string[] {
 
   // Patterns for common entities
   const patterns = {
-    address: /\d+\s+[\w\s]+(?:st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|boulevard|ct|court|way|pl|place)\b/gi,
+    address:
+      /\d+\s+[\w\s]+(?:st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|boulevard|ct|court|way|pl|place)\b/gi,
     zipCode: /\b\d{5}(?:-\d{4})?\b/g,
     price: /\$[\d,]+(?:k|K|m|M)?|\d+(?:,\d{3})*\s*(?:thousand|million|k|K|m|M)\b/gi,
     propertyId: /property[_\s-]?id[:\s]*[\w-]+/gi,
@@ -136,9 +137,23 @@ function extractTopics(messages: CoreMessage[]): string[] {
 
   // Topic keywords to look for
   const topicKeywords = [
-    'deal', 'property', 'buyer', 'seller', 'market', 'offer',
-    'arv', 'mao', 'repair', 'motivation', 'equity', 'absentee',
-    'probate', 'foreclosure', 'wholesale', 'flip', 'rental',
+    'deal',
+    'property',
+    'buyer',
+    'seller',
+    'market',
+    'offer',
+    'arv',
+    'mao',
+    'repair',
+    'motivation',
+    'equity',
+    'absentee',
+    'probate',
+    'foreclosure',
+    'wholesale',
+    'flip',
+    'rental',
   ];
 
   for (const message of messages) {
@@ -166,9 +181,9 @@ export async function summarizeConversation(
 ): Promise<ConversationSummary> {
   // Get the last few user messages for current topic detection
   const recentUserMessages = messages
-    .filter(m => m.role === 'user')
+    .filter((m) => m.role === 'user')
     .slice(-3)
-    .map(m => typeof m.content === 'string' ? m.content : '')
+    .map((m) => (typeof m.content === 'string' ? m.content : ''))
     .filter(Boolean);
 
   const lastMessage = recentUserMessages[recentUserMessages.length - 1] || '';
@@ -177,17 +192,17 @@ export async function summarizeConversation(
 
   // Identify concepts that might need explanation (not already fetched)
   const fetchedCategories = new Set(existingState?.fetchedCategories || []);
-  const conceptsNeeded = currentTopics.filter(_topic => {
+  const conceptsNeeded = currentTopics.filter((_topic) => {
     // If we haven't fetched from related categories, might need context
     const relatedCategories = ['Fundamentals', 'AI Tools', 'Data Interpretation'];
-    return !relatedCategories.some(cat => fetchedCategories.has(cat));
+    return !relatedCategories.some((cat) => fetchedCategories.has(cat));
   });
 
   return {
     currentTopic: currentTopics[0] || 'general',
     keyEntities: extractEntities(messages),
     conceptsNeeded,
-    previousTopics: allTopics.filter(t => !currentTopics.includes(t)),
+    previousTopics: allTopics.filter((t) => !currentTopics.includes(t)),
   };
 }
 
@@ -201,7 +216,7 @@ export function generateContextAwareQuery(
   state: ConversationRAGState | null
 ): ContextAwareQuery {
   // Start with the current message
-  let query = currentMessage;
+  const query = currentMessage;
 
   // Add boost concepts from conversation context
   const boostConcepts: string[] = [];
@@ -212,31 +227,31 @@ export function generateContextAwareQuery(
   }
 
   // If current topic is different from previous, we might need fresh context
-  const topicChanged = summary.previousTopics.length > 0 &&
-    !summary.previousTopics.includes(summary.currentTopic);
+  const topicChanged =
+    summary.previousTopics.length > 0 && !summary.previousTopics.includes(summary.currentTopic);
 
   // Categories to search
   const categories: string[] = [];
 
   // Add categories based on current topic
   const topicCategoryMap: Record<string, string[]> = {
-    'deal': ['Deal Analysis', 'Fundamentals'],
-    'property': ['Data Sources', 'Deal Analysis'],
-    'buyer': ['Buyer Intelligence'],
-    'seller': ['Filter System', 'Negotiations'],
-    'market': ['Market Analysis'],
-    'offer': ['Negotiations', 'Fundamentals'],
-    'arv': ['Fundamentals', 'Deal Analysis'],
-    'mao': ['Fundamentals'],
-    'repair': ['Fundamentals', 'Deal Analysis'],
-    'motivation': ['Filter System', 'Fundamentals'],
-    'equity': ['Filter System', 'Fundamentals'],
-    'absentee': ['Filter System'],
-    'probate': ['Filter System', 'Legal & Compliance'],
-    'foreclosure': ['Filter System'],
-    'wholesale': ['Fundamentals', 'Legal & Compliance'],
-    'flip': ['Deal Analysis', 'Buyer Intelligence'],
-    'rental': ['Market Analysis', 'Buyer Intelligence'],
+    deal: ['Deal Analysis', 'Fundamentals'],
+    property: ['Data Sources', 'Deal Analysis'],
+    buyer: ['Buyer Intelligence'],
+    seller: ['Filter System', 'Negotiations'],
+    market: ['Market Analysis'],
+    offer: ['Negotiations', 'Fundamentals'],
+    arv: ['Fundamentals', 'Deal Analysis'],
+    mao: ['Fundamentals'],
+    repair: ['Fundamentals', 'Deal Analysis'],
+    motivation: ['Filter System', 'Fundamentals'],
+    equity: ['Filter System', 'Fundamentals'],
+    absentee: ['Filter System'],
+    probate: ['Filter System', 'Legal & Compliance'],
+    foreclosure: ['Filter System'],
+    wholesale: ['Fundamentals', 'Legal & Compliance'],
+    flip: ['Deal Analysis', 'Buyer Intelligence'],
+    rental: ['Market Analysis', 'Buyer Intelligence'],
   };
 
   if (summary.currentTopic) {

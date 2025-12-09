@@ -76,7 +76,7 @@ export function BuyerDashboard() {
     try {
       const res = await fetch(`/api/buyers/export?type=${type}`);
       if (!res.ok) throw new Error('Export failed');
-      
+
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -106,10 +106,20 @@ export function BuyerDashboard() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Buyer Analytics</h2>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => handleExport('buyers')} disabled={isExporting}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport('buyers')}
+            disabled={isExporting}
+          >
             <Download className="h-4 w-4 mr-2" /> Export Buyers
           </Button>
-          <Button variant="outline" size="sm" onClick={() => handleExport('transactions')} disabled={isExporting}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport('transactions')}
+            disabled={isExporting}
+          >
             <Download className="h-4 w-4 mr-2" /> Export Transactions
           </Button>
           <Button variant="outline" size="sm" onClick={loadDashboardData}>
@@ -127,9 +137,7 @@ export function BuyerDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalBuyers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.activeBuyers || 0} active
-            </p>
+            <p className="text-xs text-muted-foreground">{stats?.activeBuyers || 0} active</p>
           </CardContent>
         </Card>
 
@@ -141,7 +149,10 @@ export function BuyerDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{stats?.qualifiedBuyers || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.totalBuyers ? ((stats.qualifiedBuyers / stats.totalBuyers) * 100).toFixed(0) : 0}% of total
+              {stats?.totalBuyers
+                ? ((stats.qualifiedBuyers / stats.totalBuyers) * 100).toFixed(0)
+                : 0}
+              % of total
             </p>
           </CardContent>
         </Card>
@@ -197,7 +208,7 @@ export function BuyerDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-gray-100 text-gray-800">C</Badge>
+                  <Badge className="bg-muted text-muted-foreground">C</Badge>
                   <span>New/Inactive</span>
                 </div>
                 <span className="font-bold">{stats?.tierCCount || 0}</span>
@@ -245,7 +256,9 @@ export function BuyerDashboard() {
                 <div className="text-sm text-muted-foreground">Deal Acceptance</div>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold">${metrics.averageTransactionValue.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  ${metrics.averageTransactionValue.toLocaleString()}
+                </div>
                 <div className="text-sm text-muted-foreground">Avg Transaction</div>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
@@ -253,7 +266,9 @@ export function BuyerDashboard() {
                 <div className="text-sm text-muted-foreground">Avg Response</div>
               </div>
               <div className="text-center p-4 bg-muted rounded-lg">
-                <div className="text-2xl font-bold">${metrics.totalClosedVolume.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  ${metrics.totalClosedVolume.toLocaleString()}
+                </div>
                 <div className="text-sm text-muted-foreground">Total Volume</div>
               </div>
             </div>
@@ -263,4 +278,3 @@ export function BuyerDashboard() {
     </div>
   );
 }
-

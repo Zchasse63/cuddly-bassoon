@@ -59,7 +59,7 @@ export function PipelineSummary({
           )}
         </div>
         <Link
-          href="/deals"
+          href="/pipeline"
           className="flex items-center gap-1 text-sm text-primary hover:underline"
         >
           View all

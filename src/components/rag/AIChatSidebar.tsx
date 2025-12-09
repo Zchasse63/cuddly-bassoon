@@ -1,13 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MessageSquare, PanelRightClose, Sparkles } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { MessageSquare, PanelRightClose, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { EnhancedChatInterface } from '@/components/ai/EnhancedChatInterface';
 import { AIContextBar, ContextBadge } from '@/components/ai/AIContextBar';
-import { ResizableSidebar } from '@/components/layout/ResizableSidebar';
+import { cn } from '@/lib/utils';
+
+// Lazy load EnhancedChatInterface - heavy component with AI SDK
+const EnhancedChatInterface = dynamic(
+  () =>
+    import('@/components/ai/EnhancedChatInterface').then((mod) => ({
+      default: mod.EnhancedChatInterface,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex-1 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  }
+);
 
 const AI_SIDEBAR_COOKIE = 'ai-sidebar-state';
 
@@ -77,33 +93,43 @@ export function AIChatSidebar({ defaultOpen = true }: AIChatSidebarProps) {
     );
   }
 
-  // Desktop: Integrated with AppShell grid layout with resizable sidebar
+  // Desktop: Fluid OS Glass HUD - 360px width
   return (
-    <ResizableSidebar side="right" className="border-l bg-background">
-      <div className="flex h-full flex-col">
-        {/* Header */}
-        <div className="chat-header flex-shrink-0">
-          <div className="chat-header__title">
-            <Sparkles className="size-5 text-primary" />
-            <span>AI Assistant</span>
-            <ContextBadge />
-          </div>
-          <Button size="icon" variant="ghost" onClick={toggleSidebar}>
-            <PanelRightClose className="size-5" />
-          </Button>
+    <aside
+      className={cn(
+        'w-[360px] flex-shrink-0',
+        'glass-high border-l border-white/10',
+        'flex flex-col h-full',
+        'shadow-[-8px_0_32px_rgba(0,0,0,0.08)]'
+      )}
+    >
+      {/* Header - Glass styling */}
+      <div className="chat-header flex-shrink-0 glass-subtle border-b border-white/10">
+        <div className="chat-header__title">
+          <Sparkles className="size-5 text-primary" />
+          <span className="font-semibold">Scout</span>
+          <ContextBadge />
         </div>
-
-        {/* Context Bar - shows current entity and quick actions */}
-        <AIContextBar />
-
-        {/* Chat interface */}
-        <EnhancedChatInterface
-          className="flex-1 min-h-0 overflow-hidden"
-          persistKey="ai-chat-sidebar"
-          placeholder="Ask me anything about your properties, deals, or buyers..."
-          showOnboarding={false}
-        />
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={toggleSidebar}
+          className="hover:bg-white/10 transition-colors"
+        >
+          <PanelRightClose className="size-5" />
+        </Button>
       </div>
-    </ResizableSidebar>
+
+      {/* Context Bar - shows current entity and quick actions */}
+      <AIContextBar className="border-b border-white/10" />
+
+      {/* Chat interface - transparent background for glass effect */}
+      <EnhancedChatInterface
+        className="flex-1 min-h-0 overflow-hidden bg-transparent"
+        persistKey="ai-chat-sidebar"
+        placeholder="Ask Scout anything..."
+        showOnboarding={false}
+      />
+    </aside>
   );
 }

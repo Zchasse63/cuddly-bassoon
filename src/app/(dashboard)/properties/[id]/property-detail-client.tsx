@@ -134,9 +134,9 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
       if (!response.ok) throw new Error('Failed to create deal');
 
       const { deal } = await response.json();
-      toast.success('Deal created successfully');
+      toast.success('Added to pipeline');
       setShowCreateDealDialog(false);
-      router.push(`/deals/${deal.id}`);
+      router.push(`/pipeline/${deal.id}`);
     } catch (error) {
       console.error('Error creating deal:', error);
       toast.error('Failed to create deal');
@@ -412,7 +412,7 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
                   {relatedDeals.map((deal) => (
                     <Link
                       key={deal.id}
-                      href={`/deals/${deal.id}`}
+                      href={`/pipeline/${deal.id}`}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
                     >
                       <div className="flex items-center gap-3">
@@ -455,10 +455,10 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
                           className={cn(
                             'w-10 h-10 rounded-full flex items-center justify-center font-semibold',
                             buyer.tier === 'A'
-                              ? 'bg-green-100 text-green-700'
+                              ? 'bg-[var(--fluid-success-light)] text-[var(--fluid-success)]'
                               : buyer.tier === 'B'
-                                ? 'bg-yellow-100 text-yellow-700'
-                                : 'bg-gray-100 text-gray-700'
+                                ? 'bg-[var(--fluid-warning-light)] text-[var(--fluid-warning)]'
+                                : 'bg-muted text-muted-foreground'
                           )}
                         >
                           {buyer.name.charAt(0)}
@@ -651,12 +651,12 @@ export function PropertyDetailClient({ property, relatedDeals }: PropertyDetailC
                         className={cn(
                           'w-10 h-10 rounded-full flex items-center justify-center',
                           permit.status === 'completed'
-                            ? 'bg-green-100 text-green-600'
+                            ? 'bg-[var(--fluid-success-light)] text-[var(--fluid-success)]'
                             : permit.status === 'active'
-                              ? 'bg-blue-100 text-blue-600'
+                              ? 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)]'
                               : permit.status === 'expired'
-                                ? 'bg-red-100 text-red-600'
-                                : 'bg-gray-100 text-gray-600'
+                                ? 'bg-[var(--fluid-danger-light)] text-[var(--fluid-danger)]'
+                                : 'bg-muted text-muted-foreground'
                         )}
                       >
                         {permit.status === 'completed' ? (

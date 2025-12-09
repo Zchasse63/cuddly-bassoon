@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import type { PropertySearchResultItem } from '@/lib/filters/types';
 import { getFilterById } from '@/lib/filters/registry';
 import { motion } from 'framer-motion';
+import { springPresets } from '@/lib/animations';
 
 interface PropertyCardProps {
   result: PropertySearchResultItem;
@@ -36,8 +37,9 @@ export function PropertyCard({ result, onClick, isSelected }: PropertyCardProps)
     <motion.div
       whileHover={{ y: -4, scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
+      transition={springPresets.snappy}
       className={cn(
-        'group relative overflow-hidden transition-all duration-300',
+        'group relative overflow-hidden',
         'glass-card squircle p-4',
         isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:glass-high',
         'cursor-pointer'

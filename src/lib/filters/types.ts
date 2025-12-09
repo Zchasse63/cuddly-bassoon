@@ -44,10 +44,7 @@ export type ContrarianFilterId =
   | 'competitor_exit';
 
 // Shovels-only filter IDs (permit-based)
-export type ShovelsFilterId =
-  | 'stalled_permit'
-  | 'failed_inspection'
-  | 'expired_permit';
+export type ShovelsFilterId = 'stalled_permit' | 'failed_inspection' | 'expired_permit';
 
 // Combined filter IDs (RentCast + Shovels)
 export type CombinedFilterId =
@@ -58,30 +55,18 @@ export type CombinedFilterId =
   | 'major_system_due';
 
 // Home services filter IDs
-export type RoofingFilterId =
-  | 'aging_roof'
-  | 'storm_damage'
-  | 'no_reroof_history';
+export type RoofingFilterId = 'aging_roof' | 'storm_damage' | 'no_reroof_history';
 
-export type HvacFilterId =
-  | 'hvac_replacement_due'
-  | 'heat_pump_candidate'
-  | 'no_hvac_history';
+export type HvacFilterId = 'hvac_replacement_due' | 'heat_pump_candidate' | 'no_hvac_history';
 
 export type ElectricalFilterId =
   | 'panel_upgrade_candidate'
   | 'ev_charger_ready'
   | 'no_electrical_upgrades';
 
-export type PlumbingFilterId =
-  | 'repiping_candidate'
-  | 'water_heater_due'
-  | 'no_plumbing_permits';
+export type PlumbingFilterId = 'repiping_candidate' | 'water_heater_due' | 'no_plumbing_permits';
 
-export type SolarFilterId =
-  | 'solar_ready'
-  | 'battery_upgrade'
-  | 'high_consumption_area';
+export type SolarFilterId = 'solar_ready' | 'battery_upgrade' | 'high_consumption_area';
 
 export type HomeServicesFilterId =
   | RoofingFilterId
@@ -200,6 +185,7 @@ export interface PropertyData {
   taxAmountPrior?: number | null;
   listingStatus?: string | null;
   listingDate?: string | null;
+  listingDescription?: string | null;
   daysOnMarket?: number | null;
   lastSaleDate?: string | null;
   lastSalePrice?: number | null;
@@ -221,6 +207,11 @@ export interface PropertyData {
   preForeclosureDate?: string | null;
   isTaxDelinquent?: boolean | null;
   taxDelinquentAmount?: number | null;
+  taxDelinquentYears?: number | null;
+  isVacant?: boolean | null;
+  vacancyDurationMonths?: number | null;
+  hasCodeLiens?: boolean | null;
+  codeLiensCount?: number | null;
 
   // Shovels-specific fields (from shovels_address_metrics join)
   shovelsAddressId?: string | null;
@@ -288,4 +279,3 @@ export interface PropertySearchResponse {
   executionTimeMs: number;
   appliedFilters: FilterId[];
 }
-

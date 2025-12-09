@@ -62,15 +62,17 @@ const crmExportHandler: ToolHandler<CrmExportInput, CrmExportOutput> = async (in
 const calendarIntegrationInput = z.object({
   provider: z.enum(['google', 'outlook', 'apple']),
   action: z.enum(['create_event', 'update_event', 'delete_event', 'list_events']),
-  event: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    startTime: z.string(),
-    endTime: z.string(),
-    location: z.string().optional(),
-    attendees: z.array(z.string()).optional(),
-    reminders: z.array(z.number()).optional(),
-  }).optional(),
+  event: z
+    .object({
+      title: z.string(),
+      description: z.string().optional(),
+      startTime: z.string(),
+      endTime: z.string(),
+      location: z.string().optional(),
+      attendees: z.array(z.string()).optional(),
+      reminders: z.array(z.number()).optional(),
+    })
+    .optional(),
   eventId: z.string().optional(),
   dateRange: z.object({ start: z.string(), end: z.string() }).optional(),
 });
@@ -79,18 +81,25 @@ const calendarIntegrationOutput = z.object({
   success: z.boolean(),
   eventId: z.string().optional(),
   eventUrl: z.string().optional(),
-  events: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    startTime: z.string(),
-    endTime: z.string(),
-  })).optional(),
+  events: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        startTime: z.string(),
+        endTime: z.string(),
+      })
+    )
+    .optional(),
 });
 
 type CalendarIntegrationInput = z.infer<typeof calendarIntegrationInput>;
 type CalendarIntegrationOutput = z.infer<typeof calendarIntegrationOutput>;
 
-const calendarIntegrationDefinition: ToolDefinition<CalendarIntegrationInput, CalendarIntegrationOutput> = {
+const calendarIntegrationDefinition: ToolDefinition<
+  CalendarIntegrationInput,
+  CalendarIntegrationOutput
+> = {
   id: 'sync.calendar_integration',
   name: 'Calendar Integration',
   description: 'Create, update, or manage calendar events for property viewings and meetings.',
@@ -104,14 +113,28 @@ const calendarIntegrationDefinition: ToolDefinition<CalendarIntegrationInput, Ca
   tags: ['integration', 'calendar', 'scheduling', 'events'],
 };
 
-const calendarIntegrationHandler: ToolHandler<CalendarIntegrationInput, CalendarIntegrationOutput> = async (input) => {
+// Handler disabled - tool not registered to stay under xAI 200 tool limit
+const _calendarIntegrationHandler: ToolHandler<
+  CalendarIntegrationInput,
+  CalendarIntegrationOutput
+> = async (input) => {
   console.log('[Integration] Calendar:', input.action, 'on', input.provider);
   if (input.action === 'list_events') {
     return {
       success: true,
       events: [
-        { id: 'evt_1', title: 'Property Viewing - 123 Main St', startTime: '2024-01-20T10:00:00Z', endTime: '2024-01-20T11:00:00Z' },
-        { id: 'evt_2', title: 'Closing Meeting', startTime: '2024-01-22T14:00:00Z', endTime: '2024-01-22T15:30:00Z' },
+        {
+          id: 'evt_1',
+          title: 'Property Viewing - 123 Main St',
+          startTime: '2024-01-20T10:00:00Z',
+          endTime: '2024-01-20T11:00:00Z',
+        },
+        {
+          id: 'evt_2',
+          title: 'Closing Meeting',
+          startTime: '2024-01-22T14:00:00Z',
+          endTime: '2024-01-22T15:30:00Z',
+        },
       ],
     };
   }
@@ -121,17 +144,18 @@ const calendarIntegrationHandler: ToolHandler<CalendarIntegrationInput, Calendar
     eventUrl: `https://calendar.${input.provider}.com/event/${Date.now()}`,
   };
 };
+void _calendarIntegrationHandler; // Suppress unused warning
 
 // ============================================================================
 // Register All Integration Tools
 // ============================================================================
 export function registerIntegrationTools() {
   toolRegistry.register(crmExportDefinition, crmExportHandler);
-  toolRegistry.register(calendarIntegrationDefinition, calendarIntegrationHandler);
+  // Disabled to stay under xAI 200 tool limit - placeholder functionality
+  // toolRegistry.register(calendarIntegrationDefinition, calendarIntegrationHandler);
 }
 
 export const integrationTools = {
   crmExport: crmExportDefinition,
   calendarIntegration: calendarIntegrationDefinition,
 };
-

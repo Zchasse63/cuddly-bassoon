@@ -14,6 +14,7 @@ interface PieDataPoint {
   name: string;
   value: number;
   color?: string;
+  [key: string]: string | number | undefined;
 }
 
 interface PieChartProps {
@@ -58,7 +59,7 @@ export function PieChart({
         <RechartsPieChart>
           {}
           <Pie
-            data={data as any}
+            data={data}
             cx="50%"
             cy="50%"
             innerRadius={innerRadius}

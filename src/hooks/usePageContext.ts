@@ -78,7 +78,7 @@ export function usePageContext(view: ViewType, options: PageContextOptions = {})
 export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
   dashboard: [
     { id: 'search', label: 'Search Properties', action: () => {} },
-    { id: 'add-deal', label: 'Add Deal', action: () => {} },
+    { id: 'add-opportunity', label: 'Add Opportunity', action: () => {} },
   ],
   properties: [
     { id: 'search', label: 'AI Search', action: () => {} },
@@ -97,11 +97,11 @@ export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
     { id: 'match', label: 'Find Matches', action: () => {} },
     { id: 'contact', label: 'Draft Message', action: () => {} },
   ],
-  deals: [
+  pipeline: [
     { id: 'analyze', label: 'Analyze Pipeline', action: () => {} },
-    { id: 'add', label: 'Add Deal', action: () => {} },
+    { id: 'add', label: 'Add Opportunity', action: () => {} },
   ],
-  'deal-detail': [
+  'pipeline-detail': [
     { id: 'analyze', label: 'Deal Analysis', action: () => {} },
     { id: 'docs', label: 'Generate Docs', action: () => {} },
   ],
@@ -121,8 +121,8 @@ export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
     { id: 'report', label: 'Communication Report', action: () => {} },
     { id: 'analyze', label: 'Analyze Outreach', action: () => {} },
   ],
-  'analytics-deals': [
-    { id: 'report', label: 'Deal Report', action: () => {} },
+  'analytics-pipeline': [
+    { id: 'report', label: 'Pipeline Report', action: () => {} },
     { id: 'forecast', label: 'Pipeline Forecast', action: () => {} },
   ],
   'analytics-heatmap': [
@@ -170,10 +170,6 @@ export const DEFAULT_QUICK_ACTIONS: Record<ViewType, QuickAction[]> = {
   inbox: [
     { id: 'compose', label: 'New Message', action: () => {} },
     { id: 'search', label: 'Search Messages', action: () => {} },
-  ],
-  leads: [
-    { id: 'add', label: 'Add Lead', action: () => {} },
-    { id: 'import', label: 'Import Leads', action: () => {} },
   ],
   onboarding: [],
 };

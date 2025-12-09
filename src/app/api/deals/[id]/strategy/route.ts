@@ -72,7 +72,16 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const input = calculateStrategyInput.parse(body);
+    const validation = calculateStrategyInput.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
+
+    const input = validation.data;
 
     // Use deal values as defaults
     const arv = input.arv || deal.estimated_arv;

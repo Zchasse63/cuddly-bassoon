@@ -259,11 +259,15 @@ export function EnhancedChatInterface({
             {messages.map((message, idx) => (
               <div key={message.id}>
                 {/* Use ScoutMessage for glass-styled bubbles (Phase 3.5) */}
+                {/* Now includes parts for Generative UI tool rendering */}
                 <ScoutMessage
                   role={message.role}
                   content={message.content}
+                  parts={message.parts}
                   sources={message.sources}
-                  isStreaming={isStreaming && idx === messages.length - 1 && message.role === 'assistant'}
+                  isStreaming={
+                    isStreaming && idx === messages.length - 1 && message.role === 'assistant'
+                  }
                   onCopy={(content) => handleCopy(content, message.id)}
                   isCopied={copiedId === message.id}
                 />

@@ -16,31 +16,35 @@ import { calculateDistance as calcDistanceUtil, GeoPoint } from '@/lib/map/utils
 const geocodeInput = z.object({
   address: z.string().min(1).max(500),
   country: z.string().length(2).optional(), // ISO 3166-1 alpha-2 code
-  proximity: z.object({
-    lat: z.number(),
-    lng: z.number(),
-  }).optional(),
+  proximity: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
   limit: z.number().min(1).max(10).default(1),
 });
 
 const geocodeOutput = z.object({
-  results: z.array(z.object({
-    address: z.string(),
-    coordinates: z.object({
-      lat: z.number(),
-      lng: z.number(),
-    }),
-    placeType: z.string(),
-    relevance: z.number(),
-    context: z.object({
-      neighborhood: z.string().optional(),
-      city: z.string().optional(),
-      county: z.string().optional(),
-      state: z.string().optional(),
-      country: z.string().optional(),
-      postalCode: z.string().optional(),
-    }),
-  })),
+  results: z.array(
+    z.object({
+      address: z.string(),
+      coordinates: z.object({
+        lat: z.number(),
+        lng: z.number(),
+      }),
+      placeType: z.string(),
+      relevance: z.number(),
+      context: z.object({
+        neighborhood: z.string().optional(),
+        city: z.string().optional(),
+        county: z.string().optional(),
+        state: z.string().optional(),
+        country: z.string().optional(),
+        postalCode: z.string().optional(),
+      }),
+    })
+  ),
   query: z.string(),
   attribution: z.string(),
 });
@@ -51,7 +55,8 @@ type GeocodeOutput = z.infer<typeof geocodeOutput>;
 const geocodeDefinition: ToolDefinition<GeocodeInput, GeocodeOutput> = {
   id: 'utility.geocode',
   name: 'Geocode Address',
-  description: 'Convert a street address or place name to geographic coordinates (latitude/longitude) using Mapbox Geocoding API.',
+  description:
+    'Convert a street address or place name to geographic coordinates (latitude/longitude) using Mapbox Geocoding API.',
   category: 'utility',
   requiredPermission: 'read',
   inputSchema: geocodeInput,
@@ -69,7 +74,9 @@ const geocodeHandler: ToolHandler<GeocodeInput, GeocodeOutput> = async (input) =
     throw new Error('Mapbox token not configured. Unable to geocode address.');
   }
 
-  const url = new URL(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`);
+  const url = new URL(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json`
+  );
   url.searchParams.set('access_token', MAPBOX_TOKEN);
   url.searchParams.set('limit', limit.toString());
   url.searchParams.set('types', 'address,place,locality,neighborhood,postcode');
@@ -89,7 +96,7 @@ const geocodeHandler: ToolHandler<GeocodeInput, GeocodeOutput> = async (input) =
     throw new Error(`Geocoding API error: ${response.status} - ${error}`);
   }
 
-  const data = await response.json() as {
+  const data = (await response.json()) as {
     features: Array<{
       place_name: string;
       center: [number, number];
@@ -145,9 +152,11 @@ const reverseGeocodeInput = z.object({
     lat: z.number().min(-90).max(90),
     lng: z.number().min(-180).max(180),
   }),
-  types: z.array(z.enum([
-    'address', 'place', 'locality', 'neighborhood', 'postcode', 'region', 'country',
-  ])).optional(),
+  types: z
+    .array(
+      z.enum(['address', 'place', 'locality', 'neighborhood', 'postcode', 'region', 'country'])
+    )
+    .optional(),
 });
 
 const reverseGeocodeOutput = z.object({
@@ -178,7 +187,8 @@ type ReverseGeocodeOutput = z.infer<typeof reverseGeocodeOutput>;
 const reverseGeocodeDefinition: ToolDefinition<ReverseGeocodeInput, ReverseGeocodeOutput> = {
   id: 'utility.reverse_geocode',
   name: 'Reverse Geocode',
-  description: 'Convert geographic coordinates (latitude/longitude) to a human-readable address using Mapbox Geocoding API.',
+  description:
+    'Convert geographic coordinates (latitude/longitude) to a human-readable address using Mapbox Geocoding API.',
   category: 'utility',
   requiredPermission: 'read',
   inputSchema: reverseGeocodeInput,
@@ -189,14 +199,18 @@ const reverseGeocodeDefinition: ToolDefinition<ReverseGeocodeInput, ReverseGeoco
   tags: ['utility', 'geocode', 'reverse', 'address'],
 };
 
-const reverseGeocodeHandler: ToolHandler<ReverseGeocodeInput, ReverseGeocodeOutput> = async (input) => {
+const reverseGeocodeHandler: ToolHandler<ReverseGeocodeInput, ReverseGeocodeOutput> = async (
+  input
+) => {
   const { coordinates, types } = input;
 
   if (!MAPBOX_TOKEN) {
     throw new Error('Mapbox token not configured. Unable to reverse geocode.');
   }
 
-  const url = new URL(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates.lng},${coordinates.lat}.json`);
+  const url = new URL(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates.lng},${coordinates.lat}.json`
+  );
   url.searchParams.set('access_token', MAPBOX_TOKEN);
 
   if (types && types.length > 0) {
@@ -210,7 +224,7 @@ const reverseGeocodeHandler: ToolHandler<ReverseGeocodeInput, ReverseGeocodeOutp
     throw new Error(`Reverse geocoding API error: ${response.status} - ${error}`);
   }
 
-  const data = await response.json() as {
+  const data = (await response.json()) as {
     features: Array<{
       place_name: string;
       center: [number, number];
@@ -307,7 +321,8 @@ type FormatCurrencyOutput = z.infer<typeof formatCurrencyOutput>;
 const formatCurrencyDefinition: ToolDefinition<FormatCurrencyInput, FormatCurrencyOutput> = {
   id: 'utility.format_currency',
   name: 'Format Currency',
-  description: 'Format a numeric amount as a currency string with proper locale-specific formatting, symbols, and notation.',
+  description:
+    'Format a numeric amount as a currency string with proper locale-specific formatting, symbols, and notation.',
   category: 'utility',
   requiredPermission: 'read',
   inputSchema: formatCurrencyInput,
@@ -318,7 +333,10 @@ const formatCurrencyDefinition: ToolDefinition<FormatCurrencyInput, FormatCurren
   tags: ['utility', 'format', 'currency', 'money'],
 };
 
-const formatCurrencyHandler: ToolHandler<FormatCurrencyInput, FormatCurrencyOutput> = async (input) => {
+// Handler disabled - tool not registered to stay under xAI 200 tool limit
+const _formatCurrencyHandler: ToolHandler<FormatCurrencyInput, FormatCurrencyOutput> = async (
+  input
+) => {
   const {
     amount,
     currency,
@@ -374,6 +392,7 @@ const formatCurrencyHandler: ToolHandler<FormatCurrencyInput, FormatCurrencyOutp
     parts: partsObj,
   };
 };
+void _formatCurrencyHandler; // Suppress unused warning
 
 // ============================================================================
 // Calculate Distance Tool
@@ -413,19 +432,21 @@ const calculateDistanceOutput = z.object({
 type CalculateDistanceInput = z.infer<typeof calculateDistanceInput>;
 type CalculateDistanceOutput = z.infer<typeof calculateDistanceOutput>;
 
-const calculateDistanceDefinition: ToolDefinition<CalculateDistanceInput, CalculateDistanceOutput> = {
-  id: 'utility.calculate_distance',
-  name: 'Calculate Distance',
-  description: 'Calculate the straight-line (Haversine) distance between two points. Accepts coordinates or addresses.',
-  category: 'utility',
-  requiredPermission: 'read',
-  inputSchema: calculateDistanceInput,
-  outputSchema: calculateDistanceOutput,
-  requiresConfirmation: false,
-  estimatedDuration: 2000,
-  rateLimit: 30,
-  tags: ['utility', 'distance', 'calculation', 'geo'],
-};
+const calculateDistanceDefinition: ToolDefinition<CalculateDistanceInput, CalculateDistanceOutput> =
+  {
+    id: 'utility.calculate_distance',
+    name: 'Calculate Distance',
+    description:
+      'Calculate the straight-line (Haversine) distance between two points. Accepts coordinates or addresses.',
+    category: 'utility',
+    requiredPermission: 'read',
+    inputSchema: calculateDistanceInput,
+    outputSchema: calculateDistanceOutput,
+    requiresConfirmation: false,
+    estimatedDuration: 2000,
+    rateLimit: 30,
+    tags: ['utility', 'distance', 'calculation', 'geo'],
+  };
 
 // Helper to geocode an address or return coordinates
 async function resolveLocation(location: { lat: number; lng: number } | string): Promise<{
@@ -441,7 +462,9 @@ async function resolveLocation(location: { lat: number; lng: number } | string):
     throw new Error('Mapbox token not configured. Cannot geocode address.');
   }
 
-  const url = new URL(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json`);
+  const url = new URL(
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json`
+  );
   url.searchParams.set('access_token', MAPBOX_TOKEN);
   url.searchParams.set('limit', '1');
 
@@ -450,7 +473,7 @@ async function resolveLocation(location: { lat: number; lng: number } | string):
     throw new Error(`Geocoding failed for address: ${location}`);
   }
 
-  const data = await response.json() as {
+  const data = (await response.json()) as {
     features: Array<{
       place_name: string;
       center: [number, number];
@@ -470,7 +493,11 @@ async function resolveLocation(location: { lat: number; lng: number } | string):
   };
 }
 
-const calculateDistanceHandler: ToolHandler<CalculateDistanceInput, CalculateDistanceOutput> = async (input) => {
+// Handler disabled - tool not registered to stay under xAI 200 tool limit
+const _calculateDistanceHandler: ToolHandler<
+  CalculateDistanceInput,
+  CalculateDistanceOutput
+> = async (input) => {
   const { from, to, unit } = input;
 
   // Resolve both locations (geocode if needed)
@@ -514,6 +541,7 @@ const calculateDistanceHandler: ToolHandler<CalculateDistanceInput, CalculateDis
     formattedDistance,
   };
 };
+void _calculateDistanceHandler; // Suppress unused warning
 
 // ============================================================================
 // Register All Utility Tools
@@ -521,8 +549,9 @@ const calculateDistanceHandler: ToolHandler<CalculateDistanceInput, CalculateDis
 export function registerUtilityTools() {
   toolRegistry.register(geocodeDefinition, geocodeHandler);
   toolRegistry.register(reverseGeocodeDefinition, reverseGeocodeHandler);
-  toolRegistry.register(formatCurrencyDefinition, formatCurrencyHandler);
-  toolRegistry.register(calculateDistanceDefinition, calculateDistanceHandler);
+  // Disabled to stay under xAI 200 tool limit - these can be done in code
+  // toolRegistry.register(formatCurrencyDefinition, formatCurrencyHandler);
+  // toolRegistry.register(calculateDistanceDefinition, calculateDistanceHandler);
 }
 
 export const utilityTools = {

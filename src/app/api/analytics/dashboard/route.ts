@@ -16,14 +16,10 @@ export async function GET(request: NextRequest) {
     const days = parseInt(searchParams.get('days') || '7');
 
     // Get dashboard summary from RPC
-    // Note: Using type assertion as database types need regeneration after migration
-    const { data: summary, error: summaryError } = await (supabase as any).rpc(
-      'get_dashboard_summary',
-      {
-        p_user_id: user.id,
-        p_days: days,
-      }
-    );
+    const { data: summary, error: summaryError } = await supabase.rpc('get_dashboard_summary', {
+      p_user_id: user.id,
+      p_days: days,
+    });
 
     if (summaryError) {
       console.error('Dashboard summary error:', summaryError);
@@ -51,8 +47,7 @@ export async function GET(request: NextRequest) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    // Note: Using type assertion as database types need regeneration after migration
-    const { data: dailyData, error: dailyError } = await (supabase as any)
+    const { data: dailyData, error: dailyError } = await supabase
       .from('analytics_daily')
       .select('*')
       .eq('user_id', user.id)

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
+
+type AnalyticsDaily = Database['public']['Tables']['analytics_daily']['Row'];
 
 /**
  * Analytics Export API
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
     const endDateStr = new Date().toISOString().split('T')[0];
 
     // Fetch daily analytics data
-    const { data: dailyData, error: dailyError } = await (supabase as any)
+    const { data: dailyData, error: dailyError } = await supabase
       .from('analytics_daily')
       .select('*')
       .eq('user_id', user.id)
@@ -40,7 +43,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
     }
 
-    const data = dailyData || [];
+    const data: AnalyticsDaily[] = dailyData || [];
 
     if (format === 'csv') {
       // Generate CSV
@@ -62,12 +65,12 @@ export async function GET(request: NextRequest) {
         'Expenses',
       ];
 
-      const rows = data.map((row: any) => [
+      const rows = data.map((row) => [
         row.date,
         row.searches || 0,
         row.property_views || 0,
-        row.saves || 0,
-        row.analyses || 0,
+        row.property_saves || 0,
+        row.property_analyses || 0,
         row.calls_made || 0,
         row.calls_connected || 0,
         row.emails_sent || 0,
@@ -80,7 +83,7 @@ export async function GET(request: NextRequest) {
         row.expenses || 0,
       ]);
 
-      const csv = [headers.join(','), ...rows.map((row: any[]) => row.join(','))].join('\n');
+      const csv = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
 
       return new NextResponse(csv, {
         headers: {
@@ -95,11 +98,11 @@ export async function GET(request: NextRequest) {
       period: { start: startDateStr, end: endDateStr, days },
       data,
       summary: {
-        totalSearches: data.reduce((sum: number, r: any) => sum + (r.searches || 0), 0),
-        totalViews: data.reduce((sum: number, r: any) => sum + (r.property_views || 0), 0),
-        totalSaves: data.reduce((sum: number, r: any) => sum + (r.saves || 0), 0),
-        totalRevenue: data.reduce((sum: number, r: any) => sum + (r.revenue || 0), 0),
-        totalDeals: data.reduce((sum: number, r: any) => sum + (r.deals_closed || 0), 0),
+        totalSearches: data.reduce((sum, r) => sum + (r.searches || 0), 0),
+        totalViews: data.reduce((sum, r) => sum + (r.property_views || 0), 0),
+        totalSaves: data.reduce((sum, r) => sum + (r.property_saves || 0), 0),
+        totalRevenue: data.reduce((sum, r) => sum + (Number(r.revenue) || 0), 0),
+        totalDeals: data.reduce((sum, r) => sum + (r.deals_closed || 0), 0),
       },
     });
   } catch (error) {

@@ -23,11 +23,9 @@ export const HeroCell = memo(function HeroCell({
   onStreetViewToggle,
 }: HeroCellProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // Use property image or placeholder
-  const allImages = images.length > 0 
-    ? images 
-    : ['/images/property-placeholder.jpg'];
+  const allImages = images.length > 0 ? images : ['/images/property-placeholder.jpg'];
 
   const nextImage = () => {
     setCurrentIndex((prev) => (prev + 1) % allImages.length);
@@ -38,10 +36,7 @@ export const HeroCell = memo(function HeroCell({
   };
 
   return (
-    <motion.div
-      layout
-      className={cn('bento-cell bento-hero relative group', className)}
-    >
+    <motion.div layout className={cn('bento-cell bento-hero relative group', className)}>
       {/* Image Carousel */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -52,11 +47,11 @@ export const HeroCell = memo(function HeroCell({
           transition={{ duration: 0.3 }}
           className="absolute inset-0"
         >
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center rounded-[var(--radius-fluid-standard)]"
-            style={{ 
+            style={{
               backgroundImage: `url(${allImages[currentIndex]})`,
-              backgroundColor: 'var(--surface-glass-subtle)'
+              backgroundColor: 'var(--surface-glass-subtle)',
             }}
           />
         </motion.div>
@@ -71,6 +66,7 @@ export const HeroCell = memo(function HeroCell({
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Previous image"
             className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm hover:bg-white/30"
             onClick={prevImage}
           >
@@ -79,6 +75,7 @@ export const HeroCell = memo(function HeroCell({
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Next image"
             className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 backdrop-blur-sm hover:bg-white/30"
             onClick={nextImage}
           >
@@ -91,23 +88,23 @@ export const HeroCell = memo(function HeroCell({
       <div className="absolute bottom-0 left-0 right-0 p-5">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1">
-              {property.address}
-            </h1>
+            <h1 className="text-2xl font-semibold text-white mb-1">{property.address}</h1>
             <div className="flex items-center gap-2 text-white/80">
               <MapPin className="h-4 w-4" />
-              <span>{property.city}, {property.state} {property.zip}</span>
+              <span>
+                {property.city}, {property.state} {property.zip}
+              </span>
             </div>
           </div>
-          
+
           {/* Street View Toggle */}
           {onStreetViewToggle && (
             <Button
               variant="ghost"
               size="sm"
               className={cn(
-                "bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white",
-                showStreetView && "bg-white/40"
+                'bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white',
+                showStreetView && 'bg-white/40'
               )}
               onClick={onStreetViewToggle}
             >
@@ -142,6 +139,17 @@ export const HeroCell = memo(function HeroCell({
           {property.isTaxDelinquent && (
             <Badge variant="secondary" className="bg-[var(--fluid-warning)]/80 text-white border-0">
               Tax Delinquent
+              {property.taxDelinquentYears ? ` (${property.taxDelinquentYears}yr)` : ''}
+            </Badge>
+          )}
+          {property.isVacant && (
+            <Badge variant="secondary" className="bg-purple-500/80 text-white border-0">
+              Vacant{property.vacancyDurationMonths ? ` (${property.vacancyDurationMonths}mo)` : ''}
+            </Badge>
+          )}
+          {property.hasCodeLiens && (
+            <Badge variant="secondary" className="bg-[var(--fluid-danger)]/80 text-white border-0">
+              Code Liens{property.codeLiensCount ? ` (${property.codeLiensCount})` : ''}
             </Badge>
           )}
           {property.condition && (
@@ -150,17 +158,31 @@ export const HeroCell = memo(function HeroCell({
             </Badge>
           )}
         </div>
+
+        {/* Listing Description */}
+        {property.listingDescription && (
+          <div className="mt-3 p-2 rounded-lg bg-black/30 backdrop-blur-sm">
+            <p className="text-xs text-white/90 line-clamp-2">{property.listingDescription}</p>
+          </div>
+        )}
       </div>
 
       {/* Image Dots */}
       {allImages.length > 1 && (
-        <div className="absolute bottom-5 right-5 flex gap-1.5">
+        <div
+          className="absolute bottom-5 right-5 flex gap-1.5"
+          role="tablist"
+          aria-label="Property images"
+        >
           {allImages.map((_, idx) => (
             <button
               key={idx}
+              role="tab"
+              aria-selected={idx === currentIndex}
+              aria-label={`View image ${idx + 1} of ${allImages.length}`}
               className={cn(
-                "w-2 h-2 rounded-full transition-all",
-                idx === currentIndex ? "bg-white w-4" : "bg-white/50"
+                'w-2 h-2 rounded-full transition-all',
+                idx === currentIndex ? 'bg-white w-4' : 'bg-white/50'
               )}
               onClick={() => setCurrentIndex(idx)}
             />
@@ -170,4 +192,3 @@ export const HeroCell = memo(function HeroCell({
     </motion.div>
   );
 });
-

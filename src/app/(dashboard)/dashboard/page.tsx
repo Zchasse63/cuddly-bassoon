@@ -47,10 +47,10 @@ export default function DashboardPage() {
   const quickActions = [
     {
       id: 'new-deal',
-      label: 'New Deal',
-      description: 'Create a new deal',
+      label: 'New Opportunity',
+      description: 'Add to pipeline',
       icon: Plus,
-      href: '/deals/new',
+      href: '/pipeline/new',
       variant: 'primary' as const,
     },
     {
@@ -99,7 +99,7 @@ export default function DashboardPage() {
       {staleDealCount > 0 && (
         <StaleDealsAlert
           staleDealCount={staleDealCount}
-          onViewDeals={() => router.push('/deals?filter=stale')}
+          onViewDeals={() => router.push('/pipeline?filter=stale')}
           className="mb-6"
         />
       )}
@@ -113,7 +113,7 @@ export default function DashboardPage() {
           change={
             summary?.deals_trend ? { value: summary.deals_trend, label: 'vs last week' } : undefined
           }
-          onClick={() => router.push('/deals')}
+          onClick={() => router.push('/pipeline')}
           className="cursor-pointer hover:shadow-md transition-shadow"
         />
         <KPICard
@@ -145,7 +145,7 @@ export default function DashboardPage() {
           }
           icon={TrendingUp}
           subtitle={`${deals?.deals_by_stage?.contract || 0} in contract`}
-          onClick={() => router.push('/deals')}
+          onClick={() => router.push('/pipeline')}
           className="cursor-pointer hover:shadow-md transition-shadow"
         />
       </KPICardGrid>
@@ -251,13 +251,13 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </Link>
-              <Link href="/deals" className="group">
+              <Link href="/pipeline" className="group">
                 <div className="p-4 rounded-lg border border-border hover:border-[var(--color-brand-300)] transition-colors">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium mb-1">Track Deals</h4>
+                      <h4 className="font-medium mb-1">View Pipeline</h4>
                       <p className="text-sm text-muted-foreground">
-                        Move deals through your pipeline stages
+                        Track opportunities through your pipeline
                       </p>
                     </div>
                     <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-[var(--color-brand-500)] transition-colors" />

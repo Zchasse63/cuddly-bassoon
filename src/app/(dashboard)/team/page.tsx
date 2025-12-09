@@ -1,51 +1,40 @@
 'use client';
 
-import { Users, UserPlus, Settings, Crown, Shield, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, UserPlus, Settings, Crown, Shield, User, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { usePageContext } from '@/hooks/usePageContext';
 import { KPICard, KPICardGrid } from '@/components/ui/kpi-card';
 import { Leaderboard } from '@/components/analytics';
 
-// Mock team data - will be replaced with real API data
-const mockTeamMembers = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john@example.com',
-    role: 'admin',
-    status: 'active',
-    deals: 12,
-    revenue: 145000,
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    role: 'acquisitions',
-    status: 'active',
-    deals: 8,
-    revenue: 98000,
-  },
-  {
-    id: '3',
-    name: 'Mike Davis',
-    email: 'mike@example.com',
-    role: 'dispositions',
-    status: 'active',
-    deals: 15,
-    revenue: 187000,
-  },
-  {
-    id: '4',
-    name: 'Emily Chen',
-    email: 'emily@example.com',
-    role: 'junior_acquisitions',
-    status: 'active',
-    deals: 5,
-    revenue: 42000,
-  },
-];
+interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  deals: number;
+  revenue: number;
+}
+
+interface TeamData {
+  memberships: Array<{
+    role: string;
+    status: string;
+    joined_at: string;
+    team: {
+      id: string;
+      name: string;
+      owner_id: string;
+    };
+  }>;
+  ownedTeams: Array<{
+    id: string;
+    name: string;
+    owner_id: string;
+  }>;
+}
 
 const roleIcons: Record<string, typeof Crown> = {
   admin: Crown,
@@ -67,10 +56,65 @@ const roleLabels: Record<string, string> = {
 
 export default function TeamPage() {
   usePageContext('team');
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const totalDeals = mockTeamMembers.reduce((sum, m) => sum + m.deals, 0);
-  const totalRevenue = mockTeamMembers.reduce((sum, m) => sum + m.revenue, 0);
-  const avgDealsPerMember = Math.round(totalDeals / mockTeamMembers.length);
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await fetch('/api/teams');
+        if (!response.ok) {
+          throw new Error('Failed to fetch team data');
+        }
+        const data: TeamData = await response.json();
+
+        // Transform memberships into team members format
+        // Note: In a full implementation, we'd fetch member details from a separate endpoint
+        const members: TeamMember[] = data.memberships.map((m, index) => ({
+          id: `member-${index}`,
+          name: `Team Member ${index + 1}`,
+          email: '',
+          role: m.role,
+          status: m.status,
+          deals: 0,
+          revenue: 0,
+        }));
+        setTeamMembers(members);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load team data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeamData();
+  }, []);
+
+  const totalDeals = teamMembers.reduce((sum, m) => sum + m.deals, 0);
+  const totalRevenue = teamMembers.reduce((sum, m) => sum + m.revenue, 0);
+  const avgDealsPerMember =
+    teamMembers.length > 0 ? Math.round(totalDeals / teamMembers.length) : 0;
+
+  if (loading) {
+    return (
+      <div className="page-container flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <div className="text-center py-12">
+          <p className="text-destructive">{error}</p>
+          <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -91,7 +135,7 @@ export default function TeamPage() {
 
       {/* Team KPIs */}
       <KPICardGrid columns={4}>
-        <KPICard title="Team Members" value={mockTeamMembers.length.toString()} icon={Users} />
+        <KPICard title="Team Members" value={teamMembers.length.toString()} icon={Users} />
         <KPICard title="Total Deals" value={totalDeals.toString()} icon={Users} />
         <KPICard title="Team Revenue" value={`$${totalRevenue.toLocaleString()}`} icon={Users} />
         <KPICard title="Avg Deals/Member" value={avgDealsPerMember.toString()} icon={Users} />
@@ -101,7 +145,7 @@ export default function TeamPage() {
         {/* Team Leaderboard */}
         <Leaderboard
           title="Team Leaderboard"
-          entries={mockTeamMembers.map((m, i) => ({
+          entries={teamMembers.map((m, i) => ({
             id: m.id,
             name: m.name,
             avatar: undefined,
@@ -120,34 +164,40 @@ export default function TeamPage() {
           </CardHeader>
           <CardContent>
             <div className="team-members-list">
-              {mockTeamMembers.map((member) => {
-                const RoleIcon = roleIcons[member.role] || User;
-                return (
-                  <div key={member.id} className="team-member">
-                    <div className="team-member__info">
-                      <div className="team-member__avatar">
-                        {member.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')}
+              {teamMembers.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">
+                  No team members yet. Invite someone to get started!
+                </p>
+              ) : (
+                teamMembers.map((member) => {
+                  const RoleIcon = roleIcons[member.role] || User;
+                  return (
+                    <div key={member.id} className="team-member">
+                      <div className="team-member__info">
+                        <div className="team-member__avatar">
+                          {member.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
+                        </div>
+                        <div>
+                          <p className="team-member__name">{member.name}</p>
+                          <p className="team-member__email">{member.email}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="team-member__name">{member.name}</p>
-                        <p className="team-member__email">{member.email}</p>
+                      <div className="team-member__actions">
+                        <span className="team-member__role-badge">
+                          <RoleIcon className="h-3 w-3" />
+                          {roleLabels[member.role]}
+                        </span>
+                        <Button variant="ghost" size="sm">
+                          <Settings className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="team-member__actions">
-                      <span className="team-member__role-badge">
-                        <RoleIcon className="h-3 w-3" />
-                        {roleLabels[member.role]}
-                      </span>
-                      <Button variant="ghost" size="sm">
-                        <Settings className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </CardContent>
         </Card>

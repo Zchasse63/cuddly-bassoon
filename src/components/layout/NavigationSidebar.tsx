@@ -48,12 +48,15 @@ import { useAppShell } from './AppShell';
  * - Material: Glass Base
  */
 
+// Badge variant type matching the Badge component
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning';
+
 interface NavItem {
   title: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string | number;
-  badgeVariant?: 'default' | 'secondary' | 'destructive' | 'outline';
+  badgeVariant?: BadgeVariant;
 }
 
 interface NavGroup {
@@ -67,7 +70,7 @@ const mainNavItems: NavItem[] = [
   { title: 'Properties', href: '/properties', icon: Building2 }, // Primary
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Inbox', href: '/inbox', icon: MessageSquare, badge: 2, badgeVariant: 'default' },
-  { title: 'Deals', href: '/deals', icon: Handshake, badge: 3, badgeVariant: 'default' },
+  { title: 'Pipeline', href: '/pipeline', icon: Handshake, badge: 3, badgeVariant: 'default' },
   { title: 'Buyers', href: '/buyers', icon: Users },
   { title: 'Analytics', href: '/analytics', icon: BarChart3 },
 ];
@@ -230,10 +233,7 @@ export function NavigationSidebar({ user }: NavigationSidebarProps) {
                       {leftCollapsed ? (
                         <span className="h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
                       ) : (
-                        <Badge
-                          variant={item.badgeVariant as any}
-                          className="h-5 px-1.5 text-[10px]"
-                        >
+                        <Badge variant={item.badgeVariant} className="h-5 px-1.5 text-[10px]">
                           {item.badge}
                         </Badge>
                       )}

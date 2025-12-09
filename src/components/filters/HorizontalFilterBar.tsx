@@ -128,7 +128,8 @@ export function HorizontalFilterBar({
               <DropdownMenuItem
                 key={beds}
                 onClick={() => {
-                  /* TODO: Add bed filter */
+                  // TODO: Add bed filter - requires adding min_bedrooms to FilterId type and registry
+                  console.log(`Filter by ${beds}+ beds`);
                 }}
                 className="focus:bg-brand-500/10 focus:text-brand-600"
               >

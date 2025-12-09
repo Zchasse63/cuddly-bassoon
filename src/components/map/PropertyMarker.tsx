@@ -51,28 +51,32 @@ export function PropertyMarker({
   onClick,
   onHover,
 }: PropertyMarkerProps) {
-  const price = (property.estimatedValue as number | undefined) || (property.lastSalePrice as number | undefined);
+  const price =
+    (property.estimatedValue as number | undefined) ||
+    (property.lastSalePrice as number | undefined);
   const equity = (property.equityPercent as number) || 0;
 
   // Determine color based on equity (per design system)
   const getEquityColors = () => {
-    if (equity >= 50) return {
-      bg: 'bg-[var(--fluid-success)]',
-      border: 'border-[var(--fluid-success)]',
-      glow: 'shadow-[0_0_20px_rgba(52,199,89,0.4)]',
-      text: 'text-white'
-    };
-    if (equity >= 20) return {
-      bg: 'bg-[var(--fluid-warning)]',
-      border: 'border-[var(--fluid-warning)]',
-      glow: 'shadow-[0_0_20px_rgba(255,159,10,0.4)]',
-      text: 'text-white'
-    };
+    if (equity >= 50)
+      return {
+        bg: 'bg-[var(--fluid-success)]',
+        border: 'border-[var(--fluid-success)]',
+        glow: 'shadow-[0_0_20px_rgba(52,199,89,0.4)]',
+        text: 'text-white',
+      };
+    if (equity >= 20)
+      return {
+        bg: 'bg-[var(--fluid-warning)]',
+        border: 'border-[var(--fluid-warning)]',
+        glow: 'shadow-[0_0_20px_rgba(255,159,10,0.4)]',
+        text: 'text-white',
+      };
     return {
-      bg: 'bg-slate-500',
-      border: 'border-slate-500',
-      glow: '',
-      text: 'text-white'
+      bg: 'bg-[var(--fluid-danger)]',
+      border: 'border-[var(--fluid-danger)]',
+      glow: 'shadow-[0_0_20px_rgba(255,59,48,0.4)]',
+      text: 'text-white',
     };
   };
 
@@ -89,6 +93,8 @@ export function PropertyMarker({
       }}
     >
       <motion.div
+        role="button"
+        aria-label={`Property at ${property.address}, ${property.city}. Estimated value: ${formatPrice(price)}`}
         className="relative cursor-pointer"
         onMouseEnter={() => onHover?.(property)}
         onMouseLeave={() => onHover?.(null)}
@@ -109,15 +115,23 @@ export function PropertyMarker({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
             >
-              <div className={cn(
-                'absolute inset-0 rounded-full',
-                isHighlightedFromList ? 'bg-[var(--fluid-brand)]/20' : 'bg-[var(--fluid-success)]/20',
-                'animate-ping'
-              )} />
-              <div className={cn(
-                'absolute inset-0 rounded-full',
-                isHighlightedFromList ? 'bg-[var(--fluid-brand)]/30' : 'bg-[var(--fluid-success)]/30'
-              )} />
+              <div
+                className={cn(
+                  'absolute inset-0 rounded-full',
+                  isHighlightedFromList
+                    ? 'bg-[var(--fluid-brand)]/20'
+                    : 'bg-[var(--fluid-success)]/20',
+                  'animate-ping'
+                )}
+              />
+              <div
+                className={cn(
+                  'absolute inset-0 rounded-full',
+                  isHighlightedFromList
+                    ? 'bg-[var(--fluid-brand)]/30'
+                    : 'bg-[var(--fluid-success)]/30'
+                )}
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -130,14 +144,16 @@ export function PropertyMarker({
               'mb-1 px-3 py-1.5 rounded-full text-[11px] font-bold',
               'glass-high shadow-lg',
               'border',
-              isSelected ? 'border-[var(--fluid-brand)] text-[var(--fluid-brand)]' :
-              equity >= 50 ? 'border-[var(--fluid-success)]/50 text-[var(--fluid-success)]' :
-              'border-[var(--border-highlight)] text-[var(--fluid-text-primary)]'
+              isSelected
+                ? 'border-[var(--fluid-brand)] text-[var(--fluid-brand)]'
+                : equity >= 50
+                  ? 'border-[var(--fluid-success)]/50 text-[var(--fluid-success)]'
+                  : 'border-[var(--border-highlight)] text-[var(--fluid-text-primary)]'
             )}
             initial={{ opacity: 0, y: 8 }}
             animate={{
               opacity: isSelected || isHighlighted || isHighlightedFromList ? 1 : 0,
-              y: isSelected || isHighlighted || isHighlightedFromList ? 0 : 8
+              y: isSelected || isHighlighted || isHighlightedFromList ? 0 : 8,
             }}
             transition={{ type: 'spring', ...springConfig }}
           >

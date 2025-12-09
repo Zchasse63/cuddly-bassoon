@@ -1,5 +1,13 @@
 /**
- * Lead Detail API Routes
+ * @deprecated DEPRECATED: Lead Detail API Routes
+ * The leads functionality has been consolidated into the unified Pipeline (/api/deals).
+ * These routes are kept for backward compatibility but will be removed in a future version.
+ *
+ * Please migrate to:
+ * - GET /api/deals/[id] - Get pipeline item details
+ * - PATCH /api/deals/[id] - Update pipeline item
+ * - DELETE /api/deals/[id] - Delete pipeline item
+ *
  * GET /api/leads/[id] - Get lead details
  * PATCH /api/leads/[id] - Update lead
  * DELETE /api/leads/[id] - Delete lead
@@ -13,6 +21,9 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * @deprecated Use GET /api/deals/[id] instead
+ */
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -42,6 +53,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 }
 
+/**
+ * @deprecated Use PATCH /api/deals/[id] instead
+ */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -55,10 +69,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const input = updateLeadSchema.parse(body);
+    const validation = updateLeadSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
 
     const service = new LeadService(supabase);
-    const lead = await service.updateLead(id, user.id, input);
+    const lead = await service.updateLead(id, user.id, validation.data);
 
     return NextResponse.json(lead);
   } catch (error) {
@@ -70,6 +91,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 }
 
+/**
+ * @deprecated Use DELETE /api/deals/[id] instead
+ */
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -98,7 +122,10 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// POST /api/leads/[id]/contact - Log contact with lead
+/**
+ * @deprecated Use POST /api/deals/[id]/activities instead
+ * POST /api/leads/[id]/contact - Log contact with lead
+ */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -112,10 +139,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json();
-    const input = createContactHistorySchema.parse(body);
+    const validation = createContactHistorySchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
 
     const service = new LeadService(supabase);
-    const contact = await service.logContact(id, user.id, input);
+    const contact = await service.logContact(id, user.id, validation.data);
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {

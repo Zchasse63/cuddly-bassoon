@@ -1,14 +1,29 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { aiEventBus } from '@/lib/ai/events';
 import {
   SplitViewLayout,
   SplitViewLayoutTablet,
   SplitViewLayoutMobile,
 } from '@/components/layout/SplitViewLayout';
 import { HorizontalFilterBar } from '@/components/filters/HorizontalFilterBar';
-import { MapPanel } from '@/components/properties/MapPanel';
 import { PropertyListPanel } from '@/components/properties/PropertyListPanel';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load MapPanel - heavy component with Mapbox
+const MapPanel = dynamic(
+  () => import('@/components/properties/MapPanel').then((mod) => ({ default: mod.MapPanel })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-muted/20">
+        <Skeleton className="w-full h-full" />
+      </div>
+    ),
+  }
+);
 import { useMapListSync } from '@/hooks/useMapListSync';
 import { usePropertySearch } from '@/hooks/use-property-search';
 import { usePageContext } from '@/hooks/usePageContext';
@@ -20,15 +35,15 @@ import type { MapProperty } from '@/components/map';
 
 /**
  * PropertySearchSplitView Component
- * 
+ *
  * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 11 (Page Templates)
- * 
+ *
  * Unified property search page with split-view layout:
  * - Left: Interactive map with property markers
  * - Right: Scrollable property list
  * - Top: Horizontal filter bar
  * - Bottom: Floating AI chat dialog
- * 
+ *
  * Features:
  * - Map-list synchronization (hover/click)
  * - Bounds-based filtering
@@ -57,7 +72,7 @@ const FALLBACK_PROPERTIES: MapProperty[] = [
     city: 'Miami Beach',
     state: 'FL',
     latitude: 25.7907,
-    longitude: -80.1300,
+    longitude: -80.13,
     bedrooms: 4,
     bathrooms: 3,
     sqft: 2200,
@@ -101,13 +116,10 @@ export function PropertySearchSplitView() {
   } = useMapListSync();
 
   // Property search state
-  const {
-    activeFilters,
-    setActiveFilters,
-  } = usePropertySearch();
+  const { activeFilters, setActiveFilters } = usePropertySearch();
 
   // Search location state - default to Miami, FL
-  const [searchLocation] = useState({ city: 'Miami', state: 'FL' });
+  const [searchLocation, setSearchLocation] = useState({ city: 'Miami', state: 'FL', zipCode: '' });
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('score');
   const [mapBounds, setMapBounds] = useState<{
@@ -123,16 +135,81 @@ export function PropertySearchSplitView() {
     isLoading: isLoadingProperties,
     error: apiError,
   } = useRentcastProperties({
-    city: searchLocation.city,
-    state: searchLocation.state,
+    city: searchLocation.city || undefined,
+    state: searchLocation.state || undefined,
+    zipCode: searchLocation.zipCode || undefined,
     limit: 50,
-    enabled: true,
+    enabled: Boolean(searchLocation.city || searchLocation.state || searchLocation.zipCode),
   });
 
-  // Use API data or fallback to mock
-  const allProperties = apiProperties && apiProperties.length > 0
-    ? apiProperties
-    : FALLBACK_PROPERTIES;
+  // AI-provided properties from tool results
+  const [aiProperties, setAiProperties] = useState<MapProperty[]>([]);
+
+  // Subscribe to AI property search events
+  useEffect(() => {
+    const unsubscribe = aiEventBus.on('tool:result', (event) => {
+      // Check if this is a property search result
+      if (event.toolName.includes('property') && event.toolName.includes('search')) {
+        const result = event.result as { properties?: unknown[]; data?: unknown[] };
+        const properties = (result?.properties || result?.data || []) as Array<{
+          id?: string;
+          address?: string;
+          formattedAddress?: string;
+          city?: string;
+          state?: string;
+          zip?: string;
+          zipCode?: string;
+          latitude?: number;
+          longitude?: number;
+          bedrooms?: number;
+          bathrooms?: number;
+          squareFootage?: number;
+          sqft?: number;
+          estimatedValue?: number;
+          propertyType?: string;
+        }>;
+
+        if (properties.length > 0) {
+          // Convert to MapProperty format
+          const mapProperties: MapProperty[] = properties.map((p, idx) => ({
+            id: p.id || `ai-${idx}`,
+            address: p.address || p.formattedAddress || 'Unknown',
+            city: p.city || '',
+            state: p.state || '',
+            latitude: p.latitude || 0,
+            longitude: p.longitude || 0,
+            bedrooms: p.bedrooms,
+            bathrooms: p.bathrooms,
+            sqft: p.squareFootage || p.sqft,
+            estimatedValue: p.estimatedValue,
+            propertyType: p.propertyType,
+          }));
+
+          setAiProperties(mapProperties);
+
+          // Update search location if we can infer it
+          const firstWithLocation = properties.find((p) => p.city && p.state);
+          if (firstWithLocation) {
+            setSearchLocation({
+              city: firstWithLocation.city || '',
+              state: firstWithLocation.state || '',
+              zipCode: firstWithLocation.zip || firstWithLocation.zipCode || '',
+            });
+          }
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Use AI properties if available, otherwise API data or fallback
+  const allProperties =
+    aiProperties.length > 0
+      ? aiProperties
+      : apiProperties && apiProperties.length > 0
+        ? apiProperties
+        : FALLBACK_PROPERTIES;
 
   // Filter properties by map bounds
   const visibleProperties = useMemo(() => {
@@ -184,16 +261,19 @@ export function PropertySearchSplitView() {
         waterfront: null,
         gatedCommunity: null,
         seniorCommunity: null,
-        equityPercent: property.estimatedValue && property.lastSalePrice
-          ? (((property.estimatedValue as number) - (property.lastSalePrice as number)) / (property.estimatedValue as number)) * 100
-          : null,
+        equityPercent:
+          property.estimatedValue && property.lastSalePrice
+            ? (((property.estimatedValue as number) - (property.lastSalePrice as number)) /
+                (property.estimatedValue as number)) *
+              100
+            : null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
       filterResults: {
         matches: [],
         matchedFilters: [],
-        combinedScore: 75 - (index * 5), // Mock score that decreases for each property
+        combinedScore: 75 - index * 5, // Mock score that decreases for each property
         passesFilter: true,
       },
       rank: index + 1,
@@ -201,15 +281,52 @@ export function PropertySearchSplitView() {
   }, [visibleProperties]);
 
   // Handle filter changes
-  const handleFiltersChange = useCallback((filters: ActiveFilter[]) => {
-    setActiveFilters(filters);
-  }, [setActiveFilters]);
+  const handleFiltersChange = useCallback(
+    (filters: ActiveFilter[]) => {
+      setActiveFilters(filters);
+    },
+    [setActiveFilters]
+  );
+
+  // Parse search query to extract location (city, state, or zip)
+  const parseSearchQuery = useCallback(
+    (query: string): { city: string; state: string; zipCode: string } => {
+      const trimmed = query.trim();
+
+      // Check if it's a zip code (5 digits)
+      if (/^\d{5}$/.test(trimmed)) {
+        return { city: '', state: '', zipCode: trimmed };
+      }
+
+      // Check for "City, State" format (e.g., "Miami, FL" or "Los Angeles, California")
+      const cityStateMatch = trimmed.match(/^([^,]+),\s*([A-Za-z]{2,})$/);
+      if (cityStateMatch && cityStateMatch[1] && cityStateMatch[2]) {
+        return { city: cityStateMatch[1].trim(), state: cityStateMatch[2].trim(), zipCode: '' };
+      }
+
+      // Check for state abbreviation only (e.g., "FL", "CA")
+      if (/^[A-Za-z]{2}$/.test(trimmed)) {
+        return { city: '', state: trimmed.toUpperCase(), zipCode: '' };
+      }
+
+      // Default: treat as city name
+      return { city: trimmed, state: '', zipCode: '' };
+    },
+    []
+  );
 
   // Handle search
-  const handleSearch = useCallback((query: string) => {
-    setSearchQuery(query);
-    // TODO: Implement search logic
-  }, []);
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+
+      if (query.trim()) {
+        const parsed = parseSearchQuery(query);
+        setSearchLocation(parsed);
+      }
+    },
+    [parseSearchQuery]
+  );
 
   // Shared components
   const filterBar = (
@@ -274,12 +391,5 @@ export function PropertySearchSplitView() {
 
   // Desktop layout (1024px+)
   // AI Chat is handled by AppShell right sidebar
-  return (
-    <SplitViewLayout
-      filterBar={filterBar}
-      mapPanel={mapPanel}
-      listPanel={listPanel}
-    />
-  );
+  return <SplitViewLayout filterBar={filterBar} mapPanel={mapPanel} listPanel={listPanel} />;
 }
-

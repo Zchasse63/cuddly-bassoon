@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
       <section className="analytics-section">
         <h2 className="analytics-section__title">Detailed Analytics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link href="/analytics/deals" className="group">
+          <Link href="/analytics/pipeline" className="group">
             <Card className="h-full hover:border-primary/50 transition-colors">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
                       <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium">Deal Analytics</h3>
+                      <h3 className="font-medium">Pipeline Analytics</h3>
                       <p className="text-xs text-muted-foreground">Pipeline & revenue</p>
                     </div>
                   </div>

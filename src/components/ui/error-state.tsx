@@ -1,8 +1,10 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { springPresets, fadeUpVariants } from '@/lib/animations';
 import { AlertCircle, RefreshCw, Home, AlertTriangle } from 'lucide-react';
 
 interface ErrorStateProps {
@@ -25,7 +27,10 @@ export function ErrorState({
   details,
 }: ErrorStateProps) {
   return (
-    <div
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fadeUpVariants}
       className={cn(
         'flex flex-col items-center justify-center text-center p-8 min-h-[400px]',
         'glass-card border-destructive/20 bg-destructive/5',
@@ -35,9 +40,14 @@ export function ErrorState({
       {/* Icon */}
       <div className="relative mb-6 group">
         <div className="absolute inset-0 bg-destructive/20 rounded-full blur-xl animate-pulse" />
-        <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-destructive/10 ring-1 ring-destructive/30 text-destructive shadow-lg shadow-destructive/10 group-hover:scale-105 transition-transform duration-300">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={springPresets.gentle}
+          className="relative flex items-center justify-center w-20 h-20 rounded-full bg-destructive/10 ring-1 ring-destructive/30 text-destructive shadow-lg shadow-destructive/10"
+        >
           <AlertTriangle className="h-10 w-10 opacity-90" />
-        </div>
+        </motion.div>
       </div>
 
       {/* Content */}
@@ -94,6 +104,6 @@ export function ErrorState({
           </Button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

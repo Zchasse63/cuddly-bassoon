@@ -4,12 +4,23 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { User, FileText, ExternalLink, Check, Copy } from 'lucide-react';
+import {
+  User,
+  FileText,
+  ExternalLink,
+  Check,
+  Copy,
+  Loader2,
+  AlertCircle,
+  Home,
+  MapPin,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScoutOrb } from './ScoutOrb';
 import { springPresets } from '@/lib/animations';
+import type { MessagePart, ToolPart } from '@/hooks/use-rag-chat';
 
 /* PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
    TYPES
@@ -18,6 +29,7 @@ import { springPresets } from '@/lib/animations';
 export interface ScoutMessageProps {
   role: 'user' | 'assistant';
   content: string;
+  parts?: MessagePart[]; // Tool parts from AI SDK
   sources?: Array<{
     slug: string;
     title: string;
@@ -68,6 +80,163 @@ function SourceCard({
 }
 
 /* PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+   TOOL RESULT COMPONENTS
+   PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP */
+
+interface PropertyResult {
+  id?: string;
+  address?: string;
+  formattedAddress?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  zipCode?: string;
+  propertyType?: string;
+  estimatedValue?: number;
+  lastSalePrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  squareFootage?: number;
+}
+
+function PropertyCard({ property }: { property: PropertyResult }) {
+  const address = property.address || property.formattedAddress || 'Unknown Address';
+  const location = [property.city, property.state, property.zip || property.zipCode]
+    .filter(Boolean)
+    .join(', ');
+  const value = property.estimatedValue || property.lastSalePrice;
+
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-lg glass-subtle hover:glass-base transition-all">
+      <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary shrink-0">
+        <Home className="size-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm truncate">{address}</p>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <MapPin className="size-3" />
+          <span className="truncate">{location}</span>
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          {property.propertyType && (
+            <Badge variant="secondary" className="text-xs">
+              {property.propertyType.replace(/_/g, ' ')}
+            </Badge>
+          )}
+          {value && (
+            <span className="text-xs font-medium text-primary">${value.toLocaleString()}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ToolResultCard({ part }: { part: ToolPart }) {
+  const toolName = part.toolName || part.type.replace('tool-', '');
+  const displayName = toolName.replace(/_/g, ' ').replace(/\./g, ' › ');
+
+  // Loading state
+  if (part.state === 'input-streaming' || part.state === 'input-available') {
+    return (
+      <motion.div
+        className="flex items-center gap-2 p-3 rounded-lg glass-subtle"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <Loader2 className="size-4 animate-spin text-primary" />
+        <span className="text-sm text-muted-foreground">Running {displayName}...</span>
+      </motion.div>
+    );
+  }
+
+  // Error state
+  if (part.state === 'output-error') {
+    return (
+      <motion.div
+        className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 text-destructive"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <AlertCircle className="size-4" />
+        <span className="text-sm">{part.errorText || 'Tool execution failed'}</span>
+      </motion.div>
+    );
+  }
+
+  // Output available - render based on tool type
+  if (part.state === 'output-available' && part.output) {
+    const output = part.output as Record<string, unknown>;
+
+    // Property search results
+    if (toolName.includes('property') && toolName.includes('search')) {
+      const properties = (output.properties || output.data || []) as PropertyResult[];
+      const total = (output.total || properties.length) as number;
+
+      if (properties.length === 0) {
+        return (
+          <motion.div
+            className="p-3 rounded-lg glass-subtle text-sm text-muted-foreground"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            No properties found matching your criteria.
+          </motion.div>
+        );
+      }
+
+      return (
+        <motion.div
+          className="flex flex-col gap-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-medium text-muted-foreground">
+              Found {total} properties
+            </span>
+            <Badge variant="outline" className="text-xs">
+              {displayName}
+            </Badge>
+          </div>
+          <div className="grid gap-2 max-h-[300px] overflow-y-auto">
+            {properties.slice(0, 5).map((property, idx) => (
+              <PropertyCard key={property.id || idx} property={property} />
+            ))}
+          </div>
+          {properties.length > 5 && (
+            <p className="text-xs text-muted-foreground px-1">
+              + {properties.length - 5} more properties
+            </p>
+          )}
+        </motion.div>
+      );
+    }
+
+    // Generic tool result - show as JSON
+    return (
+      <motion.div
+        className="flex flex-col gap-2"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="flex items-center gap-2 px-1">
+          <Badge variant="outline" className="text-xs">
+            {displayName}
+          </Badge>
+          <span className="text-xs text-muted-foreground">completed</span>
+        </div>
+        <pre className="p-3 rounded-lg glass-subtle text-xs overflow-x-auto max-h-[200px]">
+          {JSON.stringify(output, null, 2)}
+        </pre>
+      </motion.div>
+    );
+  }
+
+  return null;
+}
+
+/* PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
    ANIMATION VARIANTS
    PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP */
 
@@ -107,6 +276,7 @@ const messageVariants = {
 export const ScoutMessage = memo(function ScoutMessage({
   role,
   content,
+  parts,
   sources,
   isStreaming = false,
   onCopy,
@@ -115,13 +285,20 @@ export const ScoutMessage = memo(function ScoutMessage({
 }: ScoutMessageProps) {
   const isAssistant = role === 'assistant';
 
+  // Extract tool parts for rendering
+  const toolParts =
+    parts?.filter(
+      (p): p is ToolPart =>
+        typeof p === 'object' &&
+        p !== null &&
+        'type' in p &&
+        typeof p.type === 'string' &&
+        p.type.startsWith('tool-')
+    ) || [];
+
   return (
     <motion.div
-      className={cn(
-        'flex gap-3 w-full',
-        isAssistant ? 'flex-row' : 'flex-row-reverse',
-        className
-      )}
+      className={cn('flex gap-3 w-full', isAssistant ? 'flex-row' : 'flex-row-reverse', className)}
       variants={isAssistant ? messageVariants.assistant : messageVariants.user}
       initial="hidden"
       animate="visible"
@@ -139,10 +316,7 @@ export const ScoutMessage = memo(function ScoutMessage({
 
       {/* Message Content Container */}
       <div
-        className={cn(
-          'flex flex-col gap-2 max-w-[80%]',
-          isAssistant ? 'items-start' : 'items-end'
-        )}
+        className={cn('flex flex-col gap-2 max-w-[80%]', isAssistant ? 'items-start' : 'items-end')}
       >
         {/* Message Bubble */}
         <div
@@ -183,6 +357,20 @@ export const ScoutMessage = memo(function ScoutMessage({
                 + {sources.length - 3} more source{sources.length - 3 > 1 ? 's' : ''}
               </p>
             )}
+          </motion.div>
+        )}
+
+        {/* Tool Results (Assistant Only) - Generative UI */}
+        {isAssistant && toolParts.length > 0 && (
+          <motion.div
+            className="flex flex-col gap-2 w-full"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...springPresets.standard, delay: 0.15 }}
+          >
+            {toolParts.map((part, idx) => (
+              <ToolResultCard key={part.toolCallId || idx} part={part} />
+            ))}
           </motion.div>
         )}
 

@@ -10,12 +10,17 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, DollarSign, Percent, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Percent, Info, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { ValueCellProps } from './types';
 
-export const ValueCell = memo(function ValueCell({ property, className, arv, repairCost = 0 }: ValueCellProps) {
+export const ValueCell = memo(function ValueCell({
+  property,
+  className,
+  arv,
+  repairCost = 0,
+}: ValueCellProps) {
   const formatCurrency = (value: number | null | undefined) => {
     if (!value) return 'N/A';
     return new Intl.NumberFormat('en-US', {
@@ -31,15 +36,14 @@ export const ValueCell = memo(function ValueCell({ property, className, arv, rep
   const askingPrice = property.askingPrice || property.lastSalePrice || estimatedValue * 0.7;
   const estimatedProfit = arvValue - (askingPrice + repairCost);
   const profitMargin = arvValue > 0 ? (estimatedProfit / arvValue) * 100 : 0;
-  
+
   const isProfitable = estimatedProfit > 0;
   const equityPercent = property.equityPercent || 0;
+  const equityAmount = property.equityAmount || 0;
+  const rentEstimate = property.rentEstimate || 0;
 
   return (
-    <motion.div
-      layout
-      className={cn('bento-cell bento-value', className)}
-    >
+    <motion.div layout className={cn('bento-cell bento-value', className)}>
       {/* Main Profit Display */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-1">
@@ -54,17 +58,18 @@ export const ValueCell = memo(function ValueCell({ property, className, arv, rep
               <TooltipContent className="glass-card">
                 <p className="text-sm">ARV - (Ask + Repairs)</p>
                 <p className="text-xs text-[var(--fluid-text-secondary)] mt-1">
-                  {formatCurrency(arvValue)} - ({formatCurrency(askingPrice)} + {formatCurrency(repairCost)})
+                  {formatCurrency(arvValue)} - ({formatCurrency(askingPrice)} +{' '}
+                  {formatCurrency(repairCost)})
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         <div className="flex items-baseline gap-2">
-          <span 
+          <span
             className={cn(
-              "profit-amount",
-              isProfitable ? "text-[var(--fluid-success)]" : "text-[var(--fluid-danger)]"
+              'profit-amount',
+              isProfitable ? 'text-[var(--fluid-success)]' : 'text-[var(--fluid-danger)]'
             )}
           >
             {formatCurrency(Math.abs(estimatedProfit))}
@@ -94,19 +99,46 @@ export const ValueCell = memo(function ValueCell({ property, className, arv, rep
             <Percent className="h-3.5 w-3.5" />
             Equity
           </div>
-          <span 
+          <span
             className={cn(
-              "font-semibold",
-              equityPercent >= 50 && "text-[var(--fluid-success)]",
-              equityPercent >= 20 && equityPercent < 50 && "text-[var(--fluid-warning)]",
-              equityPercent < 20 && "text-[var(--fluid-danger)]"
+              'font-semibold',
+              equityPercent >= 50 && 'text-[var(--fluid-success)]',
+              equityPercent >= 20 && equityPercent < 50 && 'text-[var(--fluid-warning)]',
+              equityPercent < 20 && 'text-[var(--fluid-danger)]'
             )}
           >
             {equityPercent.toFixed(0)}%
           </span>
         </div>
       </div>
+
+      {/* Additional Metrics Row */}
+      <div className="grid grid-cols-2 gap-3 pt-3 mt-3 border-t border-[var(--border-highlight)]">
+        <div>
+          <div className="flex items-center gap-1.5 text-sm text-[var(--fluid-text-secondary)] mb-0.5">
+            <DollarSign className="h-3.5 w-3.5" />
+            Equity Amount
+          </div>
+          <span
+            className={cn(
+              'font-semibold',
+              equityAmount >= 100000 && 'text-[var(--fluid-success)]',
+              equityAmount >= 50000 && equityAmount < 100000 && 'text-[var(--fluid-warning)]'
+            )}
+          >
+            {formatCurrency(equityAmount)}
+          </span>
+        </div>
+        <div>
+          <div className="flex items-center gap-1.5 text-sm text-[var(--fluid-text-secondary)] mb-0.5">
+            <Home className="h-3.5 w-3.5" />
+            Rent Estimate
+          </div>
+          <span className="font-semibold">
+            {rentEstimate > 0 ? `${formatCurrency(rentEstimate)}/mo` : 'N/A'}
+          </span>
+        </div>
+      </div>
     </motion.div>
   );
 });
-

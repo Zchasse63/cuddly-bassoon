@@ -98,25 +98,30 @@ const QUICK_ACTIONS_BY_VIEW: Record<ViewType, QuickAction[]> = {
     },
     { id: 'notes', label: 'Notes', icon: FileText, prompt: 'Add notes about this buyer' },
   ],
-  deals: [
-    { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze my deal pipeline' },
-    { id: 'add', label: 'Add Deal', icon: Plus, prompt: 'Help me create a new deal' },
-    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my deals' },
+  pipeline: [
+    { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze my pipeline' },
+    { id: 'add', label: 'Add Opportunity', icon: Plus, prompt: 'Help me add a new opportunity' },
+    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my pipeline' },
   ],
-  'deal-detail': [
+  'pipeline-detail': [
     {
       id: 'analyze',
       label: 'Analyze',
       icon: BarChart3,
-      prompt: 'Analyze this deal and provide recommendations',
+      prompt: 'Analyze this opportunity and provide recommendations',
     },
     {
       id: 'docs',
       label: 'Docs',
       icon: FileText,
-      prompt: 'Help me generate documents for this deal',
+      prompt: 'Help me generate documents for this opportunity',
     },
-    { id: 'contact', label: 'Contact', icon: Phone, prompt: 'Draft communication for this deal' },
+    {
+      id: 'contact',
+      label: 'Contact',
+      icon: Phone,
+      prompt: 'Draft communication for this opportunity',
+    },
   ],
   documents: [
     {
@@ -166,11 +171,7 @@ const QUICK_ACTIONS_BY_VIEW: Record<ViewType, QuickAction[]> = {
     { id: 'search', label: 'Search', icon: Search, prompt: 'Search properties on the map' },
     { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze this area' },
   ],
-  leads: [
-    { id: 'search', label: 'Search', icon: Search, prompt: 'Search my leads' },
-    { id: 'analyze', label: 'Analyze', icon: BarChart3, prompt: 'Analyze lead quality' },
-    { id: 'add', label: 'Add', icon: Plus, prompt: 'Help me add a new lead' },
-  ],
+
   'analytics-buyers': [
     { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a buyer analytics report' },
     {
@@ -189,13 +190,18 @@ const QUICK_ACTIONS_BY_VIEW: Record<ViewType, QuickAction[]> = {
       prompt: 'Analyze my communication effectiveness',
     },
   ],
-  'analytics-deals': [
-    { id: 'report', label: 'Report', icon: FileText, prompt: 'Generate a deals analytics report' },
+  'analytics-pipeline': [
+    {
+      id: 'report',
+      label: 'Report',
+      icon: FileText,
+      prompt: 'Generate a pipeline analytics report',
+    },
     {
       id: 'insights',
       label: 'Insights',
       icon: Sparkles,
-      prompt: 'Give me insights about deal performance',
+      prompt: 'Give me insights about pipeline performance',
     },
   ],
   'analytics-heatmap': [

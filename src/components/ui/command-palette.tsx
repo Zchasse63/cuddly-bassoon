@@ -51,10 +51,10 @@ const quickActions: SearchResult[] = [
   {
     id: 'new-deal',
     type: 'action',
-    title: 'New Deal',
-    subtitle: 'Create a new deal',
+    title: 'New Opportunity',
+    subtitle: 'Add to pipeline',
     icon: Plus,
-    href: '/deals/new',
+    href: '/pipeline/new',
     badge: 'Action',
   },
   {
@@ -81,7 +81,7 @@ const quickActions: SearchResult[] = [
 const navigationPages: SearchResult[] = [
   { id: 'dashboard', type: 'page', title: 'Dashboard', icon: BarChart3, href: '/dashboard' },
   { id: 'properties', type: 'page', title: 'Properties', icon: Building2, href: '/properties' },
-  { id: 'deals', type: 'page', title: 'Deals', icon: Briefcase, href: '/deals' },
+  { id: 'pipeline', type: 'page', title: 'Pipeline', icon: Briefcase, href: '/pipeline' },
   { id: 'buyers', type: 'page', title: 'Buyers', icon: Users, href: '/buyers' },
   { id: 'analytics', type: 'page', title: 'Analytics', icon: BarChart3, href: '/analytics' },
   { id: 'map', type: 'page', title: 'Map', icon: Map, href: '/map' },
@@ -150,9 +150,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 id: `deal-${item.id}`,
                 type: 'deal' as const,
                 title: item.property_address,
-                subtitle: `Deal • ${item.stage}`,
+                subtitle: `Pipeline • ${item.stage}`,
                 icon: Briefcase,
-                href: `/deals/${item.id}`,
+                href: `/pipeline/${item.id}`,
                 badge: item.stage,
               });
             } else if (item._type === 'buyer') {

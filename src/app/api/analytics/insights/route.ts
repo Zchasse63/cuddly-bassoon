@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/types/database';
+
+type AnalyticsDaily = Database['public']['Tables']['analytics_daily']['Row'];
+type Deal = Database['public']['Tables']['deals']['Row'];
 
 /**
  * AI Insights API
@@ -51,14 +55,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch analytics data
-    const { data: dailyData } = await (supabase as any)
+    const { data: dailyData } = await supabase
       .from('analytics_daily')
       .select('*')
       .eq('user_id', user.id)
       .gte('date', startDate.toISOString().split('T')[0])
       .lte('date', endDate.toISOString().split('T')[0]);
 
-    const { data: deals } = await (supabase as any)
+    const { data: deals } = await supabase
       .from('deals')
       .select('*')
       .eq('user_id', user.id)
@@ -66,13 +70,15 @@ export async function GET(request: NextRequest) {
 
     // Generate insights based on data
     const insights: Insight[] = [];
+    const allDeals: Deal[] = deals || [];
+    const allDailyData: AnalyticsDaily[] = dailyData || [];
 
     // Analyze deal performance
-    const closedDeals = deals?.filter((d: any) => d.status === 'closed') || [];
-    const pendingDeals = deals?.filter((d: any) => d.status === 'pending') || [];
+    const closedDeals = allDeals.filter((d) => d.status === 'closed');
+    const pendingDeals = allDeals.filter((d) => d.status === 'pending');
 
     if (closedDeals.length > 0) {
-      const totalRevenue = closedDeals.reduce((sum: number, d: any) => sum + (d.profit || 0), 0);
+      const totalRevenue = closedDeals.reduce((sum, d) => sum + (Number(d.assignment_fee) || 0), 0);
       insights.push({
         id: 'deals-closed',
         type: 'achievement',
@@ -97,10 +103,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Analyze activity trends
-    const totalSearches =
-      dailyData?.reduce((sum: number, d: any) => sum + (d.searches || 0), 0) || 0;
-    const totalCalls =
-      dailyData?.reduce((sum: number, d: any) => sum + (d.calls_made || 0), 0) || 0;
+    const totalSearches = allDailyData.reduce((sum, d) => sum + (d.searches || 0), 0);
+    const totalCalls = allDailyData.reduce((sum, d) => sum + (d.calls_made || 0), 0);
 
     if (totalSearches > 100) {
       insights.push({

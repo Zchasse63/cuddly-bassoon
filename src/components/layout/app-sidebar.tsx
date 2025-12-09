@@ -30,7 +30,7 @@ const navItems = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Properties', href: '/properties', icon: Building2 },
   { title: 'Buyers', href: '/buyers', icon: Users },
-  { title: 'Deals', href: '/deals', icon: Handshake },
+  { title: 'Pipeline', href: '/pipeline', icon: Handshake },
   { title: 'Settings', href: '/settings', icon: Settings },
 ];
 

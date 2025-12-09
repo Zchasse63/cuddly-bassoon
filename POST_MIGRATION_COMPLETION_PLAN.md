@@ -432,7 +432,7 @@ const data = validation.data;
 | Flow | Pages | Actions |
 |------|-------|---------|
 | Property Discovery | /properties → /properties/[id] | Search, filter, view detail |
-| Deal Creation | /properties/[id] → /deals | Create deal from property |
+| Pipeline Creation | /properties/[id] → /pipeline | Create opportunity from property |
 | AI Interaction | Any page with Scout | Ask question, receive tool response |
 | Authentication | /login → /dashboard | Login, view dashboard |
 
@@ -516,10 +516,70 @@ export async function testXaiConnection(): Promise<boolean> {
 
 ---
 
+## ✅ COMPLETED: CRM Unification (December 8, 2025)
+
+### Summary
+The dual Leads/Deals system has been consolidated into a **unified Pipeline**. This eliminates confusion and duplication in the real estate wholesaling workflow.
+
+### Changes Made
+
+| Category | Before | After |
+|----------|--------|-------|
+| **UI Route** | `/deals` | `/pipeline` |
+| **Navigation Label** | "Deals" | "Pipeline" |
+| **Terminology** | "Deal" | "Opportunity" |
+| **API Routes** | `/api/deals` | `/api/deals` (unchanged for backward compat) |
+| **Leads Route** | `/leads` (separate page) | Redirects to `/pipeline?stage=lead,contacted` |
+| **Leads API** | `/api/leads` | Deprecated (with notices) |
+
+### Files Modified
+
+**Route Renames:**
+- `src/app/(dashboard)/deals/` → `src/app/(dashboard)/pipeline/`
+- `src/app/(dashboard)/analytics/deals/` → `src/app/(dashboard)/analytics/pipeline/`
+
+**Navigation Updates:**
+- `src/components/layout/app-sidebar.tsx` - "Pipeline" with `/pipeline` href
+- `src/components/layout/NavigationSidebar.tsx` - Updated navigation item
+- `src/components/layout/MobileNav.tsx` - Updated mobile navigation
+
+**Component Updates:**
+- `src/app/(dashboard)/pipeline/PipelinePageClient.tsx` - Renamed from DealsPageClient
+- `src/app/(dashboard)/pipeline/[id]/DealDetailClient.tsx` - Updated back links
+- `src/components/ui/command-palette.tsx` - Updated search results
+- `src/components/analytics/PipelineSummary.tsx` - Updated link
+- `src/components/analytics/QuickActions.tsx` - Updated terminology
+- `src/components/ai/ProactiveInsights.tsx` - Updated navigation
+- `src/components/ai/QuickActions.tsx` - Updated view types
+
+**Type Updates:**
+- `src/contexts/ViewContext.tsx` - Replaced `deals`/`deal-detail`/`leads`/`analytics-deals` with `pipeline`/`pipeline-detail`/`analytics-pipeline`
+- `src/hooks/usePageContext.ts` - Updated DEFAULT_QUICK_ACTIONS
+
+**Deprecation Notices Added:**
+- `src/app/api/leads/route.ts` - Marked as deprecated
+- `src/app/api/leads/[id]/route.ts` - Marked as deprecated
+- `src/lib/crm/index.ts` - Added deprecation note
+- `src/test/fixtures/index.ts` - Added deprecation comments for leads exports
+
+**Middleware:**
+- `src/lib/supabase/middleware.ts` - Updated protected routes from `/deals` to `/pipeline`
+
+### Redirect Behavior
+- `/leads` now redirects to `/pipeline?stage=lead,contacted` to show early-stage pipeline items
+- `/deals` route no longer exists (renamed to `/pipeline`)
+
+### API Backward Compatibility
+- `/api/deals` routes remain unchanged
+- `/api/leads` routes are deprecated but still functional with deprecation notices
+
+---
+
 ## Notes
 
 - **Skip Trace API:** Deferred until external API provider is selected
 - **SendGrid/Twilio:** Rate limiting deferred until Redis is configured
 - **UI Changes:** All additions should follow Fluid OS glass morphism and spring physics
 - **Testing:** Run `npm run build` after each batch of changes
+- **CRM Unification:** Completed December 8, 2025 - Leads consolidated into Pipeline
 

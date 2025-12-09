@@ -20,6 +20,8 @@ import {
   CoreMessage,
   NoSuchToolError,
   InvalidToolInputError,
+  convertToModelMessages,
+  UIMessage,
 } from 'ai';
 import { z } from 'zod';
 
@@ -44,19 +46,29 @@ import {
   summarizeConversation,
   generateContextAwareQuery,
 } from '@/lib/rag/conversation-context';
-import { analyzeToolResult, dynamicRetrieve, mightNeedReRetrieval } from '@/lib/rag/dynamic-retrieval';
+import {
+  analyzeToolResult,
+  dynamicRetrieve,
+  mightNeedReRetrieval,
+} from '@/lib/rag/dynamic-retrieval';
 
 const xai = createXai({
   apiKey: process.env.XAI_API_KEY || '',
 });
 
-// Request validation schema
+// Request validation schema - supports both legacy format and UIMessage format
 const chatRequestSchema = z.object({
+  // Accept UIMessage[] format from useChat hook (has parts array)
+  // or legacy format with content string
   messages: z.array(
-    z.object({
-      role: z.enum(['user', 'assistant']),
-      content: z.string(),
-    })
+    z
+      .object({
+        id: z.string().optional(),
+        role: z.enum(['user', 'assistant', 'system']),
+        content: z.string().optional(), // Legacy format
+        parts: z.array(z.any()).optional(), // UIMessage format with parts
+      })
+      .passthrough() // Allow additional fields from UIMessage
   ),
   model: z.enum([GROK_MODELS.REASONING, GROK_MODELS.FAST]).optional(),
   systemPrompt: z.string().optional(),
@@ -100,7 +112,10 @@ async function fetchEnhancedRAGContext(
     const reformulated = await reformulateForRAG(query, { timeout: 1500 });
 
     // Phase 2: Tool-Aware Categories
-    const toolCategories = getToolAwareCategories(query, routingClassification as Parameters<typeof getToolAwareCategories>[1]);
+    const toolCategories = getToolAwareCategories(
+      query,
+      routingClassification as Parameters<typeof getToolAwareCategories>[1]
+    );
 
     // Phase 3: Conversation Context
     let excludeDocIds: string[] = [];
@@ -148,8 +163,8 @@ async function fetchEnhancedRAGContext(
     }
 
     // Format RAG results into context string
-    const contextParts = results.map((r: SearchResult, i: number) =>
-      `[Source ${i + 1}: ${r.metadata.title}]\n${r.content}`
+    const contextParts = results.map(
+      (r: SearchResult, i: number) => `[Source ${i + 1}: ${r.metadata.title}]\n${r.content}`
     );
 
     const sources = results.map((r: SearchResult) => ({
@@ -173,8 +188,8 @@ async function fetchEnhancedRAGContext(
     // Graceful fallback to simple search
     try {
       const results = await searchDocuments(query, { limit: 3, threshold: 0.5 });
-      const contextParts = results.map((r: SearchResult, i: number) =>
-        `[Source ${i + 1}: ${r.metadata.title}]\n${r.content}`
+      const contextParts = results.map(
+        (r: SearchResult, i: number) => `[Source ${i + 1}: ${r.metadata.title}]\n${r.content}`
       );
       const sources = results.map((r: SearchResult) => ({
         title: r.metadata.title,
@@ -184,8 +199,8 @@ async function fetchEnhancedRAGContext(
       return {
         context: contextParts.join('\n\n'),
         sources,
-        fetchedDocIds: results.map(r => r.documentId),
-        fetchedCategories: [...new Set(results.map(r => r.metadata.category))],
+        fetchedDocIds: results.map((r) => r.documentId),
+        fetchedCategories: [...new Set(results.map((r) => r.metadata.category))],
         reformulatedQuery: query,
       };
     } catch {
@@ -274,10 +289,13 @@ export async function POST(request: NextRequest) {
     const validatedData = chatRequestSchema.safeParse(body);
 
     if (!validatedData.success) {
-      return new Response(JSON.stringify({ error: 'Invalid request', details: validatedData.error.flatten() }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Invalid request', details: validatedData.error.flatten() }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const {
@@ -296,9 +314,24 @@ export async function POST(request: NextRequest) {
     // Initialize tools (only runs once)
     await ensureToolsInitialized();
 
+    // Helper to extract text content from a message (supports both legacy and UIMessage format)
+    const getMessageText = (msg: {
+      content?: string;
+      parts?: Array<{ type: string; text?: string }>;
+    }): string => {
+      if (msg.content) return msg.content;
+      if (msg.parts) {
+        return msg.parts
+          .filter((p) => p.type === 'text' && p.text)
+          .map((p) => p.text)
+          .join(' ');
+      }
+      return '';
+    };
+
     // Get the latest user message for RAG query and model routing
     const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
-    const userQuery = lastUserMessage?.content || '';
+    const userQuery = lastUserMessage ? getMessageText(lastUserMessage) : '';
 
     // Determine which model to use
     let selectedModel: GrokModelId = requestedModel || GROK_MODELS.FAST;
@@ -309,10 +342,14 @@ export async function POST(request: NextRequest) {
       selectedModel = routingDecision.model;
     }
 
-    // Convert messages to CoreMessage format (needed for RAG context)
+    // Convert messages to model format using AI SDK's convertToModelMessages
+    // This handles both legacy content format and UIMessage parts format
+    const modelMessages = convertToModelMessages(messages as UIMessage[]);
+
+    // Also create CoreMessage array for RAG context (needs simple content strings)
     const coreMessages: CoreMessage[] = messages.map((msg) => ({
-      role: msg.role,
-      content: msg.content,
+      role: msg.role as 'user' | 'assistant' | 'system',
+      content: getMessageText(msg),
     }));
 
     // Fetch enhanced RAG context with all Phase 1-4 improvements
@@ -333,21 +370,29 @@ export async function POST(request: NextRequest) {
     const tools = enableTools ? convertToAISDKTools(context) : undefined;
 
     // Get active tool keys (for limiting available tools by category)
-    const activeTools = enableTools && toolCategories?.length
-      ? getActiveToolKeys(context, toolCategories as ToolCategory[])
-      : undefined;
+    const activeTools =
+      enableTools && toolCategories?.length
+        ? getActiveToolKeys(context, toolCategories as ToolCategory[])
+        : undefined;
 
     // Wait for RAG context
     const ragResult = await ragPromise;
-    const { context: ragContext, sources: ragSources, fetchedDocIds, fetchedCategories } = ragResult;
+    const {
+      context: ragContext,
+      sources: ragSources,
+      fetchedDocIds,
+      fetchedCategories,
+    } = ragResult;
 
     // Log RAG usage with enhanced info
     if (ragSources.length > 0) {
       // eslint-disable-next-line no-console
-      console.log(`[AI Chat] RAG context loaded: ${ragSources.map(s => s.title).join(', ')}`);
+      console.log(`[AI Chat] RAG context loaded: ${ragSources.map((s) => s.title).join(', ')}`);
       if (ragResult.reformulatedQuery !== userQuery) {
         // eslint-disable-next-line no-console
-        console.log(`[AI Chat] Query reformulated: "${userQuery}" -> "${ragResult.reformulatedQuery}"`);
+        console.log(
+          `[AI Chat] Query reformulated: "${userQuery}" -> "${ragResult.reformulatedQuery}"`
+        );
       }
     }
 
@@ -357,7 +402,7 @@ export async function POST(request: NextRequest) {
         fetchedDocIds,
         fetchedCategories,
         messageCount: 1,
-      }).catch(err => console.error('[AI Chat] Failed to update conversation state:', err));
+      }).catch((err) => console.error('[AI Chat] Failed to update conversation state:', err));
     }
 
     // Build enhanced system prompt with RAG context and tool awareness
@@ -368,9 +413,10 @@ export async function POST(request: NextRequest) {
     );
 
     // Create streaming response with tools
+    // Use modelMessages (from convertToModelMessages) for proper UIMessage handling
     const result = streamText({
       model: xai(selectedModel),
-      messages: coreMessages,
+      messages: modelMessages,
       system: enhancedSystemPrompt,
       maxOutputTokens: maxTokens,
       temperature,
@@ -380,21 +426,32 @@ export async function POST(request: NextRequest) {
       onStepFinish: async (stepResult) => {
         // Log tool calls if any
         const toolCalls = stepResult.content.filter(
-          (part): part is { type: 'tool-call'; toolCallId: string; toolName: string; input: unknown } =>
+          (
+            part
+          ): part is { type: 'tool-call'; toolCallId: string; toolName: string; input: unknown } =>
             'type' in part && part.type === 'tool-call'
         );
         if (toolCalls.length > 0) {
           // eslint-disable-next-line no-console
-          console.log(`[AI Chat] Tool calls completed:`, toolCalls.map(tc => tc.toolName));
+          console.log(
+            `[AI Chat] Tool calls completed:`,
+            toolCalls.map((tc) => tc.toolName)
+          );
 
           // Phase 4: Analyze tool results for dynamic re-retrieval
           for (const toolCall of toolCalls) {
             // Quick check if re-retrieval might be needed
             const toolResultPart = stepResult.content.find(
               (part) =>
-                'type' in part && part.type === 'tool-result' && 'toolCallId' in part && part.toolCallId === toolCall.toolCallId
+                'type' in part &&
+                part.type === 'tool-result' &&
+                'toolCallId' in part &&
+                part.toolCallId === toolCall.toolCallId
             );
-            const toolResult = toolResultPart && 'output' in toolResultPart ? { result: toolResultPart.output } : null;
+            const toolResult =
+              toolResultPart && 'output' in toolResultPart
+                ? { result: toolResultPart.output }
+                : null;
 
             if (toolResult && mightNeedReRetrieval(toolResult.result)) {
               // Full analysis
@@ -406,25 +463,31 @@ export async function POST(request: NextRequest) {
 
               if (analysis.shouldRetrieve && analysis.urgency !== 'low') {
                 // eslint-disable-next-line no-console
-                console.log(`[AI Chat] Dynamic re-retrieval triggered for: ${analysis.unexpectedTerms.join(', ')}`);
+                console.log(
+                  `[AI Chat] Dynamic re-retrieval triggered for: ${analysis.unexpectedTerms.join(', ')}`
+                );
 
                 // Fetch additional context (non-blocking for now, could be enhanced later)
                 dynamicRetrieve(analysis, fetchedDocIds, { limit: 2 })
-                  .then(result => {
+                  .then((result) => {
                     if (result.additionalContext) {
                       // eslint-disable-next-line no-console
-                      console.log(`[AI Chat] Dynamic retrieval added: ${result.sources.map(s => s.title).join(', ')}`);
+                      console.log(
+                        `[AI Chat] Dynamic retrieval added: ${result.sources.map((s) => s.title).join(', ')}`
+                      );
                       // Note: In a future enhancement, this context could be injected
                       // into the conversation state for the next turn
                       if (sessionId) {
                         updateConversationState(sessionId, {
-                          fetchedDocIds: [...fetchedDocIds, ...result.sources.map(s => s.slug)],
-                          fetchedCategories: [...new Set([...fetchedCategories, ...result.retrievedCategories])],
+                          fetchedDocIds: [...fetchedDocIds, ...result.sources.map((s) => s.slug)],
+                          fetchedCategories: [
+                            ...new Set([...fetchedCategories, ...result.retrievedCategories]),
+                          ],
                         }).catch(() => {});
                       }
                     }
                   })
-                  .catch(err => console.error('[AI Chat] Dynamic retrieval error:', err));
+                  .catch((err) => console.error('[AI Chat] Dynamic retrieval error:', err));
               }
             }
           }
@@ -442,7 +505,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return result.toTextStreamResponse();
+    // Return UIMessageStreamResponse to include tool parts for client-side rendering
+    // This enables the Generative UI pattern where tool results render as React components
+    return result.toUIMessageStreamResponse({
+      onError: (error) => {
+        if (NoSuchToolError.isInstance(error)) {
+          return 'The AI tried to call an unknown tool.';
+        } else if (InvalidToolInputError.isInstance(error)) {
+          return 'The AI called a tool with invalid inputs.';
+        }
+        return 'An error occurred while processing your request.';
+      },
+    });
   } catch (error) {
     console.error('[AI Chat] Error:', error);
     return new Response(
@@ -454,4 +528,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

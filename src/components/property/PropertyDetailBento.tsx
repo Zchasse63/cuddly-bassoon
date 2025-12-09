@@ -2,7 +2,7 @@
 
 /**
  * PropertyDetailBento - Bento Grid Property Detail View
- * 
+ *
  * Source: Fluid_Real_Estate_OS_Design_System.md Section 4.2
  * Replaces the traditional scroll-of-death with a non-linear scanning layout
  */
@@ -34,7 +34,10 @@ interface PropertyDetailBentoProps {
   }>;
 }
 
-export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: PropertyDetailBentoProps) {
+export function PropertyDetailBento({
+  property,
+  relatedDeals: _relatedDeals,
+}: PropertyDetailBentoProps) {
   const router = useRouter();
   const [isSkipTracing, setIsSkipTracing] = useState(false);
   const [showCreateDealDialog, setShowCreateDealDialog] = useState(false);
@@ -53,7 +56,7 @@ export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: P
     setIsSkipTracing(true);
     try {
       // TODO: Implement skip trace API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       toast.success('Skip trace completed');
     } catch (error) {
       console.error('Skip trace error:', error);
@@ -81,9 +84,9 @@ export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: P
       if (!response.ok) throw new Error('Failed to create deal');
 
       const { deal } = await response.json();
-      toast.success('Deal created successfully');
+      toast.success('Added to pipeline');
       setShowCreateDealDialog(false);
-      router.push(`/deals/${deal.id}`);
+      router.push(`/pipeline/${deal.id}`);
     } catch (error) {
       console.error('Error creating deal:', error);
       toast.error('Failed to create deal');
@@ -105,10 +108,10 @@ export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: P
     >
       {/* Back Navigation */}
       <div className="p-4">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => router.back()} 
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.back()}
           className="gap-2 text-[var(--fluid-text-secondary)] hover:text-[var(--fluid-text-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -133,13 +136,14 @@ export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: P
         <DialogContent className="glass-card">
           <DialogHeader>
             <DialogTitle>Create New Deal</DialogTitle>
-            <DialogDescription>
-              Add this property to your deal pipeline
-            </DialogDescription>
+            <DialogDescription>Add this property to your deal pipeline</DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm text-[var(--fluid-text-secondary)]">
-              Property: <span className="font-medium text-[var(--fluid-text-primary)]">{property.address}</span>
+              Property:{' '}
+              <span className="font-medium text-[var(--fluid-text-primary)]">
+                {property.address}
+              </span>
             </p>
           </div>
           <DialogFooter>
@@ -155,4 +159,3 @@ export function PropertyDetailBento({ property, relatedDeals: _relatedDeals }: P
     </motion.div>
   );
 }
-

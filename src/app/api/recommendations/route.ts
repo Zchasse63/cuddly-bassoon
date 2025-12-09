@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { RecommendationEngine, DealPattern } from '@/lib/recommendations';
+import type { Database } from '@/types/database';
+
+type Deal = Database['public']['Tables']['deals']['Row'];
 
 /**
  * Recommendations API
@@ -28,32 +31,35 @@ export async function GET(request: NextRequest) {
     const engine = new RecommendationEngine({ minConfidence: minScore, maxResults: limit });
 
     // Fetch user's closed deals to learn patterns
-    const { data: closedDeals } = await (supabase as any)
+    const { data: closedDeals } = await supabase
       .from('deals')
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'closed')
-      .order('closed_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(100);
 
     if (closedDeals && closedDeals.length > 0) {
-      const patterns: DealPattern[] = closedDeals.map((deal: any) => ({
-        zipCode: deal.zip_code || '',
-        priceRange: { min: deal.purchase_price * 0.8, max: deal.purchase_price * 1.2 },
-        propertyType: deal.property_type || 'single_family',
-        bedrooms: deal.bedrooms || 3,
-        buyerId: deal.buyer_id,
-        profit: deal.profit || 0,
-        daysToClose: deal.days_to_close || 30,
+      const patterns: DealPattern[] = closedDeals.map((deal: Deal) => ({
+        zipCode: '',
+        priceRange: {
+          min: Number(deal.contract_price || 0) * 0.8,
+          max: Number(deal.contract_price || 0) * 1.2,
+        },
+        propertyType: 'single_family',
+        bedrooms: 3,
+        buyerId: deal.assigned_buyer_id || undefined,
+        profit: Number(deal.assignment_fee) || 0,
+        daysToClose: 30,
       }));
       engine.learnFromDeals(patterns);
     }
 
     // Fetch available properties to score
-    const { data: properties } = await (supabase as any)
+    const { data: properties } = await supabase
       .from('properties')
-      .select('id, address, city, state, zip_code, price, property_type, bedrooms')
-      .eq('status', 'available')
+      .select('id, address, city, state, zip, asking_price, property_type, bedrooms')
+      .eq('listing_status', 'active')
       .limit(100);
 
     if (!properties || properties.length === 0) {
@@ -67,18 +73,18 @@ export async function GET(request: NextRequest) {
 
     // Get recommendations
     const recommendations = engine.getRecommendations(
-      properties.map((p: any) => ({
+      properties.map((p) => ({
         id: p.id,
-        zipCode: p.zip_code,
-        price: p.price,
-        propertyType: p.property_type,
-        bedrooms: p.bedrooms,
+        zipCode: p.zip || '',
+        price: p.asking_price || 0,
+        propertyType: p.property_type || 'single_family',
+        bedrooms: p.bedrooms || 0,
       }))
     );
 
     // Enrich with property details
     const enrichedRecommendations = recommendations.map((rec) => {
-      const property = properties.find((p: any) => p.id === rec.propertyId);
+      const property = properties.find((p) => p.id === rec.propertyId);
       return {
         ...rec,
         property: property
@@ -87,8 +93,8 @@ export async function GET(request: NextRequest) {
               address: property.address,
               city: property.city,
               state: property.state,
-              zipCode: property.zip_code,
-              price: property.price,
+              zipCode: property.zip,
+              price: property.asking_price,
               propertyType: property.property_type,
               bedrooms: property.bedrooms,
             }
@@ -107,6 +113,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Input deal pattern from request body
+interface InputDealPattern {
+  zipCode?: string;
+  priceRange?: { min?: number; max?: number };
+  propertyType?: string;
+  bedrooms?: number;
+  buyerId?: string;
+  profit?: number;
+  daysToClose?: number;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -120,14 +137,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { deals } = body;
+    const { deals } = body as { deals?: InputDealPattern[] };
 
     if (!deals || !Array.isArray(deals)) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
     // Store patterns in database for persistence
-    const patterns = deals.map((deal: any) => ({
+    // Note: recommendation_patterns table not yet in generated types
+    const patterns = deals.map((deal: InputDealPattern) => ({
       user_id: user.id,
       zip_code: deal.zipCode,
       price_min: deal.priceRange?.min || 0,
@@ -140,7 +158,14 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     }));
 
-    const { error: insertError } = await (supabase as any)
+    // Using type assertion for untyped table
+    const { error: insertError } = await (
+      supabase as unknown as {
+        from: (table: string) => {
+          insert: (data: typeof patterns) => Promise<{ error: Error | null }>;
+        };
+      }
+    )
       .from('recommendation_patterns')
       .insert(patterns);
 

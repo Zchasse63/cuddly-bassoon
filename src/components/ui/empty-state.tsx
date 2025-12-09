@@ -1,8 +1,10 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { springPresets, fadeUpVariants } from '@/lib/animations';
 import {
   LucideIcon,
   ArrowRight,
@@ -62,16 +64,24 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <div
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={fadeUpVariants}
       className={cn(
         'empty-state flex flex-col items-center justify-center text-center p-8',
         className
       )}
     >
       {Icon && (
-        <div className="empty-state__icon flex items-center justify-center w-20 h-20 rounded-full bg-brand-500/5 ring-1 ring-brand-500/20 text-brand-500 mb-6 group-hover:scale-110 transition-transform duration-500">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={springPresets.gentle}
+          className="empty-state__icon flex items-center justify-center w-20 h-20 rounded-full bg-brand-500/5 ring-1 ring-brand-500/20 text-brand-500 mb-6"
+        >
           <Icon className="h-10 w-10 opacity-80" />
-        </div>
+        </motion.div>
       )}
       <h3 className="empty-state__title text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 mb-2">
         {title}
@@ -163,7 +173,7 @@ export function EmptyState({
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 

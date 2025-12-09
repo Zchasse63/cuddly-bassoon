@@ -52,7 +52,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const input = createLeadListSchema.parse(body);
+    const validation = createLeadListSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
+
+    const input = validation.data;
 
     const { data, error } = await supabase
       .from('lead_lists')

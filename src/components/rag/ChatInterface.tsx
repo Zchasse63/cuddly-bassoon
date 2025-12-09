@@ -135,11 +135,13 @@ export function ChatInterface({
       {/* Input area - ChatGPT-style */}
       <div className="border-t bg-background p-4">
         <form onSubmit={handleSubmit} className="relative">
-          <div className={cn(
-            'flex items-end gap-2 rounded-2xl border bg-muted/50 px-4 py-3',
-            'focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50',
-            'transition-all duration-200'
-          )}>
+          <div
+            className={cn(
+              'flex items-end gap-2 rounded-2xl border bg-muted/50 px-4 py-3',
+              'focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50',
+              'transition-all duration-200'
+            )}
+          >
             <textarea
               ref={inputRef}
               value={input}
@@ -163,7 +165,7 @@ export function ChatInterface({
                   size="icon"
                   variant="ghost"
                   onClick={reset}
-                  title="Clear chat"
+                  aria-label="Clear chat history"
                   className="size-8 text-muted-foreground hover:text-foreground"
                 >
                   <RotateCcw className="size-4" />
@@ -175,6 +177,7 @@ export function ChatInterface({
                   size="icon"
                   variant="ghost"
                   onClick={cancel}
+                  aria-label="Stop generating response"
                   className="size-8 bg-destructive/10 text-destructive hover:bg-destructive/20"
                 >
                   <Square className="size-4" />
@@ -184,6 +187,7 @@ export function ChatInterface({
                   type="submit"
                   size="icon"
                   disabled={!input.trim()}
+                  aria-label="Send message"
                   className={cn(
                     'size-8 rounded-lg',
                     input.trim()

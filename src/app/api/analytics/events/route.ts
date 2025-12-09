@@ -30,9 +30,12 @@ export type EventType =
   | 'revenue_recorded'
   | 'expense_recorded';
 
-interface AnalyticsEvent {
+// JSON-compatible type for Supabase
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+interface AnalyticsEventInput {
   event_type: EventType;
-  event_data?: Record<string, unknown>;
+  event_data?: Record<string, JsonValue>;
   session_id?: string;
 }
 
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body: AnalyticsEvent = await request.json();
+    const body: AnalyticsEventInput = await request.json();
     const { event_type, event_data = {}, session_id } = body;
 
     if (!event_type) {
@@ -81,8 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert event into analytics_events table
-    // Note: Using type assertion as database types need regeneration after migration
-    const { error: eventError } = await (supabase as any).from('analytics_events').insert({
+    const { error: eventError } = await supabase.from('analytics_events').insert({
       user_id: user.id,
       event_type,
       event_data,
@@ -102,10 +104,10 @@ export async function POST(request: NextRequest) {
           ? (event_data.amount as number) || 0
           : 1;
 
-      // Note: Using type assertion as database types need regeneration after migration
-      const { error: upsertError } = await (supabase as any).rpc('upsert_daily_analytics', {
+      const todayDate = new Date().toISOString().split('T')[0] ?? '';
+      const { error: upsertError } = await supabase.rpc('upsert_daily_analytics', {
         p_user_id: user.id,
-        p_date: new Date().toISOString().split('T')[0],
+        p_date: todayDate,
         p_field: field,
         p_increment: increment,
       });
@@ -137,8 +139,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
 
-    // Note: Using type assertion as database types need regeneration after migration
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('analytics_events')
       .select('*')
       .eq('user_id', user.id)

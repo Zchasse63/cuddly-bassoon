@@ -1,6 +1,10 @@
 /**
  * CRM Module
  * Exports for CRM and lead management
+ *
+ * @deprecated NOTE: The separate "leads" functionality has been consolidated into the unified Pipeline.
+ * Lead-specific exports are kept for backward compatibility but new code should use the deals/pipeline system.
+ * See /lib/deals for the primary pipeline functionality.
  */
 
 import { z } from 'zod';

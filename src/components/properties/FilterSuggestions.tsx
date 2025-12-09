@@ -48,11 +48,11 @@ export function FilterSuggestions({
   const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
     switch (confidence) {
       case 'high':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-[var(--fluid-success)]';
       case 'medium':
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'text-[var(--fluid-warning)]';
       case 'low':
-        return 'text-gray-600 dark:text-gray-400';
+        return 'text-muted-foreground';
     }
   };
 
@@ -95,7 +95,7 @@ export function FilterSuggestions({
           {suggestions.map((suggestion) => (
             <div
               key={suggestion.filterId}
-              className="bg-white dark:bg-gray-950 rounded-lg p-2.5 border border-amber-200 dark:border-amber-900/50 hover:border-amber-300 dark:hover:border-amber-800 transition-colors"
+              className="glass-subtle rounded-lg p-2.5 border border-[var(--fluid-warning)]/30 hover:border-[var(--fluid-warning)]/50 transition-colors"
             >
               <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div className="flex-1 min-w-0">

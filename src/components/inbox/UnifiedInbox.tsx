@@ -111,7 +111,7 @@ export function UnifiedInbox({ className, onThreadSelect, onReply }: UnifiedInbo
       case 'delivered':
         return <CheckCheck className="h-3 w-3 text-green-500" />;
       case 'sent':
-        return <Check className="h-3 w-3 text-gray-400" />;
+        return <Check className="h-3 w-3 text-muted-foreground" />;
       case 'queued':
       case 'sending':
         return <Clock className="h-3 w-3 text-yellow-500" />;

@@ -1,6 +1,6 @@
 /**
  * Bento Grid Types
- * 
+ *
  * Source: Fluid_Real_Estate_OS_Design_System.md Section 4.2
  */
 
@@ -19,6 +19,7 @@ export interface HeroCellProps extends BentoCellProps {
   onStreetViewToggle?: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface StatsCellProps extends BentoCellProps {}
 
 export interface ValueCellProps extends BentoCellProps {
@@ -52,4 +53,3 @@ export interface ActionsCellProps extends BentoCellProps {
   onGenerateOffer?: () => void;
   isLoading?: boolean;
 }
-

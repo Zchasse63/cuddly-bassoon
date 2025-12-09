@@ -2,7 +2,22 @@
 
 import { cn } from '@/lib/utils';
 
-export function CustomGlassTooltip({ active, payload, label }: any) {
+// Recharts tooltip payload entry type
+interface TooltipPayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string;
+  payload?: Record<string, unknown>;
+}
+
+interface CustomGlassTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+  label?: string;
+}
+
+export function CustomGlassTooltip({ active, payload, label }: CustomGlassTooltipProps) {
   if (active && payload && payload.length) {
     return (
       <div
@@ -13,7 +28,7 @@ export function CustomGlassTooltip({ active, payload, label }: any) {
       >
         <p className="text-sm font-semibold mb-2 border-b border-border/10 pb-1">{label}</p>
         <div className="space-y-1">
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index) => (
             <div key={index} className="flex items-center justify-between gap-4 text-xs">
               <div className="flex items-center gap-1.5">
                 <div

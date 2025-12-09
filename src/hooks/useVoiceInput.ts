@@ -39,11 +39,16 @@ export function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInput
   // Check if Web Speech API is supported
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
-      setIsSupported(!!SpeechRecognition);
+      // webkitSpeechRecognition is a vendor-prefixed API not in standard TypeScript types
+      type SpeechRecognitionConstructor = new () => SpeechRecognition;
+      const windowWithWebkit = window as Window &
+        typeof globalThis & { webkitSpeechRecognition?: SpeechRecognitionConstructor };
+      const SpeechRecognitionAPI: SpeechRecognitionConstructor | undefined =
+        window.SpeechRecognition || windowWithWebkit.webkitSpeechRecognition;
+      setIsSupported(!!SpeechRecognitionAPI);
 
-      if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
+      if (SpeechRecognitionAPI) {
+        recognitionRef.current = new SpeechRecognitionAPI();
         const recognition = recognitionRef.current;
 
         recognition.continuous = continuous;

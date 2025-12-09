@@ -1,18 +1,40 @@
 /**
  * Test Fixtures Index
  * Central export for all test fixtures
+ *
+ * NOTE: The leads fixtures are kept for backward compatibility but new tests
+ * should use the deals/pipeline fixtures as leads have been consolidated into the unified Pipeline.
  */
 
 export * from './properties';
 export * from './buyers';
 export * from './deals';
+// @deprecated - leads are now consolidated into the pipeline (deals)
 export * from './leads';
 
 // Re-export commonly used fixtures with convenient names
-export { sampleProperties, allSampleProperties, comparables, propertySearchResults } from './properties';
+export {
+  sampleProperties,
+  allSampleProperties,
+  comparables,
+  propertySearchResults,
+} from './properties';
 export { sampleBuyers, allSampleBuyers, activeBuyers, buyerMatchCriteria } from './buyers';
-export { sampleDeals, allSampleDeals, dealsByStage, pipelineMetrics, dealAnalysisInput } from './deals';
-export { sampleLeads, allSampleLeads, leadsByStatus, leadEngagementMetrics, skipTraceResult } from './leads';
+export {
+  sampleDeals,
+  allSampleDeals,
+  dealsByStage,
+  pipelineMetrics,
+  dealAnalysisInput,
+} from './deals';
+// @deprecated - use deals/pipeline fixtures instead
+export {
+  sampleLeads,
+  allSampleLeads,
+  leadsByStatus,
+  leadEngagementMetrics,
+  skipTraceResult,
+} from './leads';
 
 /**
  * Create a random ID for testing
@@ -131,8 +153,10 @@ export const heatMapData = {
  */
 export const notificationTemplates = {
   sms: {
-    initial: 'Hi {firstName}, I noticed your property at {address}. Would you consider selling? Reply YES for a cash offer.',
-    followUp: 'Hi {firstName}, following up on {address}. Still interested in a cash offer? Call me at {agentPhone}.',
+    initial:
+      'Hi {firstName}, I noticed your property at {address}. Would you consider selling? Reply YES for a cash offer.',
+    followUp:
+      'Hi {firstName}, following up on {address}. Still interested in a cash offer? Call me at {agentPhone}.',
   },
   email: {
     initial: {

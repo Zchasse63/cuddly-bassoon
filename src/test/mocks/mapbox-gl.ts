@@ -51,26 +51,25 @@ export class LngLatBounds {
   }
 
   getCenter() {
-    return new LngLat(
-      (this._sw.lng + this._ne.lng) / 2,
-      (this._sw.lat + this._ne.lat) / 2
-    );
+    return new LngLat((this._sw.lng + this._ne.lng) / 2, (this._sw.lat + this._ne.lat) / 2);
   }
 }
 
 // Mock Map class
-type ListenerMap = globalThis.Map<string, Function[]>;
+type EventCallback = (...args: unknown[]) => void;
+type ListenerMap = globalThis.Map<string, EventCallback[]>;
 export class Map {
   private _container: HTMLElement;
   private _listeners: ListenerMap = new globalThis.Map();
 
   constructor(options?: { container?: string | HTMLElement }) {
-    this._container = typeof options?.container === 'string'
-      ? document.createElement('div')
-      : options?.container ?? document.createElement('div');
+    this._container =
+      typeof options?.container === 'string'
+        ? document.createElement('div')
+        : (options?.container ?? document.createElement('div'));
   }
 
-  on(event: string, callback: Function) {
+  on(event: string, callback: EventCallback) {
     if (!this._listeners.has(event)) {
       this._listeners.set(event, []);
     }
@@ -78,7 +77,7 @@ export class Map {
     return this;
   }
 
-  off(event: string, callback: Function) {
+  off(event: string, callback: EventCallback) {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);
@@ -89,7 +88,7 @@ export class Map {
     return this;
   }
 
-  once(event: string, callback: Function) {
+  once(event: string, callback: EventCallback) {
     const wrapper = (...args: unknown[]) => {
       this.off(event, wrapper);
       callback(...args);

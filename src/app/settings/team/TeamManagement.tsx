@@ -44,9 +44,9 @@ const roleIcons: Record<RoleKey, typeof Crown> = {
 };
 
 const roleColors: Record<RoleKey, string> = {
-  owner: 'bg-yellow-500',
-  admin: 'bg-blue-500',
-  member: 'bg-gray-500',
+  owner: 'bg-[var(--fluid-warning)]',
+  admin: 'bg-[var(--fluid-primary)]',
+  member: 'bg-muted-foreground',
 };
 
 export function TeamManagement({ team, members, invitations }: TeamManagementProps) {
@@ -226,7 +226,7 @@ export function TeamManagement({ team, members, invitations }: TeamManagementPro
               return (
                 <div key={member.id} className="flex items-center gap-4">
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full ${roleColors[roleKey] || 'bg-gray-500'}`}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full ${roleColors[roleKey] || 'bg-muted-foreground'}`}
                   >
                     <RoleIcon className="h-5 w-5 text-white" />
                   </div>

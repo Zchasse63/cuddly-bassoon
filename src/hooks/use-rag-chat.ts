@@ -4,13 +4,19 @@
  * RAG Chat Hook
  * Client-side hook for streaming AI chat interactions with RAG + Tools
  *
- * Uses the unified /api/ai/chat endpoint which includes:
+ * Uses the official @ai-sdk/react useChat hook with:
  * - RAG integration for domain knowledge
- * - 212 AI tools for real estate operations
+ * - 200 AI tools for real estate operations
  * - xAI Grok model with auto-routing
+ * - Generative UI pattern for tool result rendering
+ *
+ * Updated December 2025 - Migrated to useChat for proper tool parts handling
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useChat, type UIMessage } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
+import { aiEventBus } from '@/lib/ai/events';
 
 export interface RAGSource {
   title: string;
@@ -26,14 +32,30 @@ export interface RAGClassification {
   categories: string[];
 }
 
+// Extended message type that includes tool parts from AI SDK
 export interface RAGMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  parts?: Array<MessagePart>; // Tool parts from AI SDK
   sources?: RAGSource[];
   classification?: RAGClassification;
   cached?: boolean;
   timestamp: Date;
+}
+
+// Message part types from AI SDK
+export type MessagePart = { type: 'text'; text: string } | { type: 'step-start' } | ToolPart;
+
+// Tool part with typed output
+export interface ToolPart {
+  type: string; // 'tool-{toolName}'
+  toolCallId: string;
+  toolName: string;
+  state: 'input-streaming' | 'input-available' | 'output-available' | 'output-error';
+  input?: Record<string, unknown>;
+  output?: unknown;
+  errorText?: string;
 }
 
 export interface UseRagChatOptions {
@@ -57,21 +79,109 @@ export interface UseRagChatReturn {
   lastClassification: RAGClassification | null;
 }
 
-function generateId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-}
-
 export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
   const { onFinish, onError, persistKey, systemContext } = options;
 
-  const [messages, setMessages] = useState<RAGMessage[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [localInput, setLocalInput] = useState('');
   const [lastClassification, setLastClassification] = useState<RAGClassification | null>(null);
 
-  const abortControllerRef = useRef<AbortController | null>(null);
+  // Use the official useChat hook from @ai-sdk/react
+  // This properly handles UIMessage format with parts array for tool results
+  const {
+    messages: chatMessages,
+    sendMessage: chatSendMessage,
+    status,
+    error: chatError,
+    stop,
+    setMessages: setChatMessages,
+  } = useChat({
+    id: persistKey || 'rag-chat',
+    transport: new DefaultChatTransport({
+      api: '/api/ai/chat',
+      // Include system context and tool options in every request
+      prepareSendMessagesRequest: ({ id, messages }) => ({
+        body: {
+          id,
+          messages,
+          systemPrompt: systemContext,
+          enableTools: true,
+          autoRoute: true,
+        },
+      }),
+    }),
+    onFinish: ({ message }) => {
+      // Convert to RAGMessage format for callback
+      const ragMessage: RAGMessage = {
+        id: message.id,
+        role: message.role as 'user' | 'assistant',
+        content: extractTextContent(message),
+        parts: message.parts as MessagePart[],
+        timestamp: new Date(),
+      };
+      onFinish?.(ragMessage);
+
+      // Emit tool results via event bus for external UI updates
+      emitToolResults(message);
+    },
+    onError: (error) => {
+      onError?.(error);
+    },
+  });
+
+  // Helper to extract text content from message parts
+  const extractTextContent = (message: UIMessage): string => {
+    if (!message.parts) return '';
+    return message.parts
+      .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+      .map((p) => p.text)
+      .join(' ');
+  };
+
+  // Emit tool results via event bus for external UI components
+  const emitToolResults = (message: UIMessage) => {
+    if (!message.parts) return;
+
+    for (const part of message.parts) {
+      // Check if this is a tool part with output
+      if (
+        typeof part === 'object' &&
+        part !== null &&
+        'type' in part &&
+        typeof part.type === 'string' &&
+        part.type.startsWith('tool-') &&
+        'state' in part &&
+        part.state === 'output-available' &&
+        'output' in part
+      ) {
+        const toolPart = part as ToolPart;
+        const toolName = toolPart.toolName || part.type.replace('tool-', '');
+
+        // Emit event for property search results
+        if (toolName.includes('property_search') || toolName.includes('search')) {
+          aiEventBus.emit('tool:result', {
+            toolName,
+            result: toolPart.output,
+          });
+        }
+      }
+    }
+  };
+
+  // Convert chat messages to RAGMessage format
+  const messages: RAGMessage[] = chatMessages.map((msg) => ({
+    id: msg.id,
+    role: msg.role as 'user' | 'assistant',
+    content: extractTextContent(msg),
+    parts: msg.parts as MessagePart[],
+    timestamp: new Date(),
+  }));
+
+  // Persist messages to localStorage
+  useEffect(() => {
+    if (persistKey && typeof window !== 'undefined' && messages.length > 0) {
+      localStorage.setItem(persistKey, JSON.stringify(messages));
+    }
+  }, [messages, persistKey]);
 
   // Load persisted messages on mount
   useEffect(() => {
@@ -80,143 +190,35 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
         const saved = localStorage.getItem(persistKey);
         if (saved) {
           const parsed = JSON.parse(saved);
-          setMessages(
-            parsed.map((m: RAGMessage) => ({
-              ...m,
-              timestamp: new Date(m.timestamp),
-            }))
-          );
+          // Convert to Message format for useChat
+          const restoredMessages = parsed.map((m: RAGMessage) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            parts: m.parts || [{ type: 'text', text: m.content }],
+          }));
+          setChatMessages(restoredMessages);
         }
       } catch {
         // Ignore parse errors
       }
     }
-  }, [persistKey]);
+  }, [persistKey, setChatMessages]);
 
-  // Persist messages on change
-  useEffect(() => {
-    if (persistKey && typeof window !== 'undefined' && messages.length > 0) {
-      localStorage.setItem(persistKey, JSON.stringify(messages));
-    }
-  }, [messages, persistKey]);
-
+  // Wrapper for sendMessage to match our interface
   const sendMessage = useCallback(
     async (content?: string) => {
-      const messageContent = content ?? input.trim();
+      const messageContent = content ?? localInput.trim();
       if (!messageContent) return;
 
-      setError(null);
-      setIsLoading(true);
-      setInput('');
+      setLocalInput('');
 
-      // Add user message
-      const userMessage: RAGMessage = {
-        id: generateId(),
-        role: 'user',
-        content: messageContent,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, userMessage]);
-
-      // Create placeholder for assistant message
-      const assistantId = generateId();
-      const assistantMessage: RAGMessage = {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // Create abort controller for cancellation
-      abortControllerRef.current = new AbortController();
-
-      try {
-        // Build messages array for API (include history for context)
-        const apiMessages = messages
-          .filter((m) => m.content.trim())
-          .map((m) => ({
-            role: m.role,
-            content: m.content,
-          }));
-        // Add current user message
-        apiMessages.push({ role: 'user' as const, content: messageContent });
-
-        // Call the unified /api/ai/chat endpoint (RAG + Tools)
-        const response = await fetch('/api/ai/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            messages: apiMessages,
-            systemPrompt: systemContext,
-            enableTools: true,
-            autoRoute: true,
-          }),
-          signal: abortControllerRef.current.signal,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || `Request failed: ${response.status}`);
-        }
-
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error('No response body');
-
-        const decoder = new TextDecoder();
-        let accumulatedContent = '';
-
-        setIsStreaming(true);
-
-        // The /api/ai/chat endpoint returns a plain text stream from streamText()
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          accumulatedContent += chunk;
-
-          // Update the assistant message with accumulated content
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId
-                ? { ...m, content: accumulatedContent }
-                : m
-            )
-          );
-        }
-
-        // Final update
-        const finalMessage: RAGMessage = {
-          id: assistantId,
-          role: 'assistant',
-          content: accumulatedContent,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalMessage : m)));
-        onFinish?.(finalMessage);
-      } catch (err) {
-        if ((err as Error).name === 'AbortError') {
-          // User cancelled - remove the empty assistant message
-          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
-        } else {
-          const error = err instanceof Error ? err : new Error('Unknown error');
-          setError(error);
-          onError?.(error);
-          // Update assistant message with error
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId ? { ...m, content: `Error: ${error.message}` } : m
-            )
-          );
-        }
-      } finally {
-        setIsLoading(false);
-        setIsStreaming(false);
-        abortControllerRef.current = null;
-      }
+      // Use the AI SDK's sendMessage with proper parts format
+      chatSendMessage({
+        parts: [{ type: 'text', text: messageContent }],
+      });
     },
-    [input, messages, onFinish, onError, systemContext]
+    [localInput, chatSendMessage, setLocalInput]
   );
 
   const handleSubmit = useCallback(
@@ -228,29 +230,30 @@ export function useRagChat(options: UseRagChatOptions = {}): UseRagChatReturn {
   );
 
   const cancel = useCallback(() => {
-    abortControllerRef.current?.abort();
-    setIsStreaming(false);
-    setIsLoading(false);
-  }, []);
+    stop();
+  }, [stop]);
 
   const reset = useCallback(() => {
-    cancel();
-    setMessages([]);
-    setInput('');
-    setError(null);
+    stop();
+    setChatMessages([]);
+    setLocalInput('');
     setLastClassification(null);
     if (persistKey && typeof window !== 'undefined') {
       localStorage.removeItem(persistKey);
     }
-  }, [cancel, persistKey]);
+  }, [stop, setChatMessages, persistKey, setLocalInput, setLastClassification]);
+
+  // Derive loading/streaming states from status
+  const isLoading = status === 'submitted' || status === 'streaming';
+  const isStreaming = status === 'streaming';
 
   return {
     messages,
-    input,
-    setInput,
+    input: localInput,
+    setInput: setLocalInput,
     isLoading,
     isStreaming,
-    error,
+    error: chatError ?? null,
     sendMessage,
     handleSubmit,
     cancel,

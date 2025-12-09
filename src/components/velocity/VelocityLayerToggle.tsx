@@ -9,11 +9,7 @@ import { useState } from 'react';
 import { Flame, ChevronDown } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { VELOCITY_COLOR_SCALE } from '@/types/velocity';
 
@@ -33,7 +29,7 @@ export function VelocityLayerToggle({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm border">
+    <div className="flex items-center gap-3 p-2 glass-card rounded-lg">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button
@@ -68,7 +64,9 @@ export function VelocityLayerToggle({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-foreground">Opacity</span>
-                  <span className="text-xs text-muted-foreground">{Math.round(opacity * 100)}%</span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.round(opacity * 100)}%
+                  </span>
                 </div>
                 <Slider
                   value={[opacity * 100]}
@@ -149,7 +147,9 @@ export function VelocityLayerButton({
       )}
       title={enabled ? 'Hide Market Velocity layer' : 'Show Market Velocity layer'}
     >
-      <Flame className={cn('h-4 w-4', enabled ? 'text-[var(--fluid-warning)]' : 'text-muted-foreground')} />
+      <Flame
+        className={cn('h-4 w-4', enabled ? 'text-[var(--fluid-warning)]' : 'text-muted-foreground')}
+      />
       Velocity
     </button>
   );

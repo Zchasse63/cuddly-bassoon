@@ -2,12 +2,12 @@
 
 /**
  * RevealSection - Progressive Disclosure Component
- * 
+ *
  * Source: Fluid_Real_Estate_OS_Design_System.md Section 4.2
  * Collapsible sections with spring animation
  */
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ interface RevealSectionProps {
   contentClassName?: string;
 }
 
-export function RevealSection({
+export const RevealSection = memo(function RevealSection({
   title,
   subtitle,
   icon,
@@ -57,12 +57,10 @@ export function RevealSection({
           )}
           <div className="text-left">
             <h3 className="font-semibold text-[var(--fluid-text-primary)]">{title}</h3>
-            {subtitle && (
-              <p className="text-sm text-[var(--fluid-text-secondary)]">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-[var(--fluid-text-secondary)]">{subtitle}</p>}
           </div>
         </div>
-        
+
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
@@ -76,33 +74,31 @@ export function RevealSection({
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ 
-              height: 'auto', 
+            animate={{
+              height: 'auto',
               opacity: 1,
               transition: {
                 height: { type: 'spring', stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2, delay: 0.1 }
-              }
+                opacity: { duration: 0.2, delay: 0.1 },
+              },
             }}
-            exit={{ 
-              height: 0, 
+            exit={{
+              height: 0,
               opacity: 0,
               transition: {
                 height: { type: 'spring', stiffness: 300, damping: 30 },
-                opacity: { duration: 0.1 }
-              }
+                opacity: { duration: 0.1 },
+              },
             }}
             className="overflow-hidden"
           >
-            <div className={cn('pt-3', contentClassName)}>
-              {children}
-            </div>
+            <div className={cn('pt-3', contentClassName)}>{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
-}
+});
 
 /**
  * RevealSectionGroup - Container for multiple reveal sections
@@ -114,16 +110,11 @@ interface RevealSectionGroupProps {
   className?: string;
 }
 
-export function RevealSectionGroup({
+export const RevealSectionGroup = memo(function RevealSectionGroup({
   children,
   accordion: _accordion = false,
   className,
 }: RevealSectionGroupProps) {
   // TODO: Implement accordion behavior (only one open at a time)
-  return (
-    <div className={cn('space-y-3', className)}>
-      {children}
-    </div>
-  );
-}
-
+  return <div className={cn('space-y-3', className)}>{children}</div>;
+});

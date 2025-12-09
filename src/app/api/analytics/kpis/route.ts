@@ -24,9 +24,8 @@ export async function GET(request: NextRequest) {
     const results: Record<string, unknown> = {};
 
     // Fetch requested KPI types
-    // Note: Using type assertion as database types need regeneration after migration
     if (type === 'all' || type === 'activity') {
-      const { data: activityKpis, error } = await (supabase as any).rpc('get_activity_kpis', {
+      const { data: activityKpis, error } = await supabase.rpc('get_activity_kpis', {
         p_user_id: user.id,
         p_start_date: startDateStr,
         p_end_date: endDateStr,
@@ -37,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'all' || type === 'outreach') {
-      const { data: outreachKpis, error } = await (supabase as any).rpc('get_outreach_kpis', {
+      const { data: outreachKpis, error } = await supabase.rpc('get_outreach_kpis', {
         p_user_id: user.id,
         p_start_date: startDateStr,
         p_end_date: endDateStr,
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'all' || type === 'pipeline') {
-      const { data: pipelineKpis, error } = await (supabase as any).rpc('get_pipeline_kpis', {
+      const { data: pipelineKpis, error } = await supabase.rpc('get_pipeline_kpis', {
         p_user_id: user.id,
         p_start_date: startDateStr,
         p_end_date: endDateStr,
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'all' || type === 'financial') {
-      const { data: financialKpis, error } = await (supabase as any).rpc('get_financial_kpis', {
+      const { data: financialKpis, error } = await supabase.rpc('get_financial_kpis', {
         p_user_id: user.id,
         p_start_date: startDateStr,
         p_end_date: endDateStr,

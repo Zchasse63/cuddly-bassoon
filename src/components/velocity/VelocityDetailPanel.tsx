@@ -69,7 +69,7 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
   const implication = getImplication(data.classification);
 
   return (
-    <div className="absolute right-4 top-4 w-80 bg-white rounded-xl shadow-lg border overflow-hidden z-10">
+    <div className="absolute right-4 top-4 w-80 glass-high rounded-xl shadow-xl border border-white/20 overflow-hidden z-10">
       {/* Header */}
       <div className={cn('p-4 text-white', getClassificationBgColor(data.classification))}>
         <div className="flex items-start justify-between">
@@ -98,8 +98,8 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {/* Days on Market */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-600">Avg Days on Market</span>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Avg Days on Market</span>
           </div>
           <span className="font-semibold">{data.avgDaysOnMarket} days</span>
         </div>
@@ -107,8 +107,8 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {/* Months of Inventory */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Home className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-600">Months of Inventory</span>
+            <Home className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Months of Inventory</span>
           </div>
           <span className="font-semibold">{data.monthsOfInventory.toFixed(1)}</span>
         </div>
@@ -116,8 +116,8 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {/* Absorption Rate */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-600">Absorption Rate</span>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Absorption Rate</span>
           </div>
           <span className="font-semibold">{Math.round(data.absorptionRate * 100)}%</span>
         </div>
@@ -125,8 +125,8 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {/* Permit Activity */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Hammer className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-600">Recent Permits</span>
+            <Hammer className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Recent Permits</span>
           </div>
           <span className="font-semibold">{data.permitVolume}</span>
         </div>
@@ -135,18 +135,18 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
         {data.permitValueTotal > 0 && (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-600">Permit Value</span>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Permit Value</span>
             </div>
-            <span className="font-semibold">
-              ${(data.permitValueTotal / 1000000).toFixed(1)}M
-            </span>
+            <span className="font-semibold">${(data.permitValueTotal / 1000000).toFixed(1)}M</span>
           </div>
         )}
 
         {/* Component Scores */}
-        <div className="border-t pt-3 mt-3">
-          <p className="text-xs font-medium text-gray-500 uppercase mb-2">Score Breakdown</p>
+        <div className="border-t border-white/10 pt-3 mt-3">
+          <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
+            Score Breakdown
+          </p>
           <div className="space-y-2">
             {[
               { label: 'DOM Score', score: data.daysOnMarketScore, weight: 40 },
@@ -163,7 +163,9 @@ export function VelocityDetailPanel({ data, onClose }: VelocityDetailPanelProps)
                     style={{ width: `${item.score}%` }}
                   />
                 </div>
-                <div className="w-8 text-xs text-right text-muted-foreground">{Math.round(item.score)}</div>
+                <div className="w-8 text-xs text-right text-muted-foreground">
+                  {Math.round(item.score)}
+                </div>
               </div>
             ))}
           </div>

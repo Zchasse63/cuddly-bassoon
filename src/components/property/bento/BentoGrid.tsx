@@ -2,11 +2,12 @@
 
 /**
  * BentoGrid - Main Container Component
- * 
+ *
  * Source: Fluid_Real_Estate_OS_Design_System.md Section 4.2
  * Non-linear scanning layout for property details
  */
 
+import { memo } from 'react';
 import { motion, LayoutGroup } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { PropertyWithDetails } from '@/lib/properties/types';
@@ -28,7 +29,7 @@ interface BentoGridProps {
   isSkipTracing?: boolean;
 }
 
-export function BentoGrid({
+export const BentoGrid = memo(function BentoGrid({
   property,
   className,
   onCall,
@@ -48,23 +49,13 @@ export function BentoGrid({
         aria-label={`Property details for ${property.address}`}
       >
         {/* Hero - Large image carousel */}
-        <HeroCell
-          property={property}
-          className="bento-hero"
-          aria-label="Property images"
-        />
+        <HeroCell property={property} className="bento-hero" aria-label="Property images" />
 
         {/* Stats - Quick property facts */}
-        <StatsCell
-          property={property}
-          className="bento-stats"
-        />
+        <StatsCell property={property} className="bento-stats" />
 
         {/* Value - The Spread calculation */}
-        <ValueCell
-          property={property}
-          className="bento-value"
-        />
+        <ValueCell property={property} className="bento-value" />
 
         {/* Owner - Contact info with progressive reveal */}
         <OwnerCell
@@ -75,17 +66,13 @@ export function BentoGrid({
         />
 
         {/* Scout - AI insights */}
-        <ScoutCell
-          property={property}
-          className="bento-scout"
-          autoFetch={true}
-        />
+        <ScoutCell property={property} className="bento-scout" autoFetch={true} />
 
         {/* Comps - Comparable sales */}
         <CompsCell
           property={property}
           className="bento-comps"
-          comps={property.comps?.map(c => ({
+          comps={property.comps?.map((c) => ({
             id: c.id,
             address: c.address,
             price: c.salePrice || 0,
@@ -107,5 +94,4 @@ export function BentoGrid({
       </motion.div>
     </LayoutGroup>
   );
-}
-
+});

@@ -319,17 +319,21 @@ function SubjectPopupContent({ subject }: { subject: SubjectProperty }) {
         <Star className="w-4 h-4 text-red-500 fill-red-500" />
         <span className="font-semibold text-sm">Subject Property</span>
       </div>
-      <p className="text-xs text-gray-600 mb-1">{subject.address}</p>
+      <p className="text-xs text-muted-foreground mb-1">{subject.address}</p>
       {subject.squareFootage && (
-        <p className="text-xs text-gray-500">{subject.squareFootage.toLocaleString()} sqft</p>
+        <p className="text-xs text-muted-foreground">
+          {subject.squareFootage.toLocaleString()} sqft
+        </p>
       )}
       {subject.bedrooms !== undefined && subject.bathrooms !== undefined && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           {subject.bedrooms} bed / {subject.bathrooms} bath
         </p>
       )}
       {subject.blockGroupGeoid && (
-        <p className="text-xs text-gray-400 mt-1">Block Group: {subject.blockGroupGeoid}</p>
+        <p className="text-xs text-muted-foreground/70 mt-1">
+          Block Group: {subject.blockGroupGeoid}
+        </p>
       )}
     </div>
   );
@@ -351,35 +355,37 @@ function CompPopupContent({ comp }: { comp: ScoredComparable }) {
         </span>
       </div>
 
-      <p className="text-xs text-gray-600 mb-1">{comp.formattedAddress}</p>
+      <p className="text-xs text-muted-foreground mb-1">{comp.formattedAddress}</p>
 
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm font-semibold">{formatPrice(comp.price)}</span>
         {comp.squareFootage && (
-          <span className="text-xs text-gray-500">{comp.squareFootage.toLocaleString()} sqft</span>
+          <span className="text-xs text-muted-foreground">
+            {comp.squareFootage.toLocaleString()} sqft
+          </span>
         )}
       </div>
 
       {comp.bedrooms !== undefined && comp.bathrooms !== undefined && (
-        <p className="text-xs text-gray-500 mb-1">
+        <p className="text-xs text-muted-foreground mb-1">
           {comp.bedrooms} bed / {comp.bathrooms} bath
         </p>
       )}
 
-      <div className="border-t pt-1 mt-1">
+      <div className="border-t border-white/10 pt-1 mt-1">
         <div className="flex justify-between text-xs">
-          <span className="text-gray-500">Score:</span>
+          <span className="text-muted-foreground">Score:</span>
           <span className="font-medium">{(comp.score * 100).toFixed(0)}%</span>
         </div>
         {comp.distance !== undefined && (
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Distance:</span>
+            <span className="text-muted-foreground">Distance:</span>
             <span>{comp.distance.toFixed(2)} mi</span>
           </div>
         )}
         {comp.saleDate && (
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500">Sale Date:</span>
+            <span className="text-muted-foreground">Sale Date:</span>
             <span>{new Date(comp.saleDate).toLocaleDateString()}</span>
           </div>
         )}
@@ -416,7 +422,7 @@ function CompPopupContent({ comp }: { comp: ScoredComparable }) {
 
 function CompMapLegend() {
   return (
-    <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-3 text-sm z-10">
+    <div className="absolute bottom-4 left-4 glass-card rounded-xl shadow-xl p-3 text-sm z-10">
       <div className="font-semibold mb-2">Comp Quality</div>
 
       {/* Tier legend */}

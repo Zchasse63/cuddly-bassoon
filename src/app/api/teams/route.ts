@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import type { Json } from '@/types/database';
 
 // GET user's teams
 export async function GET() {
@@ -14,8 +15,7 @@ export async function GET() {
     }
 
     // Get teams where user is a member
-    // Note: Using type assertion as database types need regeneration after migration
-    const { data: memberships, error: memberError } = await (supabase as any)
+    const { data: memberships, error: memberError } = await supabase
       .from('team_members')
       .select(
         `
@@ -41,7 +41,7 @@ export async function GET() {
     }
 
     // Get teams user owns
-    const { data: ownedTeams, error: ownedError } = await (supabase as any)
+    const { data: ownedTeams, error: ownedError } = await supabase
       .from('teams')
       .select('*')
       .eq('owner_id', user.id);
@@ -73,15 +73,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, settings = {} } = body;
+    const { name, settings = {} } = body as { name?: string; settings?: Json };
 
     if (!name) {
       return NextResponse.json({ error: 'Team name is required' }, { status: 400 });
     }
 
     // Create team
-    // Note: Using type assertion as database types need regeneration after migration
-    const { data: team, error: teamError } = await (supabase as any)
+    const { data: team, error: teamError } = await supabase
       .from('teams')
       .insert({
         name,
@@ -97,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add owner as admin member
-    const { error: memberError } = await (supabase as any).from('team_members').insert({
+    const { error: memberError } = await supabase.from('team_members').insert({
       team_id: team.id,
       user_id: user.id,
       role: 'admin',
@@ -109,11 +108,8 @@ export async function POST(request: NextRequest) {
       console.error('Error adding owner as member:', memberError);
     }
 
-    // Update user's current team (using type assertion as types need regeneration)
-    await (supabase as any)
-      .from('user_profiles')
-      .update({ current_team_id: team.id })
-      .eq('id', user.id);
+    // Update user's current team
+    await supabase.from('user_profiles').update({ current_team_id: team.id }).eq('id', user.id);
 
     return NextResponse.json({ team }, { status: 201 });
   } catch (error) {

@@ -60,12 +60,12 @@ function generateInsights(
     insights.push({
       id: 'dash-stale-deals',
       type: 'alert',
-      title: '3 deals need attention',
-      description: 'These deals have been stale for 7+ days. Consider following up.',
+      title: '3 opportunities need attention',
+      description: 'These pipeline items have been stale for 7+ days. Consider following up.',
       priority: 'high',
       action: {
-        label: 'View Stale Deals',
-        onClick: () => navigate('/deals?filter=stale'),
+        label: 'View Stale Items',
+        onClick: () => navigate('/pipeline?filter=stale'),
       },
     });
     insights.push({

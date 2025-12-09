@@ -162,10 +162,10 @@ export function AppShell({ children, leftSidebar, rightSidebar, className }: App
         </aside>
       )}
 
-      {/* 2. Canvas (Center) */}
-      <main className="main-content flex-1 relative overflow-hidden bg-gray-50/50 dark:bg-gray-900/50">
+      {/* 2. Canvas (Center) - Fluid OS uses subtle glass background */}
+      <main className="main-content flex-1 relative overflow-hidden bg-[var(--surface-glass-subtle)]">
         {/* Background decorative elements could go here */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-noise" />
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-30 bg-noise" />
 
         {/* Actual page content */}
         <div className="relative z-10 w-full h-full overflow-y-auto">{children}</div>

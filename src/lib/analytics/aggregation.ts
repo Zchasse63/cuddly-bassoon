@@ -5,6 +5,9 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { analyticsCache, cacheTTL } from './cache';
+import type { Database } from '@/types/database';
+
+type AnalyticsDaily = Database['public']['Tables']['analytics_daily']['Row'];
 
 export interface AggregatedMetrics {
   period: { start: string; end: string };
@@ -34,7 +37,7 @@ export async function aggregateDailyAnalytics(
     async () => {
       const supabase = await createClient();
 
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('analytics_daily')
         .select('*')
         .eq('user_id', userId)
@@ -42,7 +45,7 @@ export async function aggregateDailyAnalytics(
         .lte('date', endDate.toISOString().split('T')[0])
         .order('date', { ascending: true });
 
-      const rows = data || [];
+      const rows: AnalyticsDaily[] = data || [];
       const totals: Record<string, number> = {};
       const sums: Record<string, number> = {};
 
@@ -51,11 +54,12 @@ export async function aggregateDailyAnalytics(
         sums[metric] = 0;
       });
 
-      rows.forEach((row: any) => {
+      rows.forEach((row) => {
         metrics.forEach((metric) => {
-          const value = row[metric] || 0;
-          totals[metric] += value;
-          sums[metric] += value;
+          const value = (row as Record<string, unknown>)[metric];
+          const numValue = typeof value === 'number' ? value : 0;
+          totals[metric] = (totals[metric] ?? 0) + numValue;
+          sums[metric] = (sums[metric] ?? 0) + numValue;
         });
       });
 
@@ -71,22 +75,22 @@ export async function aggregateDailyAnalytics(
       const prevStart = new Date(startDate);
       prevStart.setDate(prevStart.getDate() - periodLength);
 
-      const { data: prevData } = await (supabase as any)
+      const { data: prevData } = await supabase
         .from('analytics_daily')
         .select('*')
         .eq('user_id', userId)
         .gte('date', prevStart.toISOString().split('T')[0])
         .lt('date', startDate.toISOString().split('T')[0]);
 
-      const prevRows = prevData || [];
+      const prevRows: AnalyticsDaily[] = prevData || [];
       const trends: Record<string, { current: number; previous: number; change: number }> = {};
 
       metrics.forEach((metric) => {
         const current = totals[metric] ?? 0;
-        const previous = prevRows.reduce(
-          (sum: number, row: Record<string, unknown>) => sum + ((row[metric] as number) || 0),
-          0
-        );
+        const previous = prevRows.reduce((sum, row) => {
+          const value = (row as Record<string, unknown>)[metric];
+          return sum + (typeof value === 'number' ? value : 0);
+        }, 0);
         const change = previous > 0 ? ((current - previous) / previous) * 100 : 0;
         trends[metric] = { current, previous, change };
       });
@@ -119,7 +123,7 @@ export async function getTimeSeriesData(
     async () => {
       const supabase = await createClient();
 
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('analytics_daily')
         .select('*')
         .eq('user_id', userId)
@@ -127,13 +131,15 @@ export async function getTimeSeriesData(
         .lte('date', endDate.toISOString().split('T')[0])
         .order('date', { ascending: true });
 
-      const rows = data || [];
+      const rows: AnalyticsDaily[] = data || [];
 
       if (granularity === 'day') {
-        return rows.map((row: any) => {
+        return rows.map((row) => {
           const point: TimeSeriesData = { date: row.date };
+          const rowRecord = row as Record<string, unknown>;
           metrics.forEach((m) => {
-            point[m] = row[m] || 0;
+            const value = rowRecord[m];
+            point[m] = typeof value === 'number' ? value : 0;
           });
           return point;
         });
@@ -142,8 +148,9 @@ export async function getTimeSeriesData(
       // Aggregate by week or month
       const grouped = new Map<string, Record<string, number>>();
 
-      rows.forEach((row: any) => {
+      rows.forEach((row) => {
         const date = new Date(row.date);
+        const rowRecord = row as Record<string, unknown>;
         let key: string;
 
         if (granularity === 'week') {
@@ -155,14 +162,17 @@ export async function getTimeSeriesData(
         }
 
         if (!grouped.has(key)) {
-          grouped.set(key, {});
+          const newGroup: Record<string, number> = {};
           metrics.forEach((m) => {
-            grouped.get(key)![m] = 0;
+            newGroup[m] = 0;
           });
+          grouped.set(key, newGroup);
         }
 
+        const group = grouped.get(key)!;
         metrics.forEach((m) => {
-          grouped.get(key)![m] += row[m] || 0;
+          const value = rowRecord[m];
+          group[m] = (group[m] ?? 0) + (typeof value === 'number' ? value : 0);
         });
       });
 

@@ -27,10 +27,10 @@ const TIER_CLASSES: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  active: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  qualified: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  inactive: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  unqualified: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  active: 'bg-[var(--fluid-primary)]/10 text-[var(--fluid-primary)]',
+  qualified: 'bg-[var(--fluid-success-light)] text-[var(--fluid-success)]',
+  inactive: 'bg-muted text-muted-foreground',
+  unqualified: 'bg-[var(--fluid-danger-light)] text-[var(--fluid-danger)]',
 };
 
 const BUYER_TYPE_LABELS: Record<string, string> = {

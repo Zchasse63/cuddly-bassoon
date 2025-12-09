@@ -48,9 +48,7 @@ export function PropertyListPanel({
   useEffect(() => {
     if (!selectedPropertyId || !listRef.current) return;
 
-    const cardElement = listRef.current.querySelector(
-      `[data-property-id="${selectedPropertyId}"]`
-    );
+    const cardElement = listRef.current.querySelector(`[data-property-id="${selectedPropertyId}"]`);
 
     if (cardElement) {
       cardElement.scrollIntoView({
@@ -66,15 +64,17 @@ export function PropertyListPanel({
       className={cn(
         'property-list-panel',
         'h-full flex flex-col',
-        'bg-background',
+        'bg-transparent', // Transparent for glass container effect
         className
       )}
     >
-      {/* Header */}
-      <div className="flex-shrink-0 px-4 py-3 border-b bg-card/50">
+      {/* Header - Glass styling */}
+      <div className="flex-shrink-0 px-4 py-3 border-b border-white/10 glass-subtle">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">
-            {isLoading ? 'Loading...' : `${results.length} ${results.length === 1 ? 'Property' : 'Properties'}`}
+            {isLoading
+              ? 'Loading...'
+              : `${results.length} ${results.length === 1 ? 'Property' : 'Properties'}`}
           </h2>
         </div>
       </div>
@@ -139,7 +139,7 @@ export function PropertyListPanel({
 
 /**
  * PropertyListPanelHeader Component
- * 
+ *
  * Separate header component with sort and view controls.
  * Can be used for more advanced filtering/sorting UI.
  */
@@ -156,7 +156,7 @@ export function PropertyListPanelHeader({
   onSortChange,
 }: PropertyListPanelHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b bg-card">
+    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 glass-subtle">
       <h2 className="text-sm font-semibold">
         {count} {count === 1 ? 'Property' : 'Properties'}
       </h2>
@@ -177,4 +177,3 @@ export function PropertyListPanelHeader({
     </div>
   );
 }
-
