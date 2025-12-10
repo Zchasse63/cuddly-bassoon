@@ -12,19 +12,25 @@ import { ToolDefinition, ToolHandler } from '../types';
 // ============================================================================
 const similarToDealInput = z.object({
   dealId: z.string(),
-  matchCriteria: z.array(z.enum(['location', 'price', 'property_type', 'strategy', 'roi'])).default(['location', 'price']),
+  matchCriteria: z
+    .array(z.enum(['location', 'price', 'property_type', 'strategy', 'roi']))
+    .default(['location', 'price']),
   limit: z.number().default(10),
   excludeClosed: z.boolean().default(true),
 });
 
 const similarToDealOutput = z.object({
-  properties: z.array(z.object({
-    id: z.string(),
-    address: z.string(),
-    similarityScore: z.number(),
-    matchingFactors: z.array(z.string()),
-    estimatedRoi: z.number(),
-  })),
+  properties: z.array(
+    z.object({
+      id: z.string(),
+      address: z.string(),
+      similarityScore: z.number(),
+      matchingFactors: z.array(z.string()),
+      estimatedRoi: z.number(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+  ),
   searchCriteria: z.record(z.string(), z.unknown()),
 });
 
@@ -45,12 +51,30 @@ const similarToDealDefinition: ToolDefinition<SimilarToDealInput, SimilarToDealO
   tags: ['search', 'similar', 'matching', 'deals'],
 };
 
-const similarToDealHandler: ToolHandler<SimilarToDealInput, SimilarToDealOutput> = async (input) => {
+const similarToDealHandler: ToolHandler<SimilarToDealInput, SimilarToDealOutput> = async (
+  input
+) => {
   console.log('[Search] Similar to deal:', input.dealId);
   return {
     properties: [
-      { id: 'prop_1', address: '456 Oak St', similarityScore: 92, matchingFactors: ['location', 'price', 'property_type'], estimatedRoi: 28 },
-      { id: 'prop_2', address: '789 Pine Ave', similarityScore: 85, matchingFactors: ['location', 'price'], estimatedRoi: 24 },
+      {
+        id: 'prop_1',
+        address: '456 Oak St',
+        similarityScore: 92,
+        matchingFactors: ['location', 'price', 'property_type'],
+        estimatedRoi: 28,
+        latitude: 33.4484,
+        longitude: -112.074,
+      },
+      {
+        id: 'prop_2',
+        address: '789 Pine Ave',
+        similarityScore: 85,
+        matchingFactors: ['location', 'price'],
+        estimatedRoi: 24,
+        latitude: 33.45,
+        longitude: -112.07,
+      },
     ],
     searchCriteria: { location: 'Phoenix, AZ', priceRange: { min: 100000, max: 200000 } },
   };
@@ -66,23 +90,30 @@ const buyerPropertyMatchInput = z.object({
 });
 
 const buyerPropertyMatchOutput = z.object({
-  matches: z.array(z.object({
-    propertyId: z.string(),
-    address: z.string(),
-    matchScore: z.number(),
-    matchingCriteria: z.array(z.string()),
-    estimatedProfit: z.number(),
-  })),
+  matches: z.array(
+    z.object({
+      propertyId: z.string(),
+      address: z.string(),
+      matchScore: z.number(),
+      matchingCriteria: z.array(z.string()),
+      estimatedProfit: z.number(),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+  ),
   buyerCriteria: z.record(z.string(), z.unknown()),
 });
 
 type BuyerPropertyMatchInput = z.infer<typeof buyerPropertyMatchInput>;
 type BuyerPropertyMatchOutput = z.infer<typeof buyerPropertyMatchOutput>;
 
-const buyerPropertyMatchDefinition: ToolDefinition<BuyerPropertyMatchInput, BuyerPropertyMatchOutput> = {
+const buyerPropertyMatchDefinition: ToolDefinition<
+  BuyerPropertyMatchInput,
+  BuyerPropertyMatchOutput
+> = {
   id: 'search.buyer_property_match',
   name: 'Match Buyer to Properties',
-  description: 'Find properties matching a buyer\'s criteria and preferences.',
+  description: "Find properties matching a buyer's criteria and preferences.",
   category: 'advanced_search',
   requiredPermission: 'read',
   inputSchema: buyerPropertyMatchInput,
@@ -93,12 +124,31 @@ const buyerPropertyMatchDefinition: ToolDefinition<BuyerPropertyMatchInput, Buye
   tags: ['search', 'buyer', 'matching', 'properties'],
 };
 
-const buyerPropertyMatchHandler: ToolHandler<BuyerPropertyMatchInput, BuyerPropertyMatchOutput> = async (input) => {
+const buyerPropertyMatchHandler: ToolHandler<
+  BuyerPropertyMatchInput,
+  BuyerPropertyMatchOutput
+> = async (input) => {
   console.log('[Search] Buyer match:', input.buyerId);
   return {
     matches: [
-      { propertyId: 'prop_1', address: '123 Main St', matchScore: 95, matchingCriteria: ['price', 'location', 'bedrooms'], estimatedProfit: 35000 },
-      { propertyId: 'prop_2', address: '456 Oak Ave', matchScore: 88, matchingCriteria: ['price', 'location'], estimatedProfit: 28000 },
+      {
+        propertyId: 'prop_1',
+        address: '123 Main St',
+        matchScore: 95,
+        matchingCriteria: ['price', 'location', 'bedrooms'],
+        estimatedProfit: 35000,
+        latitude: 33.5,
+        longitude: -112.1,
+      },
+      {
+        propertyId: 'prop_2',
+        address: '456 Oak Ave',
+        matchScore: 88,
+        matchingCriteria: ['price', 'location'],
+        estimatedProfit: 28000,
+        latitude: 33.51,
+        longitude: -112.09,
+      },
     ],
     buyerCriteria: { maxPrice: 200000, locations: ['Phoenix', 'Scottsdale'], minBedrooms: 3 },
   };
@@ -115,21 +165,28 @@ const permitPatternMatchInput = z.object({
 });
 
 const permitPatternMatchOutput = z.object({
-  properties: z.array(z.object({
-    id: z.string(),
-    address: z.string(),
-    permitType: z.string(),
-    permitValue: z.number(),
-    filedDate: z.string(),
-    investmentSignal: z.enum(['strong', 'moderate', 'weak']),
-  })),
+  properties: z.array(
+    z.object({
+      id: z.string(),
+      address: z.string(),
+      permitType: z.string(),
+      permitValue: z.number(),
+      filedDate: z.string(),
+      investmentSignal: z.enum(['strong', 'moderate', 'weak']),
+      latitude: z.number().optional(),
+      longitude: z.number().optional(),
+    })
+  ),
   patterns: z.array(z.object({ type: z.string(), count: z.number(), avgValue: z.number() })),
 });
 
 type PermitPatternMatchInput = z.infer<typeof permitPatternMatchInput>;
 type PermitPatternMatchOutput = z.infer<typeof permitPatternMatchOutput>;
 
-const permitPatternMatchDefinition: ToolDefinition<PermitPatternMatchInput, PermitPatternMatchOutput> = {
+const permitPatternMatchDefinition: ToolDefinition<
+  PermitPatternMatchInput,
+  PermitPatternMatchOutput
+> = {
   id: 'search.permit_pattern_match',
   name: 'Permit Pattern Search',
   description: 'Find properties with permit activity indicating investment opportunities.',
@@ -143,11 +200,23 @@ const permitPatternMatchDefinition: ToolDefinition<PermitPatternMatchInput, Perm
   tags: ['search', 'permits', 'patterns', 'opportunities'],
 };
 
-const permitPatternMatchHandler: ToolHandler<PermitPatternMatchInput, PermitPatternMatchOutput> = async (input) => {
+const permitPatternMatchHandler: ToolHandler<
+  PermitPatternMatchInput,
+  PermitPatternMatchOutput
+> = async (input) => {
   console.log('[Search] Permit patterns in:', input.location);
   return {
     properties: [
-      { id: 'prop_1', address: '123 Main St', permitType: 'renovation', permitValue: 45000, filedDate: '2024-01-15', investmentSignal: 'strong' },
+      {
+        id: 'prop_1',
+        address: '123 Main St',
+        permitType: 'renovation',
+        permitValue: 45000,
+        filedDate: '2024-01-15',
+        investmentSignal: 'strong',
+        latitude: 33.48,
+        longitude: -112.05,
+      },
     ],
     patterns: [
       { type: 'renovation', count: 45, avgValue: 38000 },
@@ -170,4 +239,3 @@ export const advancedSearchTools = {
   buyerPropertyMatch: buyerPropertyMatchDefinition,
   permitPatternMatch: permitPatternMatchDefinition,
 };
-

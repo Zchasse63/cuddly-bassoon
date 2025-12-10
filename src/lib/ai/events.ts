@@ -1,8 +1,20 @@
 /**
  * AI-UI Event Bridge
- * Enables AI tool results to update UI components
  *
- * Pattern: Tool executes → emits event → UI component subscribes and updates state
+ * @deprecated This event bus pattern has been replaced by Zustand store.
+ * Use `useAIResultStore` from '@/stores/aiResultStore' instead.
+ *
+ * Migration Guide: See src/stores/AI_RESULT_STORE_MIGRATION_GUIDE.md
+ *
+ * This file is kept for backward compatibility with tests only.
+ * All production code should use the Zustand store pattern:
+ *
+ * Writing results (ScoutPane):
+ *   const addAIResult = useAIResultStore((state) => state.addResult);
+ *   addAIResult({ id, toolName, result });
+ *
+ * Reading results (Components):
+ *   const result = useAIResultStore((state) => state.latestByTool.get('search-properties'));
  */
 
 export type AIPropertySearchResult = {

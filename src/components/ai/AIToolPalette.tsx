@@ -88,10 +88,18 @@ function ToolListItem({
   const firstExample = tool.examples[0];
 
   return (
-    <button
+    <div
       onClick={onSelect}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
       className={cn(
-        'w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
+        'w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors cursor-pointer',
         isSelected ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
       )}
     >
@@ -129,6 +137,7 @@ function ToolListItem({
             }}
             className={cn('p-1 rounded hover:bg-muted', isSelected && 'hover:bg-background/50')}
             title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            type="button"
           >
             <Star
               className={cn(
@@ -146,11 +155,12 @@ function ToolListItem({
             onExpand();
           }}
           className={cn('p-1 rounded hover:bg-muted', isSelected && 'hover:bg-background/50')}
+          type="button"
         >
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -573,9 +583,9 @@ export function AIToolPalette({
                           </Badge>
                         </div>
                         <div className="space-y-0.5 mt-1">
-                          {recentTools.map((tool) => (
+                          {recentTools.map((tool, idx) => (
                             <ToolListItem
-                              key={tool.slug}
+                              key={`${tool.slug}-recent-${idx}`}
                               tool={tool}
                               isSelected={false}
                               onSelect={() => handleSelectTool(tool)}

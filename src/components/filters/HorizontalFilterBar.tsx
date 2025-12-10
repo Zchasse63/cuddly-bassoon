@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, SlidersHorizontal, ChevronDown, X } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Flame, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,23 +21,32 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { STANDARD_FILTERS, ENHANCED_FILTERS, ALL_FILTERS } from '@/lib/filters/registry';
+import {
+  STANDARD_FILTERS,
+  ENHANCED_FILTERS,
+  CONTRARIAN_FILTERS,
+  ALL_FILTERS,
+} from '@/lib/filters/registry';
 import type { ActiveFilter, FilterId } from '@/lib/filters/types';
+import { FilterPill, FilterPillGroup } from './FilterPill';
 
 /**
  * HorizontalFilterBar Component
  *
  * Source: UI_UX_DESIGN_SYSTEM_v1.md Section 11 (Page Templates)
+ * Enhanced: ARCHITECTURE_SOURCE_OF_TRUTH.md Section 9 Phase 5
  *
  * Horizontal filter bar for split-view property search.
  * Replaces vertical FilterSidebar with compact horizontal layout.
  *
  * Features:
  * - Search input
- * - Quick filter dropdowns (Beds, Price, Equity, More)
+ * - Quick filter dropdowns (Beds, Price, Equity, More) with glass styling
+ * - FluidOS FilterPill components for active filters with tooltips
  * - Sort control
  * - Results count
  * - Scrollable on mobile
+ * - Filter count badges in More dropdown
  */
 
 interface HorizontalFilterBarProps {
@@ -49,6 +58,9 @@ interface HorizontalFilterBarProps {
   onSortChange?: (sort: string) => void;
   resultsCount?: number;
   className?: string;
+  // Market Velocity overlay toggle
+  velocityEnabled?: boolean;
+  onVelocityToggle?: (enabled: boolean) => void;
 }
 
 export function HorizontalFilterBar({
@@ -60,6 +72,8 @@ export function HorizontalFilterBar({
   onSortChange,
   resultsCount,
   className,
+  velocityEnabled = false,
+  onVelocityToggle,
 }: HorizontalFilterBarProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
@@ -84,8 +98,8 @@ export function HorizontalFilterBar({
   return (
     <div
       className={cn(
-        'flex items-center gap-2 px-4 py-3 border-b border-border/40',
-        'glass-subtle sticky top-0 z-30',
+        'flex items-center gap-2 px-4 py-3',
+        'bg-transparent', // Transparent to let SplitView wrapper handle glass
         'overflow-x-auto scrollbar-hide',
         className
       )}
@@ -115,7 +129,12 @@ export function HorizontalFilterBar({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 rounded-full border-border/50 bg-background/30 hover:bg-background/80 transition-all"
+              className={cn(
+                'h-8 rounded-full transition-all',
+                'bg-white/65 backdrop-blur-md border border-white/40',
+                'hover:bg-white/80 hover:border-white/60 hover:scale-105',
+                'text-foreground font-medium'
+              )}
             >
               Beds
               <ChevronDown className="ml-1 size-3 opacity-50" />
@@ -145,7 +164,12 @@ export function HorizontalFilterBar({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 rounded-full border-border/50 bg-background/30 hover:bg-background/80 transition-all"
+              className={cn(
+                'h-8 rounded-full transition-all',
+                'bg-white/65 backdrop-blur-md border border-white/40',
+                'hover:bg-white/80 hover:border-white/60 hover:scale-105',
+                'text-foreground font-medium'
+              )}
             >
               Price
               <ChevronDown className="ml-1 size-3 opacity-50" />
@@ -175,7 +199,12 @@ export function HorizontalFilterBar({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 rounded-full border-border/50 bg-background/30 hover:bg-background/80 transition-all"
+              className={cn(
+                'h-8 rounded-full transition-all',
+                'bg-white/65 backdrop-blur-md border border-white/40',
+                'hover:bg-white/80 hover:border-white/60 hover:scale-105',
+                'text-foreground font-medium'
+              )}
             >
               Equity
               <ChevronDown className="ml-1 size-3 opacity-50" />
@@ -210,10 +239,33 @@ export function HorizontalFilterBar({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 rounded-full border-border/50 bg-background/30 hover:bg-background/80 transition-all px-3"
+              className={cn(
+                'h-8 rounded-full transition-all px-3 relative',
+                'bg-white/65 backdrop-blur-md border border-white/40',
+                'hover:bg-white/80 hover:border-white/60 hover:scale-105',
+                'text-foreground font-medium'
+              )}
             >
               <SlidersHorizontal className="mr-1.5 size-3" />
               More
+              {/* Filter count badge */}
+              {(() => {
+                const moreFilterIds = [
+                  ...STANDARD_FILTERS.slice(0, 4).map((f) => f.id),
+                  ...ENHANCED_FILTERS.slice(0, 3).map((f) => f.id),
+                ];
+                const activeCount = activeFilters.filter((f) =>
+                  moreFilterIds.includes(f.filterId)
+                ).length;
+                return activeCount > 0 ? (
+                  <Badge
+                    variant="secondary"
+                    className="ml-1.5 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-brand-500 text-white border-0"
+                  >
+                    {activeCount}
+                  </Badge>
+                ) : null;
+              })()}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56 glass-high border-border/40">
@@ -254,38 +306,110 @@ export function HorizontalFilterBar({
             })}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Contrarian Filters */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'h-8 rounded-full transition-all px-3 relative',
+                'bg-white/65 backdrop-blur-md border border-white/40',
+                'hover:bg-white/80 hover:border-white/60 hover:scale-105',
+                'text-foreground font-medium'
+              )}
+            >
+              <TrendingDown className="mr-1.5 size-3" />
+              Contrarian
+              {/* Filter count badge */}
+              {(() => {
+                const contrarianFilterIds = CONTRARIAN_FILTERS.map((f) => f.id);
+                const activeCount = activeFilters.filter((f) =>
+                  contrarianFilterIds.includes(f.filterId)
+                ).length;
+                return activeCount > 0 ? (
+                  <Badge
+                    variant="secondary"
+                    className="ml-1.5 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-brand-500 text-white border-0"
+                  >
+                    {activeCount}
+                  </Badge>
+                ) : null;
+              })()}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="w-56 glass-high border-border/40 max-h-80 overflow-y-auto"
+          >
+            <DropdownMenuLabel>Contrarian Strategies</DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-border/40" />
+            {CONTRARIAN_FILTERS.map((filter) => {
+              const isActive = activeFilters.some((f) => f.filterId === filter.id);
+              return (
+                <DropdownMenuItem
+                  key={filter.id}
+                  onClick={() => toggleFilter(filter.id)}
+                  className={cn(
+                    'focus:bg-brand-500/10 focus:text-brand-600 flex flex-col items-start gap-0.5',
+                    isActive && 'bg-brand-50 text-brand-700 font-medium'
+                  )}
+                >
+                  <span>{filter.name}</span>
+                  <span className="text-xs text-muted-foreground font-normal">
+                    {filter.description}
+                  </span>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Market Velocity Toggle */}
+        <Button
+          variant={velocityEnabled ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => onVelocityToggle?.(!velocityEnabled)}
+          className={cn(
+            'h-8 rounded-full transition-all px-3',
+            velocityEnabled
+              ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 hover:from-orange-600 hover:to-red-600'
+              : 'border-border/50 bg-background/30 hover:bg-background/80'
+          )}
+        >
+          <Flame className={cn('mr-1.5 size-3', velocityEnabled && 'animate-pulse')} />
+          Velocity
+        </Button>
       </div>
 
       {/* Active Filters */}
       {activeFilters.length > 0 && (
         <>
           <div className="h-6 w-px bg-border/40 flex-shrink-0 mx-1" />
-          <div className="flex items-center gap-1.5 flex-shrink-0 animate-in fade-in slide-in-from-left-2 duration-300">
+          <FilterPillGroup className="flex-shrink-0">
             {activeFilters.map((filter) => {
               const config = ALL_FILTERS.find((f) => f.id === filter.filterId);
               return (
-                <Badge
+                <FilterPill
                   key={filter.filterId}
-                  variant="secondary"
-                  className="gap-1 rounded-full h-7 px-2.5 bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200/50 transition-colors"
-                >
-                  {config?.name || filter.filterId}
-                  <X
-                    className="size-3 cursor-pointer hover:text-brand-900 transition-colors ml-0.5"
-                    onClick={() => toggleFilter(filter.filterId)}
-                  />
-                </Badge>
+                  label={config?.name || filter.filterId}
+                  description={config?.description}
+                  isActive={true}
+                  onRemove={() => toggleFilter(filter.filterId)}
+                  showClose={true}
+                />
               );
             })}
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="h-7 text-xs rounded-full hover:bg-destructive/10 hover:text-destructive px-2.5"
+              className="h-8 text-xs rounded-full hover:bg-destructive/10 hover:text-destructive px-3 font-medium"
             >
-              Clear
+              Clear All
             </Button>
-          </div>
+          </FilterPillGroup>
         </>
       )}
 

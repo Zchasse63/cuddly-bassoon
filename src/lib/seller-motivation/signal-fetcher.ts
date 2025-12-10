@@ -10,7 +10,7 @@
 import { getRentCastClient } from '@/lib/rentcast';
 import { getPermitsForAddress, searchAddresses } from '@/lib/shovels/client';
 import { createClient } from '@/lib/supabase/server';
-import type { Json } from '@/lib/supabase/database.types';
+import type { Json } from '@/types/database';
 import type { RawPropertySignals } from './types';
 
 /**

@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { aiEventBus } from '@/lib/ai/events';
+import { toast } from 'sonner';
+import { useAIResultStore } from '@/stores/aiResultStore';
 import {
   SplitViewLayout,
   SplitViewLayoutTablet,
@@ -129,6 +130,9 @@ export function PropertySearchSplitView() {
     west: number;
   } | null>(null);
 
+  // Market Velocity overlay state
+  const [velocityEnabled, setVelocityEnabled] = useState(false);
+
   // Fetch properties from Rentcast API
   const {
     data: apiProperties,
@@ -145,23 +149,45 @@ export function PropertySearchSplitView() {
   // AI-provided properties from tool results
   const [aiProperties, setAiProperties] = useState<MapProperty[]>([]);
 
-  // Subscribe to AI property search events
-  useEffect(() => {
-    const unsubscribe = aiEventBus.on('tool:result', (event) => {
-      console.log('[SplitView] Received tool result:', event.toolName);
+  // Subscribe to AI tool results via Zustand store (replaces event bus)
+  const latestByTool = useAIResultStore((state) => state.latestByTool);
+  const acknowledgeResult = useAIResultStore((state) => state.acknowledgeResult);
 
-      // Check if this is a property search result
-      // Match: property_search.search, property_search.*, or any tool with property+search
-      const toolName = event.toolName.toLowerCase();
+  // Process AI tool results when they arrive
+  useEffect(() => {
+    // Check all tool results for property-related data
+    latestByTool.forEach((aiResult, toolName) => {
+      // Skip already acknowledged results
+      if (aiResult.acknowledged) return;
+
+      const toolNameLower = toolName.toLowerCase();
+      const result = aiResult.result as any;
+
+      // Check if the result has property array structure
+      const hasProperties =
+        Array.isArray(result?.properties) ||
+        Array.isArray(result?.data) ||
+        Array.isArray(result?.results);
+
+      // Match: property search, geocode, or any tool returning property structure
       const isPropertySearch =
-        toolName.includes('property_search') ||
-        toolName.includes('property.search') ||
-        (toolName.includes('property') && toolName.includes('search'));
+        toolNameLower.includes('property') ||
+        toolNameLower.includes('search') ||
+        toolNameLower.includes('geocode') ||
+        hasProperties;
 
       if (isPropertySearch) {
-        console.log('[SplitView] Processing property search result');
-        const result = event.result as { properties?: unknown[]; data?: unknown[] };
-        const properties = (result?.properties || result?.data || []) as Array<{
+        console.log('[SplitView] Processing property/geo search result from Zustand:', toolName);
+
+        // Handle various result shapes (properties array, data array, or single object)
+        let rawProperties = result?.properties || result?.data || result?.results || [];
+
+        // If result is a single object with coordinates, wrap it
+        if (!Array.isArray(rawProperties) && (result?.latitude || result?.address)) {
+          rawProperties = [result];
+        }
+
+        const properties = (Array.isArray(rawProperties) ? rawProperties : []) as Array<{
           id?: string;
           address?: string;
           formattedAddress?: string;
@@ -180,22 +206,73 @@ export function PropertySearchSplitView() {
         }>;
 
         if (properties.length > 0) {
-          // Convert to MapProperty format
-          const mapProperties: MapProperty[] = properties.map((p, idx) => ({
-            id: p.id || `ai-${idx}`,
-            address: p.address || p.formattedAddress || 'Unknown',
-            city: p.city || '',
-            state: p.state || '',
-            latitude: p.latitude || 0,
-            longitude: p.longitude || 0,
-            bedrooms: p.bedrooms,
-            bathrooms: p.bathrooms,
-            sqft: p.squareFootage || p.sqft,
-            estimatedValue: p.estimatedValue,
-            propertyType: p.propertyType,
-          }));
+          // Convert to MapProperty format, but filter out pure geocode results that aren't properties
+          const mapProperties: MapProperty[] = properties
+            .map((p: any, idx): MapProperty | null => {
+              // Extract coordinates from various possible shapes
+              let lat = p.latitude || p.lat;
+              let lng = p.longitude || p.lng || p.long;
+
+              // Handle nested coordinates (e.g. from geocode tool)
+              if (!lat && p.coordinates) {
+                lat = p.coordinates.lat;
+                lng = p.coordinates.lng;
+              }
+              // Handle center point (e.g. from map tools)
+              if (!lat && p.center) {
+                lat = p.center.lat;
+                lng = p.center.lng;
+              }
+
+              // Check if this is a "real" property or just a location result
+              const isRealProperty =
+                p.estimatedValue ||
+                p.askingPrice ||
+                p.bedrooms ||
+                p.bathrooms ||
+                p.propertyType ||
+                p.id?.startsWith('prop_');
+
+              if (!isRealProperty && toolNameLower.includes('geocode')) {
+                return null;
+              }
+
+              return {
+                id: p.id || `ai-${idx}`,
+                address: p.address || p.formattedAddress || 'Unknown',
+                city: p.city || '',
+                state: p.state || '',
+                latitude: Number(lat) || 0,
+                longitude: Number(lng) || 0,
+                bedrooms: p.bedrooms,
+                bathrooms: p.bathrooms,
+                sqft: p.squareFootage || p.sqft,
+                price: p.price || p.estimatedValue || p.askingPrice,
+                estimatedValue: p.estimatedValue,
+                propertyType: p.propertyType,
+              } as MapProperty;
+            })
+            .filter((p): p is MapProperty => p !== null);
 
           setAiProperties(mapProperties);
+
+          // Verify we have valid coordinates to show on map AND give feedback
+          const validProperties = mapProperties.filter(
+            (p) => p.latitude !== 0 && p.longitude !== 0
+          );
+
+          if (validProperties.length > 0) {
+            toast.success(`Scout found ${validProperties.length} properties`, {
+              description: 'Map view updated',
+            });
+          } else if (mapProperties.length > 0) {
+            toast.warning(
+              `Scout found ${mapProperties.length} properties but they lack location data.`,
+              {
+                description: 'Check the list view.',
+              }
+            );
+          }
 
           // Update search location if we can infer it
           const firstWithLocation = properties.find((p) => p.city && p.state);
@@ -207,11 +284,12 @@ export function PropertySearchSplitView() {
             });
           }
         }
+
+        // Mark result as acknowledged so we don't process it again
+        acknowledgeResult(aiResult.id);
       }
     });
-
-    return unsubscribe;
-  }, []);
+  }, [latestByTool, acknowledgeResult]);
 
   // Use AI properties if available, otherwise API data or fallback
   const allProperties =
@@ -237,57 +315,75 @@ export function PropertySearchSplitView() {
 
   // Convert MapProperty to PropertySearchResultItem for list display
   const searchResults = useMemo(() => {
-    return visibleProperties.map((property, index) => ({
-      property: {
-        id: property.id,
-        address: property.address,
-        city: property.city,
-        state: property.state,
-        zip: '',
-        latitude: property.latitude,
-        longitude: property.longitude,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        squareFootage: property.sqft,
-        estimatedValue: property.estimatedValue as number | null | undefined,
-        lastSalePrice: property.lastSalePrice as number | null | undefined,
-        lastSaleDate: null,
-        ownerName: null,
-        ownerOccupied: null,
-        yearBuilt: null,
-        lotSize: null,
-        propertyType: null,
-        zoning: null,
-        taxAssessedValue: null,
-        annualTaxAmount: null,
-        mlsStatus: null,
-        daysOnMarket: null,
-        pricePerSqft: null,
-        hoaFees: null,
-        parkingSpaces: null,
-        garage: null,
-        pool: null,
-        view: null,
-        waterfront: null,
-        gatedCommunity: null,
-        seniorCommunity: null,
-        equityPercent:
-          property.estimatedValue && property.lastSalePrice
-            ? (((property.estimatedValue as number) - (property.lastSalePrice as number)) /
-                (property.estimatedValue as number)) *
-              100
-            : null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      filterResults: {
-        matches: [],
-        matchedFilters: [],
-        combinedScore: 75 - index * 5, // Mock score that decreases for each property
-        passesFilter: true,
-      },
-      rank: index + 1,
-    }));
+    return visibleProperties.map((property, index) => {
+      // Extract price from various possible fields
+      const estimatedValue = (property.estimatedValue || property.price || property.marketValue) as
+        | number
+        | null
+        | undefined;
+      const lastSalePrice = (property.lastSalePrice || property.soldPrice) as
+        | number
+        | null
+        | undefined;
+      const taxAssessedValue = (property.taxAssessedValue || property.assessedValue) as
+        | number
+        | null
+        | undefined;
+
+      // Calculate equity if we have the data
+      const primaryValue = estimatedValue || taxAssessedValue;
+      const equityPercent =
+        primaryValue && lastSalePrice && lastSalePrice > 0
+          ? ((primaryValue - lastSalePrice) / primaryValue) * 100
+          : null;
+
+      return {
+        property: {
+          id: property.id,
+          address: property.address,
+          city: property.city,
+          state: property.state,
+          zip: (property.zip || property.zipCode || '') as string,
+          latitude: property.latitude,
+          longitude: property.longitude,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          squareFootage: property.sqft || (property.squareFootage as number | undefined),
+          estimatedValue,
+          lastSalePrice,
+          lastSaleDate: null,
+          ownerName: null,
+          ownerOccupied: null,
+          yearBuilt: property.yearBuilt as number | null | undefined,
+          lotSize: null,
+          propertyType: (property.propertyType as string | null | undefined) || null,
+          zoning: null,
+          taxAssessedValue,
+          annualTaxAmount: null,
+          mlsStatus: null,
+          daysOnMarket: null,
+          pricePerSqft: null,
+          hoaFees: null,
+          parkingSpaces: null,
+          garage: null,
+          pool: null,
+          view: null,
+          waterfront: null,
+          gatedCommunity: null,
+          seniorCommunity: null,
+          equityPercent,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        filterResults: {
+          matches: [],
+          matchedFilters: [],
+          combinedScore: Math.max(50, 85 - index * 3), // Score from 85 down to minimum 50
+          passesFilter: true,
+        },
+        rank: index + 1,
+      };
+    });
   }, [visibleProperties]);
 
   // Handle filter changes
@@ -338,6 +434,56 @@ export function PropertySearchSplitView() {
     [parseSearchQuery]
   );
 
+  // Handle marking a property as sold
+  const handleMarkSold = useCallback(
+    async (propertyId: string) => {
+      // Find the property to get details for the toast
+      const property = visibleProperties.find((p) => p.id === propertyId);
+      const address = property?.address || 'Property';
+
+      try {
+        // Call the API to mark property as sold
+        const response = await fetch('/api/ai/tools/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            toolName: 'markPropertySold',
+            input: { propertyId },
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to mark property as sold');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          toast.success(`Marked as sold: ${address}`, {
+            description: result.wasInPipeline
+              ? 'Deal moved to lost. Check Loss Pipeline for analytics.'
+              : 'Recorded for loss analysis.',
+          });
+
+          // Remove from visible properties
+          setAiProperties((prev) => prev.filter((p) => p.id !== propertyId));
+        } else {
+          toast.error('Failed to mark property as sold', {
+            description: result.message || 'Please try again',
+          });
+        }
+      } catch (error) {
+        console.error('Error marking property as sold:', error);
+        // Fallback: Show dialog to manually enter sale info
+        toast.info(`Mark "${address}" as sold`, {
+          description: 'Use Scout to record sale details: "Mark [address] as sold for $X"',
+          duration: 5000,
+        });
+      }
+    },
+    [visibleProperties]
+  );
+
   // Shared components
   const filterBar = (
     <HorizontalFilterBar
@@ -348,6 +494,8 @@ export function PropertySearchSplitView() {
       sortBy={sortBy}
       onSortChange={setSortBy}
       resultsCount={searchResults.length}
+      velocityEnabled={velocityEnabled}
+      onVelocityToggle={setVelocityEnabled}
     />
   );
 
@@ -358,6 +506,7 @@ export function PropertySearchSplitView() {
       selectedPropertyId={selectedPropertyId}
       onPropertyClick={handleMarkerClick}
       onBoundsChange={setMapBounds}
+      velocityEnabled={velocityEnabled}
     />
   );
 
@@ -368,6 +517,7 @@ export function PropertySearchSplitView() {
       selectedPropertyId={selectedPropertyId}
       onPropertyHover={handleCardHover}
       onPropertyClick={handleCardClick}
+      onPropertyMarkSold={handleMarkSold}
       isLoading={isLoadingProperties}
       error={apiError ? (apiError as Error).message : undefined}
     />

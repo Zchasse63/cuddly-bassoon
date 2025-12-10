@@ -63,7 +63,14 @@ export async function GET(request: NextRequest) {
     const granularity = getGranularityForZoom(zoom);
 
     // Get velocity data for bounds
+    console.log(
+      `[Market Velocity API] Calling getVelocityForBounds with: N${north}, S${south}, E${east}, W${west}`
+    );
     const velocities = await getVelocityForBounds({ north, south, east, west });
+    console.log(`[Market Velocity API] getVelocityForBounds returned ${velocities.length} records`);
+    if (velocities.length > 0) {
+      console.log(`[Market Velocity API] Sample record:`, velocities[0]);
+    }
 
     // Transform to heat map response format
     const dataPoints = velocities.map((v) => ({

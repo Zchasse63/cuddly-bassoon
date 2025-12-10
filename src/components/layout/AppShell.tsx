@@ -146,7 +146,7 @@ export function AppShell({ children, leftSidebar, rightSidebar, className }: App
         {
           '--sidebar-left-width': '240px',
           '--sidebar-left-collapsed-width': '60px',
-          '--sidebar-right-width': '320px',
+          '--sidebar-right-width': '400px',
         } as React.CSSProperties
       }
     >
@@ -175,11 +175,11 @@ export function AppShell({ children, leftSidebar, rightSidebar, className }: App
       <AnimatePresence mode="wait">
         {scoutVisible && rightSidebar && (
           <motion.aside
-            initial={{ x: 320, opacity: 0 }}
+            initial={{ x: 400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 320, opacity: 0 }}
+            exit={{ x: 400, opacity: 0 }}
             transition={springPresets.standard}
-            className="sidebar-right w-[320px] glass-high border-l border-white/20 shadow-2xl z-20"
+            className="sidebar-right w-[400px] glass-high border-l border-white/20 shadow-2xl z-20"
           >
             {rightSidebar}
           </motion.aside>

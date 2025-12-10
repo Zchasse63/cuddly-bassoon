@@ -155,6 +155,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_comp_analyses_updated_at ON comp_analyses;
 CREATE TRIGGER trigger_comp_analyses_updated_at
   BEFORE UPDATE ON comp_analyses
   FOR EACH ROW

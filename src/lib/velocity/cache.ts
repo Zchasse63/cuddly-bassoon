@@ -3,7 +3,7 @@
  * Caching layer for velocity calculations using Supabase
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import type {
   MarketVelocityIndex,
   MarketVelocityIndexRow,
@@ -291,49 +291,55 @@ export async function getVelocityForBounds(bounds: {
   east: number;
   west: number;
 }): Promise<MarketVelocityIndex[]> {
-  const supabase = await createClient();
+  // Use admin client for public velocity data (bypasses RLS issues with cookie-based auth)
+  const supabase = createAdminClient();
 
-  // Use the RPC function for efficient spatial query
-  const { data, error } = await supabase.rpc('get_velocity_for_bounds', {
-    p_north: bounds.north,
-    p_south: bounds.south,
-    p_east: bounds.east,
-    p_west: bounds.west,
+  console.log('[Velocity Cache] Querying with bounds:', bounds);
+  console.log('[Velocity Cache] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('[Velocity Cache] Secret key exists:', !!process.env.SUPABASE_SECRET_KEY);
+
+  // First, let's try a simple count query to verify connection
+  const { count, error: countError } = await supabase
+    .from('market_velocity_index')
+    .select('*', { count: 'exact', head: true });
+
+  console.log('[Velocity Cache] Table count:', { count, countError });
+
+  // Fetch all velocity data and filter in JS (Supabase client has issues with numeric comparisons)
+  const { data, error } = await supabase
+    .from('market_velocity_index')
+    .select('zip_code, velocity_index, classification, center_lat, center_lng')
+    .not('center_lat', 'is', null)
+    .not('center_lng', 'is', null);
+
+  console.log('[Velocity Cache] Raw query result:', {
+    error,
+    dataCount: data?.length ?? 0,
+    firstRow: data?.[0],
   });
 
-  if (error) {
-    console.error('[Velocity Cache] Error fetching for bounds:', error);
-
-    // Fallback: fetch all and filter (less efficient)
-    const { data: fallbackData } = await supabase
-      .from('market_velocity_index')
-      .select('*')
-      .gt('expires_at', new Date().toISOString())
-      .not('center_lat', 'is', null)
-      .not('center_lng', 'is', null);
-
-    if (!fallbackData) return [];
-
-    return (fallbackData as MarketVelocityIndexRow[])
-      .filter(
-        (row) =>
-          row.center_lat !== null &&
-          row.center_lng !== null &&
-          row.center_lat >= bounds.south &&
-          row.center_lat <= bounds.north &&
-          row.center_lng >= bounds.west &&
-          row.center_lng <= bounds.east
-      )
-      .map(rowToMarketVelocityIndex);
+  if (error || !data) {
+    console.error('[Velocity Cache] Error fetching velocity data:', error);
+    return [];
   }
 
-  // RPC returns simplified format, need to reconstruct
-  return (data || []).map((row: { zip_code: string; velocity_index: number; classification: string; center_lat: number; center_lng: number }) => ({
+  // Filter in JavaScript since Supabase client has issues with numeric type comparisons
+  const filtered = data.filter((row) => {
+    const lat = parseFloat(String(row.center_lat));
+    const lng = parseFloat(String(row.center_lng));
+    return lat >= bounds.south && lat <= bounds.north && lng >= bounds.west && lng <= bounds.east;
+  });
+
+  console.log('[Velocity Cache] Filtered result:', { count: filtered.length, bounds });
+
+  // Map filtered data to MarketVelocityIndex format
+  // Note: center_lat/center_lng may be strings from database, so we parse them
+  return filtered.map((row) => ({
     zipCode: row.zip_code,
     velocityIndex: row.velocity_index,
     classification: row.classification,
-    centerLat: row.center_lat,
-    centerLng: row.center_lng,
+    centerLat: parseFloat(String(row.center_lat)),
+    centerLng: parseFloat(String(row.center_lng)),
     // Fill in defaults for other fields
     daysOnMarketScore: 0,
     absorptionScore: 0,

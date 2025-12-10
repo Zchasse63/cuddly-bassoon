@@ -40,6 +40,9 @@ import { registerMarketVelocityTools } from './market-velocity-tools';
 // Census Geography Tools (Micro-Territory Comp Selection)
 import { registerCensusGeographyTools } from './census-geography-tools';
 
+// Property Lifecycle Tools (Sale tracking, status management, loss analytics)
+import { registerPropertyLifecycleTools } from './property-lifecycle-tools';
+
 /**
  * Register all tool categories
  */
@@ -83,7 +86,10 @@ export function registerAllTools(): void {
   // Census Geography Tools (Micro-Territory Comp Selection)
   registerCensusGeographyTools();
 
-  toolLogger.info('Tool Categories', 'All tools registered (29 categories)');
+  // Property Lifecycle Tools (Sale tracking, status management, loss analytics)
+  registerPropertyLifecycleTools();
+
+  toolLogger.info('Tool Categories', 'All tools registered (30 categories)');
 }
 
 // Core tool exports
@@ -122,3 +128,6 @@ export { registerMarketVelocityTools, marketVelocityTools } from './market-veloc
 
 // Census Geography Tools exports
 export { registerCensusGeographyTools, censusGeographyTools } from './census-geography-tools';
+
+// Property Lifecycle Tools exports
+export { registerPropertyLifecycleTools } from './property-lifecycle-tools';

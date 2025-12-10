@@ -220,7 +220,7 @@ export function ClusterMarker({ longitude, latitude, pointCount, onClick }: Clus
           'border-2 border-[var(--border-highlight)]'
         )}
         style={{ width: size, height: size }}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
           onClick?.();
         }}

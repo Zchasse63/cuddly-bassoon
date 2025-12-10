@@ -63,9 +63,13 @@ CREATE INDEX IF NOT EXISTS idx_properties_subdivision
 ON properties(subdivision)
 WHERE subdivision IS NOT NULL;
 
+-- Enable pg_trgm extension for fuzzy matching (if not already enabled)
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA extensions;
+
 -- Trigram index for fuzzy subdivision matching
+-- Note: Using gin_trgm_ops from the extensions schema
 CREATE INDEX IF NOT EXISTS idx_properties_subdivision_trgm
-ON properties USING gin(subdivision extensions.gin_trgm_ops)
+ON properties USING gin(subdivision gin_trgm_ops)
 WHERE subdivision IS NOT NULL;
 
 -- ============================================================================

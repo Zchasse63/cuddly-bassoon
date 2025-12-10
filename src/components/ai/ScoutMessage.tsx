@@ -4,17 +4,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import {
-  User,
-  FileText,
-  ExternalLink,
-  Check,
-  Copy,
-  Loader2,
-  AlertCircle,
-  Home,
-  MapPin,
-} from 'lucide-react';
+import { User, FileText, ExternalLink, Check, Copy, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -96,55 +86,6 @@ function SourceCard({
    TOOL RESULT COMPONENTS
    PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP */
 
-interface PropertyResult {
-  id?: string;
-  address?: string;
-  formattedAddress?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  zipCode?: string;
-  propertyType?: string;
-  estimatedValue?: number;
-  lastSalePrice?: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  squareFootage?: number;
-}
-
-function PropertyCard({ property }: { property: PropertyResult }) {
-  const address = property.address || property.formattedAddress || 'Unknown Address';
-  const location = [property.city, property.state, property.zip || property.zipCode]
-    .filter(Boolean)
-    .join(', ');
-  const value = property.estimatedValue || property.lastSalePrice;
-
-  return (
-    <div className="flex items-start gap-3 p-3 rounded-lg glass-subtle hover:glass-base transition-all">
-      <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 text-primary shrink-0">
-        <Home className="size-5" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm truncate">{address}</p>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="size-3" />
-          <span className="truncate">{location}</span>
-        </div>
-        <div className="flex items-center gap-2 mt-1">
-          {property.propertyType && (
-            <Badge variant="secondary" className="text-xs">
-              {property.propertyType.replace(/_/g, ' ')}
-            </Badge>
-          )}
-          {value && (
-            <span className="text-xs font-medium text-primary">${value.toLocaleString()}</span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ToolResultCard({ part }: { part: ToolPart }) {
   const toolName = part.toolName || part.type.replace('tool-', '');
   const displayName = toolName.replace(/_/g, ' ').replace(/\./g, ' › ');
@@ -177,58 +118,21 @@ function ToolResultCard({ part }: { part: ToolPart }) {
     );
   }
 
-  // Output available - render based on tool type
+  // Output available - show clean, minimal summary (details go to property list/map)
   if (part.state === 'output-available' && part.output) {
     const output = part.output as Record<string, unknown>;
 
-    // Property search results
-    if (toolName.includes('property') && toolName.includes('search')) {
-      const properties = (output.properties || output.data || []) as PropertyResult[];
-      const total = (output.total || properties.length) as number;
-
-      if (properties.length === 0) {
-        return (
-          <motion.div
-            className="p-3 rounded-lg glass-subtle text-sm text-muted-foreground"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            No properties found matching your criteria.
-          </motion.div>
-        );
+    // Extract meaningful summary from the output
+    const getResultSummary = (data: Record<string, unknown>): string => {
+      // Property searches - brief summary, details on map/list
+      if (toolName.includes('property') || toolName.includes('search')) {
+        const properties = (data.properties || data.data || data.results || []) as unknown[];
+        if (Array.isArray(properties) && properties.length > 0) {
+          return `Found ${properties.length} properties → View on map`;
+        }
+        if (properties.length === 0) return 'No properties found';
       }
 
-      return (
-        <motion.div
-          className="flex flex-col gap-2 max-w-full overflow-hidden"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className="flex items-center justify-between px-1 min-w-0">
-            <span className="text-xs font-medium text-muted-foreground truncate">
-              Found {total} properties
-            </span>
-            <Badge variant="outline" className="text-xs shrink-0">
-              {displayName}
-            </Badge>
-          </div>
-          <div className="grid gap-2 max-h-[300px] overflow-y-auto overflow-x-hidden">
-            {properties.slice(0, 5).map((property, idx) => (
-              <PropertyCard key={property.id || idx} property={property} />
-            ))}
-          </div>
-          {properties.length > 5 && (
-            <p className="text-xs text-muted-foreground px-1">
-              + {properties.length - 5} more properties
-            </p>
-          )}
-        </motion.div>
-      );
-    }
-
-    // Generic tool result - show clean summary (no raw JSON)
-    // Extract meaningful info from the output
-    const getResultSummary = (data: Record<string, unknown>): string => {
       // Check for common success indicators
       if (data.success === true) return 'Completed successfully';
       if (data.message && typeof data.message === 'string') return data.message;
@@ -251,6 +155,7 @@ function ToolResultCard({ part }: { part: ToolPart }) {
 
     const summary = getResultSummary(output);
 
+    // Show minimal inline summary - no property cards in chat (they show in the list panel)
     return (
       <motion.div
         className="flex items-center gap-2 p-2 rounded-lg glass-subtle"

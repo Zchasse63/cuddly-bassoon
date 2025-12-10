@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { MapProvider, MapContainer, useMap, type MapProperty } from '@/components/map';
+import { MarketVelocityLayer } from '@/components/map/MarketVelocityLayer';
+import { VelocityPolygonLayer } from '@/components/map/VelocityPolygonLayer';
 import { cn } from '@/lib/utils';
 
 /**
@@ -23,14 +25,11 @@ interface MapPanelProps {
   /** Callback when a property marker is clicked */
   onPropertyClick: (id: string) => void;
   /** Callback when map bounds change */
-  onBoundsChange: (bounds: {
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  }) => void;
+  onBoundsChange: (bounds: { north: number; south: number; east: number; west: number }) => void;
   /** Optional class name */
   className?: string;
+  /** Whether to show market velocity heatmap overlay */
+  velocityEnabled?: boolean;
 }
 
 /**
@@ -39,9 +38,11 @@ interface MapPanelProps {
 function MapPanelInner({
   properties,
   onBoundsChange,
+  velocityEnabled,
 }: {
   properties: MapProperty[];
   onBoundsChange: MapPanelProps['onBoundsChange'];
+  velocityEnabled?: boolean;
 }) {
   const { state, setProperties } = useMap();
 
@@ -63,7 +64,20 @@ function MapPanelInner({
       showDrawControl={false}
       showStyleToggle={true}
       showIsochroneControl={false}
-    />
+      // Add padding to ensure map center and controls respect the UI layout
+      // Top: 100px (Filter Bar), Right: 420px (List Panel), Bottom: 20px, Left: 20px
+      padding={{ top: 100, right: 420, bottom: 20, left: 20 }}
+    >
+      {/* Market Velocity Layers - Hybrid visualization */}
+      {velocityEnabled && (
+        <>
+          {/* Heatmap layer: visible at zoom 0-10, fades out at higher zoom */}
+          <MarketVelocityLayer visible={velocityEnabled} opacity={0.7} />
+          {/* Polygon layer: visible at zoom 8+, fades in from heatmap */}
+          <VelocityPolygonLayer visible={velocityEnabled} opacity={0.7} />
+        </>
+      )}
+    </MapContainer>
   );
 }
 
@@ -74,6 +88,7 @@ export function MapPanel({
   onPropertyClick: _onPropertyClick,
   onBoundsChange,
   className,
+  velocityEnabled,
 }: MapPanelProps) {
   // Note: highlightedPropertyId, selectedPropertyId, and onPropertyClick are passed
   // but not used directly here because MapContainer handles markers internally.
@@ -87,9 +102,9 @@ export function MapPanel({
         <MapPanelInner
           properties={properties}
           onBoundsChange={onBoundsChange}
+          velocityEnabled={velocityEnabled}
         />
       </MapProvider>
     </div>
   );
 }
-

@@ -24,9 +24,13 @@ import type { PropertySearchResultItem } from '@/lib/filters/types';
 interface PropertyListPanelProps {
   results: PropertySearchResultItem[];
   highlightedPropertyId?: string | null;
+  highlightedFromListId?: string | null;
   selectedPropertyId?: string | null;
   onPropertyHover?: (propertyId: string | null) => void;
   onPropertyClick?: (propertyId: string) => void;
+  onPropertyContact?: (propertyId: string) => void;
+  onPropertySave?: (propertyId: string) => void;
+  onPropertyMarkSold?: (propertyId: string) => void;
   isLoading?: boolean;
   error?: string;
   className?: string;
@@ -35,9 +39,13 @@ interface PropertyListPanelProps {
 export function PropertyListPanel({
   results,
   highlightedPropertyId,
+  highlightedFromListId,
   selectedPropertyId,
   onPropertyHover,
   onPropertyClick,
+  onPropertyContact,
+  onPropertySave,
+  onPropertyMarkSold,
   isLoading,
   error,
   className,
@@ -125,7 +133,11 @@ export function PropertyListPanel({
                 <PropertyCardCompact
                   result={result}
                   onClick={() => onPropertyClick?.(result.property.id)}
+                  onContact={onPropertyContact}
+                  onSave={onPropertySave}
+                  onMarkSold={onPropertyMarkSold}
                   isHighlighted={result.property.id === highlightedPropertyId}
+                  isHighlightedFromList={result.property.id === highlightedFromListId}
                   isSelected={result.property.id === selectedPropertyId}
                 />
               </div>

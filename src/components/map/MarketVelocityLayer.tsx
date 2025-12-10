@@ -1,20 +1,23 @@
 'use client';
 
 /**
- * MarketVelocityLayer Component
- * Renders the Market Velocity Index heat map layer on the Mapbox map
+ * MarketVelocityLayer Component (Heatmap Mode)
+ *
+ * Renders velocity data as a Mapbox heatmap layer for low zoom levels (0-10).
+ * At higher zoom levels (8+), VelocityPolygonLayer takes over with zip code polygons.
+ *
+ * The heatmap provides a smooth, blended view of market velocity patterns
+ * for regional overview before the user zooms in to see specific zip codes.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Source, Layer } from 'react-map-gl/mapbox';
 import { useQuery } from '@tanstack/react-query';
 import { useMap } from './MapProvider';
 import type { VelocityHeatMapResponse, VelocityClassification } from '@/types/velocity';
-import { VELOCITY_COLOR_SCALE } from '@/types/velocity';
 
 /**
  * Partial velocity data available from map click events
- * (only includes properties stored in GeoJSON features)
  */
 export interface VelocityClickData {
   zipCode: string;
@@ -46,7 +49,7 @@ const emptyGeoJSON: VelocityGeoJSON = {
 interface MarketVelocityLayerProps {
   visible: boolean;
   opacity?: number;
-  /** Callback when a velocity point is clicked. Only partial data is available from the map feature. */
+  /** Callback when a velocity point is clicked. Not available for heatmap layer. */
   onAreaClick?: (zipCode: string, data: VelocityClickData) => void;
 }
 
@@ -95,16 +98,27 @@ async function fetchVelocityHeatMapData(
 
 export function MarketVelocityLayer({
   visible,
-  opacity = 0.6,
+  opacity = 0.7,
   onAreaClick,
 }: MarketVelocityLayerProps) {
   const { state, setLoading } = useMap();
-  // Hovered feature state for styling - setter will be used when events are moved to Map level
-  const [hoveredFeature] = useState<string | null>(null);
+
+  // Round zoom to avoid refetching on tiny zoom changes during animation
+  const roundedZoom = Math.round(state.viewport.zoom * 2) / 2;
+
+  // Round bounds to avoid refetching on tiny pan changes
+  const roundedBounds = state.bounds
+    ? {
+        north: Math.round(state.bounds.north * 100) / 100,
+        south: Math.round(state.bounds.south * 100) / 100,
+        east: Math.round(state.bounds.east * 100) / 100,
+        west: Math.round(state.bounds.west * 100) / 100,
+      }
+    : null;
 
   // Query for velocity data
   const { data: velocityData, isLoading } = useQuery({
-    queryKey: ['marketVelocity', state.bounds, state.viewport.zoom],
+    queryKey: ['marketVelocityHeatmap', roundedBounds, roundedZoom],
     queryFn: () =>
       state.bounds
         ? fetchVelocityHeatMapData(state.bounds, state.viewport.zoom)
@@ -119,9 +133,8 @@ export function MarketVelocityLayer({
     setLoading(isLoading);
   }, [isLoading, setLoading]);
 
-  // TODO: Move layer click handler to parent Map component with interactiveLayerIds
-  // The onAreaClick callback is available but needs to be wired up at the Map level
-  void onAreaClick; // Acknowledge prop exists for future implementation
+  // Acknowledge callback (heatmap layers don't support click events)
+  void onAreaClick;
 
   // Don't render if not visible
   if (!visible) return null;
@@ -129,56 +142,54 @@ export function MarketVelocityLayer({
   const data = velocityData || emptyGeoJSON;
 
   return (
-    <Source id="market-velocity-source" type="geojson" data={data}>
-      {/* Circle layer for zip code velocity */}
+    <Source id="market-velocity-heatmap-source" type="geojson" data={data}>
+      {/* Heatmap layer for low zoom overview */}
       <Layer
-        id="market-velocity-circles"
-        type="circle"
+        id="market-velocity-heatmap"
+        type="heatmap"
+        maxzoom={12} // Fade out at higher zoom where polygons take over
         paint={{
-          // Color based on velocity index - hot colors for high velocity
-          'circle-color': [
-            'step',
-            ['get', 'velocityIndex'],
-            VELOCITY_COLOR_SCALE[0]!.color, // 0-24: Cold (Blue)
-            25,
-            VELOCITY_COLOR_SCALE[1]!.color, // 25-39: Cool (Green)
-            40,
-            VELOCITY_COLOR_SCALE[2]!.color, // 40-54: Balanced (Yellow)
-            55,
-            VELOCITY_COLOR_SCALE[3]!.color, // 55-69: Warm (Amber)
-            70,
-            VELOCITY_COLOR_SCALE[4]!.color, // 70-84: Hot (Orange)
-            85,
-            VELOCITY_COLOR_SCALE[5]!.color, // 85-100: On Fire (Red)
+          // Weight based on velocity index (normalized to 0-1)
+          'heatmap-weight': ['interpolate', ['linear'], ['get', 'velocityIndex'], 0, 0, 100, 1],
+          // Intensity increases with zoom
+          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 4, 0.5, 10, 2],
+          // Color ramp from cold (blue) to hot (red)
+          'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0,
+            'rgba(0, 0, 255, 0)', // Transparent
+            0.1,
+            'rgba(59, 130, 246, 0.4)', // Cold - Blue
+            0.3,
+            'rgba(34, 197, 94, 0.5)', // Cool - Green
+            0.5,
+            'rgba(234, 179, 8, 0.6)', // Balanced - Yellow
+            0.7,
+            'rgba(245, 158, 11, 0.7)', // Warm - Amber
+            0.85,
+            'rgba(234, 88, 12, 0.8)', // Hot - Orange
+            1,
+            'rgba(220, 38, 38, 0.9)', // On Fire - Red
           ],
-          // Size based on zoom level
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 4, 8, 8, 12, 12, 16, 20],
-          'circle-opacity': opacity,
-          'circle-stroke-width': ['case', ['==', ['get', 'zipCode'], hoveredFeature || ''], 2, 0.5],
-          'circle-stroke-color': '#1F2937',
-          'circle-stroke-opacity': 0.8,
-        }}
-        // Note: Event handlers need to be registered at the Map level with interactiveLayerIds
-        // TODO: Move onClick, onMouseEnter, onMouseLeave to parent Map component
-      />
-
-      {/* Label layer for zip codes at higher zoom */}
-      <Layer
-        id="market-velocity-labels"
-        type="symbol"
-        minzoom={11}
-        layout={{
-          'text-field': ['get', 'velocityIndex'],
-          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
-          'text-size': 10,
-          'text-allow-overlap': false,
-          'text-ignore-placement': false,
-        }}
-        paint={{
-          'text-color': '#FFFFFF',
-          'text-halo-color': '#000000',
-          'text-halo-width': 1,
-          'text-opacity': opacity,
+          // Radius increases with zoom
+          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 4, 20, 8, 40, 12, 60],
+          // Opacity fades out as zoom increases (polygon layer takes over at zoom 10)
+          // Heatmap fully visible up to zoom 8, then fades out completely by zoom 10
+          'heatmap-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7,
+            opacity,
+            8.5,
+            opacity * 0.5,
+            10,
+            0, // Fully transparent at zoom 10 - polygons take over
+            12,
+            0,
+          ],
         }}
       />
     </Source>

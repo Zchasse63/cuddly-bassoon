@@ -6,8 +6,8 @@
  * This is the ONLY AI chat component needed for the sidebar.
  * Uses Vercel AI SDK's useChat hook directly for simplicity.
  *
- * Per UI_UX_DESIGN_SYSTEM_v1.md:
- * - Width: 360px (fixed, not resizable)
+ * Per Fluid_Real_Estate_OS_Design_System.md:
+ * - Width: 400px (fixed, not resizable)
  * - Persistent right sidebar on all pages
  * - AI is the primary interaction method
  *
@@ -22,7 +22,6 @@
  * - ScoutOrb animated avatar
  * - ScoutMessage glass-styled bubbles
  * - Voice input support
- * - Prompt enhancement
  */
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
@@ -30,7 +29,6 @@ import {
   Send,
   Square,
   RotateCcw,
-  Loader2,
   Sparkles,
   Zap,
   Mic,
@@ -43,13 +41,12 @@ import { useChat, type UIMessage } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useOnboardingState } from '@/hooks/useInsertPrompt';
 import { useViewContextSafe } from '@/contexts/ViewContext';
-import { aiEventBus } from '@/lib/ai/events';
+import { useAIResultStore } from '@/stores/aiResultStore';
 import { InlineQuickActions } from '@/components/ai/QuickActions';
 import { OnboardingModal } from './OnboardingModal';
 import { AIToolPalette, useAIToolPalette } from './AIToolPalette';
@@ -57,13 +54,11 @@ import { EmptyChatState } from './EmptyChatState';
 import { ToolTransparency, useToolTransparency } from './ToolTransparency';
 import { ToolWorkflows } from './ToolWorkflows';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
-import { usePromptEnhancement } from '@/hooks/usePromptEnhancement';
 import type { ToolWorkflow } from '@/types/tool-preferences';
 
 // Fluid OS Scout Components
 import { ScoutOrb } from './ScoutOrb';
 import { ScoutMessage } from './ScoutMessage';
-import { AIContextBar, ContextBadge } from './AIContextBar';
 
 const SCOUT_PANE_STORAGE_KEY = 'scout-pane-state';
 
@@ -87,34 +82,7 @@ function extractTextContent(message: UIMessage): string {
     .join(' ');
 }
 
-// Emit tool results via event bus for external UI components (map, property list)
-function emitToolResults(message: UIMessage) {
-  if (!message.parts) return;
-
-  for (const part of message.parts) {
-    if (
-      typeof part === 'object' &&
-      part !== null &&
-      'type' in part &&
-      typeof part.type === 'string' &&
-      part.type.startsWith('tool-') &&
-      'state' in part &&
-      part.state === 'output-available' &&
-      'output' in part
-    ) {
-      const toolPart = part as ToolPart;
-      const toolName = toolPart.toolName || part.type.replace('tool-', '');
-
-      // Emit event for ALL tool results
-      // Each UI component subscribes and filters for tools it cares about
-      console.log('[ScoutPane] Emitting tool result:', toolName);
-      aiEventBus.emit('tool:result', {
-        toolName,
-        result: toolPart.output,
-      });
-    }
-  }
-}
+// function emitToolResults removed - logic moved to useEffect
 
 interface ScoutPaneProps {
   /** Default open state for the sidebar */
@@ -160,6 +128,9 @@ export function ScoutPane({
   const inputValueRef = useRef<string>('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Track processed tool calls to prevent duplicate events
+  const processedToolCallIds = useRef(new Set<string>());
+
   // Context
   const viewContext = useViewContextSafe();
 
@@ -175,9 +146,6 @@ export function ScoutPane({
 
   // Tool transparency tracking
   const toolTransparency = useToolTransparency();
-
-  // Prompt enhancement
-  const enhancement = usePromptEnhancement();
 
   // Get system context for AI
   const systemContext = viewContext?.getAIContext();
@@ -214,10 +182,7 @@ export function ScoutPane({
   } = useChat({
     id: persistKey,
     transport,
-    onFinish: ({ message }) => {
-      // Emit tool results for external UI updates (map, property list)
-      emitToolResults(message);
-    },
+    /* onFinish removed - using useEffect for reliable tool emitting */
     onError: (err) => {
       onError?.(err);
     },
@@ -320,6 +285,62 @@ export function ScoutPane({
     }
   }, [input, setInput, toolPalette]);
 
+  // Get Zustand store action for adding results
+  const addAIResult = useAIResultStore((state) => state.addResult);
+
+  // Effect: Watch for completed tool calls in messages and write to Zustand store (+ legacy EventBus)
+  useEffect(() => {
+    messages.forEach((message) => {
+      // 1. Check standard message parts (Vercel AI SDK UI)
+      if (message.parts) {
+        message.parts.forEach((part) => {
+          if (
+            part.type.startsWith('tool-') &&
+            (part as any).state === 'output-available' &&
+            (part as any).output
+          ) {
+            const toolPart = part as ToolPart;
+            const id = toolPart.toolCallId || `${message.id}-${toolPart.toolName}`; // Fallback ID
+
+            if (!processedToolCallIds.current.has(id)) {
+              const toolName = toolPart.toolName || part.type.replace('tool-', '');
+              console.log('[ScoutPane] Processing tool result (parts):', toolName, id);
+
+              // Write to Zustand store for reliable state management
+              addAIResult({
+                id,
+                toolName,
+                result: toolPart.output,
+              });
+              processedToolCallIds.current.add(id);
+            }
+          }
+        });
+      }
+
+      // 2. Fallback: Check toolInvocations (Vercel AI SDK Core/Newer)
+      // Sometimes results are attached here instead of parts
+      if ((message as any).toolInvocations) {
+        (message as any).toolInvocations.forEach((toolInv: any) => {
+          if (toolInv.state === 'result') {
+            const id = toolInv.toolCallId;
+            if (!processedToolCallIds.current.has(id)) {
+              console.log('[ScoutPane] Processing tool result (invocation):', toolInv.toolName, id);
+
+              // Write to Zustand store for reliable state management
+              addAIResult({
+                id,
+                toolName: toolInv.toolName,
+                result: toolInv.result,
+              });
+              processedToolCallIds.current.add(id);
+            }
+          }
+        });
+      }
+    });
+  }, [messages, addAIResult]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -368,23 +389,6 @@ export function ScoutPane({
     }
   }, [voice]);
 
-  // These handlers are available for future use with prompt enhancement feature
-  const _handleEnhance = useCallback(async () => {
-    if (input.trim()) {
-      const result = await enhancement.enhancePrompt(input);
-      if (result) {
-        setInput(result);
-      }
-    }
-  }, [input, enhancement, setInput]);
-
-  const _handleRevert = useCallback(() => {
-    if (enhancement.originalPrompt) {
-      setInput(enhancement.originalPrompt);
-      enhancement.revertToOriginal();
-    }
-  }, [enhancement, setInput]);
-
   const handleExecuteWorkflow = useCallback(
     async (workflow: ToolWorkflow) => {
       const stepPrompts = workflow.step_prompts as Record<string, string> | null;
@@ -428,8 +432,8 @@ export function ScoutPane({
                       className="ml-11 mt-2"
                     />
                   )}
-              </div>
-            ))}
+                </div>
+              ))}
             {isStreaming && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="flex items-center gap-3 text-muted-foreground text-sm">
                 <ScoutOrb state="thinking" size="md" />
@@ -450,8 +454,8 @@ export function ScoutPane({
       {/* Quick Actions */}
       <InlineQuickActions onActionClick={handleSendPrompt} />
 
-      {/* Input area - ChatGPT-style clean layout */}
-      <div className="flex-shrink-0 border-t border-white/10 p-3 bg-background/50">
+      {/* Input area - Fluid Glass */}
+      <div className="flex-shrink-0 border-t border-white/10 p-3 glass-high backdrop-blur-md z-10">
         <form onSubmit={handleSubmit} className="flex items-end gap-2">
           {/* Text input with inline icons */}
           <div className="relative flex-1 min-w-0">
@@ -465,13 +469,13 @@ export function ScoutPane({
               rows={1}
               className={cn(
                 'w-full resize-none rounded-xl border border-white/20 bg-white/5',
-                'pl-3 pr-10 py-2.5 text-sm',
+                'pl-3 pr-12 py-3 text-sm' /* Increased pr and py for better spacing */,
                 'placeholder:text-muted-foreground/60',
                 'focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
-                'max-h-32 overflow-y-auto'
+                'max-h-32 overflow-y-auto no-scrollbar'
               )}
-              style={{ minHeight: '42px' }}
+              style={{ minHeight: '44px' }}
             />
             {/* Send button inside input */}
             <div className="absolute right-1.5 bottom-1.5">
@@ -616,11 +620,11 @@ export function ScoutPane({
     );
   }
 
-  // Desktop: Fixed glass-styled sidebar (320px per Fluid OS spec)
+  // Desktop: Fixed glass-styled sidebar (400px for better message readability)
   return (
     <aside
       className={cn(
-        'w-[320px] flex-shrink-0',
+        'w-[400px] flex-shrink-0',
         'glass-high border-l border-white/10',
         'flex flex-col h-full overflow-hidden',
         'shadow-[-8px_0_32px_rgba(0,0,0,0.08)]'
@@ -631,7 +635,7 @@ export function ScoutPane({
         <div className="chat-header__title">
           <Sparkles className="size-5 text-primary" />
           <span className="font-semibold">Scout</span>
-          <ContextBadge />
+          {/* ContextBadge removed per feedback */}
         </div>
         <Button
           size="icon"
@@ -643,12 +647,11 @@ export function ScoutPane({
         </Button>
       </div>
 
-      {/* Context Bar */}
-      <AIContextBar className="border-b border-white/10" />
+      {/* Context Bar - Removed per feedback to clean up UI */}
+      {/* <AIContextBar className="border-b border-white/10" /> */}
 
       {/* Chat Content */}
       <div className="flex-1 min-h-0 overflow-hidden bg-transparent">{ChatContent}</div>
     </aside>
   );
 }
-

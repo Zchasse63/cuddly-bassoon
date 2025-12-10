@@ -6,7 +6,7 @@
 -- Stores completed deals with their outcomes for RAG retrieval
 -- ============================================================================
 
-CREATE TABLE historical_deals (
+CREATE TABLE IF NOT EXISTS historical_deals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Deal identifiers
@@ -74,7 +74,7 @@ CREATE TABLE historical_deals (
 -- Stores vector embeddings for semantic search
 -- ============================================================================
 
-CREATE TABLE historical_deal_embeddings (
+CREATE TABLE IF NOT EXISTS historical_deal_embeddings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     deal_id UUID NOT NULL REFERENCES historical_deals(id) ON DELETE CASCADE,
     embedding vector(1536) NOT NULL, -- OpenAI text-embedding-3-small dimensions
@@ -90,7 +90,7 @@ CREATE TABLE historical_deal_embeddings (
 -- Stores aggregated patterns from historical data for quick lookups
 -- ============================================================================
 
-CREATE TABLE deal_outcome_patterns (
+CREATE TABLE IF NOT EXISTS deal_outcome_patterns (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     -- Pattern key (combination of factors)
@@ -127,20 +127,20 @@ CREATE TABLE deal_outcome_patterns (
 -- ============================================================================
 
 -- Historical deals indexes
-CREATE INDEX idx_historical_deals_location ON historical_deals(city, state, zip_code);
-CREATE INDEX idx_historical_deals_type ON historical_deals(deal_type);
-CREATE INDEX idx_historical_deals_outcome ON historical_deals(outcome);
-CREATE INDEX idx_historical_deals_seller_type ON historical_deals(seller_type);
-CREATE INDEX idx_historical_deals_close_date ON historical_deals(close_date);
-CREATE INDEX idx_historical_deals_profit ON historical_deals(profit);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_location ON historical_deals(city, state, zip_code);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_type ON historical_deals(deal_type);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_outcome ON historical_deals(outcome);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_seller_type ON historical_deals(seller_type);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_close_date ON historical_deals(close_date);
+CREATE INDEX IF NOT EXISTS idx_historical_deals_profit ON historical_deals(profit);
 
 -- Embedding vector index (HNSW for fast approximate nearest neighbor)
-CREATE INDEX idx_historical_deal_embeddings_vector ON historical_deal_embeddings
+CREATE INDEX IF NOT EXISTS idx_historical_deal_embeddings_vector ON historical_deal_embeddings
     USING hnsw (embedding vector_cosine_ops)
     WITH (m = 16, ef_construction = 64);
 
 -- Pattern lookups
-CREATE INDEX idx_deal_outcome_patterns_lookup ON deal_outcome_patterns(city, state, deal_type, seller_type);
+CREATE INDEX IF NOT EXISTS idx_deal_outcome_patterns_lookup ON deal_outcome_patterns(city, state, deal_type, seller_type);
 
 -- ============================================================================
 -- 5. RPC FUNCTION FOR SEMANTIC SEARCH
@@ -353,11 +353,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_historical_deals_updated_at ON historical_deals;
 CREATE TRIGGER trigger_historical_deals_updated_at
     BEFORE UPDATE ON historical_deals
     FOR EACH ROW
     EXECUTE FUNCTION update_historical_deals_updated_at();
 
+DROP TRIGGER IF EXISTS trigger_historical_deal_embeddings_updated_at ON historical_deal_embeddings;
 CREATE TRIGGER trigger_historical_deal_embeddings_updated_at
     BEFORE UPDATE ON historical_deal_embeddings
     FOR EACH ROW
